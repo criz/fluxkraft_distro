@@ -1,0 +1,25 @@
+<?php
+
+/**
+ * @file
+ * Main module file.
+ */
+
+/**
+ * Implements hook_rules_category_info().
+ */
+function fluxdropbox_rules_category_info() {
+  return array(
+    // Use the same icon as for the service plugin.
+    'fluxdropbox' => array(
+      'label' => t('Dropbox'),
+    ) + fluxservice_get_service_icon_info('fluxdropbox'),
+  );
+}
+
+/**
+ * Implements hook_fluxservice_plugin_directory().
+ */
+function fluxdropbox_fluxservice_plugin_directory() {
+  return 'lib/Drupal/fluxdropbox/Plugin';
+}

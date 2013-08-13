@@ -1,0 +1,784 @@
+<?php
+
+/**
+ * @file
+ * Main module file.
+ */
+
+use Drupal\fluxservice\Entity\FluxEntityInterface;
+use Drupal\fluxservice\KeyValueStore\DatabaseStorage;
+use Drupal\fluxservice\KeyValueStore\DatabaseStorageExpirable;
+use Drupal\fluxservice\Plugin\Entity\AccountInterface;
+use Drupal\fluxservice\Plugin\Entity\ServiceInterface;
+use Drupal\fluxservice\Entity\RemoteEntityInterface;
+use Drupal\fluxservice\Service\OAuthAccountInterface;
+use Drupal\fluxservice\TempStore\TempStore;
+
+require_once __DIR__ . '/fluxservice.plugin.inc';
+
+/**
+ * Implements hook_init().
+ */
+function fluxservice_boot() {
+  try {
+    // Make sure that the composer manager module is bootstrapped.
+    drupal_load('module', 'composer_manager');
+
+    // Try to register the composer auto loader.
+    composer_manager_register_autoloader();
+  }
+  catch (\RuntimeException $exception) {
+    // Notify watchdog for further debugging.
+    watchdog('fluxservice', $exception->getMessage(), WATCHDOG_ERROR);
+
+    // Make sure that the user module is bootstrapped.
+    drupal_load('module', 'user');
+
+    // Additionally print a message if the auto loader could not be registered
+    // and the current user has admin privileges.
+    if (user_access('administer fluxservices')) {
+      drupal_set_message(t('The Composer auto loader could not be registered. Have you updated dependencies via <a href="@url" target="_blank">composer manager</a>? To do so, run: <code>@command</code>', array('@url' => 'http://drupal.org/project/composer_manager', '@command' => "drush composer-json-rebuild\ndrush composer-manager update")), 'error');
+    }
+  }
+}
+
+/**
+ * Implements hook_exit().
+ */
+function fluxservice_exit() {
+  // Clean up all tempstore instances that have been marked for garbage
+  // collection.
+  if ($tempstore = drupal_static('fluxservice_tempstore')) {
+    foreach ($tempstore as $store) {
+      $store->destruct();
+    }
+  }
+}
+
+/**
+ * Implements hook_entity_info().
+ */
+function fluxservice_entity_info() {
+  // Add in entity types exposed via the fluxservice plugin mechanism.
+  // See fluxservice_fluxservice_plugin_type_info().
+  $entity_info = fluxservice_discover_plugins('fluxservice_entity');
+
+  // Move the class to the key used by hook_entity_info().
+  foreach ($entity_info as &$info) {
+    $info['entity class'] = $info['class'];
+    // Set the default entity metadata controller if it is not set.
+    if (empty($info['metadata controller class'])) {
+      $info['metadata controller class'] = 'Drupal\fluxservice\FluxEntityMetadataController';
+    }
+    $info['entity class'] = $info['class'];
+    unset($info['class']);
+  }
+  return $entity_info;
+}
+
+/**
+ * Implements hook_menu().
+ */
+function fluxservice_menu() {
+  $items['fluxservice/oauth/%/%fluxservice_oauth_callback_account'] = array(
+    'title' => 'OAuth Callback',
+    'load arguments' => array(2),
+    'access callback' => 'fluxservice_oauth_callback_access',
+    'access arguments' => array(3),
+    'page callback' => 'fluxservice_oauth_callback',
+    'page arguments' => array(3),
+    'type' => MENU_CALLBACK,
+    'file' => 'fluxservice.callback.inc',
+  );
+
+  // Provide admin UI.
+  $items += \Drupal\fluxservice\UI\ServiceUIController::factory()->hook_menu();
+  $items += \Drupal\fluxservice\UI\AccountUIController::factory()->hook_menu();
+
+  return $items;
+}
+
+/**
+ * Implements hook_drupal_goto_alter().
+ */
+function fluxservice_drupal_goto_alter(&$path, &$options) {
+  if (module_exists('overlay') && overlay_get_mode() == 'child') {
+    if (url_is_external($path)) {
+      // Remove the 'render' query parameter added by the overlay module.
+      unset($options['query']['render']);
+
+      // Close the overlay dialog if the URL we are redirecting to is external.
+      overlay_close_dialog($path, $options);
+      overlay_deliver_empty_page();
+    }
+  }
+}
+
+/**
+ * Implements hook_module_implements_alter().
+ */
+function fluxservice_module_implements_alter(&$implementations, $hook) {
+  if ($hook == 'drupal_goto_alter') {
+    if (!module_exists('overlay')) {
+      // We don't need to re-add our our alter hook if the overlay module is not
+      // enabled.
+      unset($implementations['fluxservice']);
+      return;
+    }
+
+    $group = $implementations['fluxservice'];
+    unset($implementations['fluxservice']);
+    $implementations['fluxservice'] = $group;
+  }
+}
+
+/**
+ * Implements hook_theme().
+ */
+function fluxservice_theme() {
+  return array(
+    'fluxservice_add_account_by_service' => array(
+      'render element' => 'element',
+      'file' => 'theme/fluxservice.theme.inc',
+    ),
+    'fluxservice_icon' => array(
+      'variables' => array('icon' => NULL, 'icon path' => NULL, 'icon background color' => '#ddd', 'icon font class' => NULL, 'module' => NULL, 'children' => '', 'attributes' => array()),
+      'file' => 'theme/fluxservice.theme.inc',
+    ),
+  );
+}
+
+/**
+ * Implements hook_forms().
+ */
+function fluxservice_forms($form_id, $args) {
+  // For efficiency only iterate over our entity bundles if a form of it is
+  // requested.
+  if (isset($args[2]) && ($type = $args[2]) && in_array($type, array('fluxservice_account', 'fluxservice_service'))) {
+    $info = entity_get_info($type);
+    $forms = array();
+    foreach ($info['bundles'] as $bundle => $bundle_info) {
+      $forms["{$type}_edit_{$bundle}_form"]['callback'] = "{$type}_form";
+    }
+    return $forms;
+  }
+}
+
+/**
+ * Implements hook_permission().
+ */
+function fluxservice_permission() {
+  $permissions['administer fluxservices'] = array(
+    'title' => t('Administer service endpoints'),
+    'description' => t('Create and manage service endpoints and accounts.'),
+    'restrict access' => TRUE,
+  );
+
+  foreach (entity_load('fluxservice_service') as $service) {
+    $permissions["use fluxservice endpoint {$service->identifier()}"] =  array(
+      'title' => t('Use endpoint: %endpoint', array('%endpoint' => $service->label())),
+      'description' => t('Create service accounts that use this endpoint.'),
+    );
+  }
+
+  return $permissions;
+}
+
+/**
+ * Entity access callback for service account entities.
+ *
+ * @param string $op
+ *   One of the regular entity operations or 'use' for using the account.
+ */
+function fluxservice_account_access($op, AccountInterface $entity = NULL, $account = NULL) {
+  if (user_access('administer fluxservices', $account)) {
+    return TRUE;
+  }
+  // Allow modules to grant / deny access.
+  $access = module_invoke_all('fluxservice_account_access', $op, $entity, $account);
+
+  // Only grant access if at least one module granted access and no one denied
+  // access.
+  if (in_array(FALSE, $access, TRUE)) {
+    return FALSE;
+  }
+  elseif (in_array(TRUE, $access, TRUE)) {
+    return TRUE;
+  }
+  return FALSE;
+}
+
+/**
+ * Implements hook_fluxservice_account_access().
+ */
+function fluxservice_fluxservice_account_access($op, AccountInterface $entity = NULL, $account = NULL) {
+  if ($op == 'use' && isset($entity) && fluxservice_service_access('use', $entity->getService(), $account)) {
+    return TRUE;
+  }
+}
+
+/**
+ * Entity access callback for service instance entities.
+ *
+ * @param $op
+ *   One of the regular entity operations or 'use' for using the service.
+ */
+function fluxservice_service_access($op, ServiceInterface $entity = NULL, $account = NULL) {
+  if ($op == 'use' && isset($entity) && user_access("use fluxservice endpoint {$entity->identifier()}", $account)) {
+    return TRUE;
+  }
+  return user_access('administer fluxservices', $account);
+}
+
+/**
+ * Returns whether the given user has access to any service of the given plugin.
+ *
+ * @param string $plugin
+ *   The service plugin to check access for.
+ * @param stdClass $account
+ *   (optional) The user to check access for.
+ *
+ * @return boolean
+ */
+function fluxservice_access_by_plugin($plugin, $account = NULL) {
+  if (user_access('administer fluxservices', $account)) {
+    return TRUE;
+  }
+  // Check all available endpoints.
+  foreach (entity_load('fluxservice_service', FALSE, array('plugin' => $plugin)) as $entity) {
+    if (user_access("use fluxservice endpoint {$entity->identifier()}", $account)) {
+      return TRUE;
+    }
+  }
+  return FALSE;
+}
+
+/**
+ * Menu system callback for loading an account entity.
+ *
+ * @param string $entity_id
+ *   A account entity id.
+ *
+ * @return \Drupal\fluxservice\Plugin\Entity\Account
+ *   The account entity or FALSE if it could not be loaded.
+ */
+function fluxservice_account_load($entity_id) {
+  return entity_load_single('fluxservice_account', $entity_id);
+}
+
+/**
+ * Menu system callback for loading a service entity.
+ *
+ * @param string $entity_id
+ *   A service entity id.
+ * @param string $plugin
+ *   (Optional) A service account plugin name.
+ *
+ * @return \Drupal\fluxservice\Plugin\Entity\Service
+ *   The service entity or FALSE if it could not be loaded.
+ */
+function fluxservice_service_load($entity_id, $plugin = NULL) {
+  $service = entity_load_single('fluxservice_service', $entity_id);
+  if (!isset($plugin)) {
+    return $service;
+  }
+
+  if (($info = fluxservice_get_account_plugin_info($plugin)) && $info['service'] == $service->bundle()) {
+    return $service;
+  }
+
+  return FALSE;
+}
+
+/**
+ * Helper function for loading service accounts by their remote id.
+ *
+ * @param string $plugin
+ *   The account plugin (e.g. 'fluxtwitter').
+ * @param mixed $remote_id
+ *   The remote id (e.g. 'screen name') of an account.
+ * @param stdClass $user
+ *   (optional) A user entity or NULL to query for site-wide accounts. Defaults
+ *   to NULL.
+ *
+ * @return \Drupal\fluxservice\Plugin\Entity\Account
+ *   The queried account or FALSE if no account matched the given criteria.
+ */
+function fluxservice_account_load_by_remote_id($plugin, $remote_id, $user = NULL) {
+  $query = new EntityFieldQuery();
+  $query->entityCondition('entity_type', 'fluxservice_account')
+    ->propertyCondition('plugin', $plugin)
+    ->propertyCondition('remote_id', $remote_id);
+
+  // Query for user specific accounts if a user id has been specified. If $uid
+  // is FALSE, query for site-wide accounts only (NULL).
+  if (isset($user)) {
+    $query->propertyCondition('uid', entity_id('user', $user));
+  }
+  else {
+    // EntityFieldQuery does not support isNull() so we have to alter the query
+    // via hook_query_TAG_alter().
+    $query->addTag('fluxservice_uid_null');
+  }
+
+  if (($result = $query->execute()) && !empty($result['fluxservice_account'])) {
+    $entity_id = key($result['fluxservice_account']);
+    return entity_load_single('fluxservice_account', $entity_id);
+  }
+
+  return FALSE;
+}
+
+/**
+ * Loads remote entities from a web service.
+ *
+ * @param string $entity_type
+ *   The entity type to load, e.g. node or user.
+ * @param array|bool $ids
+ *   An array of entity IDs, or FALSE to load all entities.
+ * @param FluxEntityInterface $agent
+ *   The agent with which to query the web service.
+ *
+ * @return bool|array
+ *   An array of entity objects indexed by their ids. When no results are
+ *   found, an empty array is returned.
+ */
+function fluxservice_load_remote_entity($entity_type, array $ids = array(), FluxEntityInterface $agent) {
+  $controller = entity_get_controller($entity_type);
+  return $controller->load($entity_type, $ids);
+}
+
+/**
+ * Loads a single remote entity from a web service.
+ *
+ * @param string $entity_type
+ *   The entity type to load, e.g. node or user.
+ * @param string $id
+ *   An array of entity IDs, or FALSE to load all entities.
+ * @param FluxEntityInterface $agent
+ *   The agent with which to query the web service.
+ *
+ * @return mixed
+ *   The loaded entity object or FALSE if the entity could not be loaded.
+ */
+function fluxservice_load_remote_entity_single($entity_type, $id, FluxEntityInterface $agent) {
+  $controller = entity_get_controller($entity_type);
+  $entities = $controller->load($entity_type, array($id));
+  return !empty($entities) ? reset($entities) : FALSE;
+}
+
+/**
+ * Turns a single bycatched data object into an entity.
+ *
+ * @param array $item
+ *   The item to entify and bycatch.
+ * @param string $entity_type
+ *   The entity type to use.
+ * @param \Drupal\fluxservice\Entity\FluxEntityInterface $agent
+ *   The agent used to load the item.
+ *
+ * @return \Drupal\fluxservice\Entity\RemoteEntityInterface
+ *   The bycatched entity.
+ *
+ * @see fluxservice_entify_bycatch_multiple()
+ */
+function fluxservice_entify_bycatch($item, $entity_type, FluxEntityInterface $agent) {
+  $entities = fluxservice_entify_bycatch_multiple(array($item), $entity_type, $agent);
+  return reset($entities);
+}
+
+/**
+ * Turns bycatched data objects into entities.
+ *
+ * Bycatching entified items puts them into entity cache, such that are
+ * available for future calls without requiring another service request.
+ *
+ * @param array $items
+ *   The array of items to entify and bycatch.
+ * @param string $entity_type
+ *   The entity type to use.
+ * @param \Drupal\fluxservice\Entity\FluxEntityInterface $agent
+ *   The agent used to load the item.
+ *
+ * @return array
+ *   The array of bycatched entities.
+ */
+function fluxservice_entify_bycatch_multiple($items, $entity_type, FluxEntityInterface $agent) {
+  $controller = entity_get_controller($entity_type);
+  return $controller->entifyBycatch($items, $agent);
+}
+
+/**
+ * Implements hook_entity_query_alter().
+ */
+function fluxservice_entity_query_alter(EntityFieldQuery $query) {
+  // Add in fluxservice EFQ drivers.
+  if (!empty($query->entityConditions['entity_type']['value'])) {
+    $entity_type = $query->entityConditions['entity_type']['value'];
+
+    if ($driver = fluxservice_get_query_driver($entity_type, $query)) {
+      $query->fluxservice_driver = $driver;
+      $query->executeCallback = 'fluxservice_efq_execute_callback';
+    }
+  }
+}
+
+/**
+ * Gets the query driver to use for a given EFQ object.
+ */
+function fluxservice_get_query_driver($entity_type, EntityFieldQuery $query) {
+  $info = entity_get_info($entity_type);
+
+  if (!empty($info['fluxservice_efq_driver'])) {
+    $driver = isset($query->metaData['fluxservice']['driver']) ? $query->metaData['fluxservice']['driver'] : 'default';
+    $info = entity_get_info($entity_type);
+    $class = $info['fluxservice_efq_driver'][$driver];
+    $account = entity_load_single('fluxservice_account', $query->metaData['fluxservice']['account']);
+    return $class::factory($entity_type, $info, $account ?: NULL);
+  }
+}
+
+/**
+ * EFQ execute callback that executes via the driver.
+ */
+function fluxservice_efq_execute_callback(EntityFieldQuery $query) {
+  // Make sure an account is given if one is used.
+  if (!$query->fluxservice_driver->getAccount() && $query->fluxservice_driver->getAccountPlugin()) {
+    throw new Exception("Unable to execute the query as account information is missing. Make sure the query is appropriately configured.");
+  }
+  return $query->fluxservice_driver->execute($query);
+}
+
+/**
+ * Implements hook_views_api().
+ */
+function fluxservice_views_api() {
+  return array(
+    'api' => 3,
+    'path' => drupal_get_path('module', 'fluxservice'),
+  );
+}
+
+/**
+ * Implements hook_views_default_views().
+ */
+function fluxservice_views_default_views() {
+  return fluxservice_load_exports('fluxservice', 'views', 'view.inc', 'view');
+}
+
+/**
+ * Fetches an array of exportables from files.
+ *
+ * @param $module
+ *   The module for which to find exportables.
+ * @param $directory
+ *   The subdirectory in the given module.
+ * @param $extension
+ *   The file extension.
+ * @param $name
+ *   The name of the variable found in each file. Defaults to the same as
+ *   $extension.
+ *
+ * @return array
+ *   Array of $name objects.
+ */
+function fluxservice_load_exports($module, $directory, $extension, $name = NULL) {
+  $name = !isset($name) ? $extension : $name;
+  $return = array();
+  // Find all the files in the directory with the correct extension.
+  $files = file_scan_directory(drupal_get_path('module', $module) . "/$directory", "/\.{$extension}$/");
+  foreach ($files as $path => $file) {
+    require DRUPAL_ROOT . '/' . $path;
+    if (isset($name)) {
+      $return[$$name->name] = $$name;
+    }
+  }
+  return $return;
+}
+
+/**
+ * Key value store factory.
+ *
+ * Instantiates and statically caches key value store classes.
+ *
+ * @param string $collection
+ *   The name of a collection.
+ *
+ * @return \Drupal\fluxservice\KeyValueStore\KeyValueStoreInterface
+ *   A key value store object.
+ */
+function fluxservice_key_value($collection) {
+  $stores = &drupal_static(__FUNCTION__);
+  if (!isset($stores[$collection])) {
+    // Statically cache the instantiated plugin handlers.
+    $stores[$collection] = new DatabaseStorage($collection, Database::getConnection());
+  }
+  return $stores[$collection];
+}
+
+/**
+ * Creates a TempStore for the current user or anonymous session.
+ *
+ * @param string $collection
+ *   The collection name to use for this key/value store. This is typically
+ *   a shared namespace or module name, e.g. 'views', 'entity', etc.
+ * @param mixed $owner
+ *   (optional) The owner of this TempStore. By default, the TempStore is
+ *   owned by the currently authenticated user, or by the active anonymous
+ *   session if no user is logged in.
+ *
+ * @return TempStore
+ *   An instance of the the key/value store.
+ */
+function fluxservice_tempstore($collection, $owner = NULL) {
+  // Use the currently authenticated user ID or the active user ID unless
+  // the owner is overridden.
+  if (!isset($owner)) {
+    $owner = $GLOBALS['user']->uid ?: session_id();
+  }
+
+  // Store the data for this collection in the database.
+  $storage = &drupal_static(__FUNCTION__);
+  if (!isset($storage[$collection])) {
+    $storage[$collection] = new DatabaseStorageExpirable($collection, Database::getConnection());
+  }
+
+  return new TempStore($storage[$collection], $owner);
+}
+
+/**
+ * Gets a service account for the given plugin and user.
+ *
+ * Note that a user may have multiple accounts. This function returns any of
+ * those.
+ *
+ * @param $plugin
+ *   An account plugin.
+ * @param $uid
+ *   The ID of the user for whom to get an account.
+ *
+ * @return \Drupal\fluxservice\Plugin\Entity\Account|false
+ *   An account entity or FALSE if no account could be loaded.
+ */
+function fluxservice_get_account_per_user($plugin, $uid) {
+  $query = new EntityFieldQuery();
+  $query->entityCondition('entity_type', 'fluxservice_account')
+    ->propertyCondition('plugin', $plugin)
+    ->propertyCondition('uid', $uid);
+
+  if (($results = $query->execute()) && !empty($results['fluxservice_account'])) {
+    return entity_load_single('fluxservice_account', key($results['fluxservice_account']));
+  }
+  return FALSE;
+}
+
+/**
+ * Returns an account options array for a given user.
+ *
+ * @param $plugin
+ *   A service plugin type.
+ * @param $uid
+ *   (optional) The ID of the user for whom to create the options list. Defaults
+ *   to NULL which builds an options list using all site-wide accounts.
+ *
+ * @return array
+ *   An account options array.
+ */
+function fluxservice_account_options($plugin, $uid = NULL) {
+  $plugins = array_keys(array_filter(fluxservice_get_account_plugin_info(), function ($info) use ($plugin) {
+    return $info['service'] == $plugin;
+  }));
+
+  $query = new EntityFieldQuery();
+  $query->entityCondition('entity_type', 'fluxservice_account')
+    ->propertyCondition('plugin', $plugins);
+
+  if (isset($uid)) {
+    $query->propertyCondition('uid', $uid);
+  }
+  else {
+    // EntityFieldQuery does not support isNull() so we have to alter the query
+    // via hook_query_TAG_alter().
+    $query->addTag('fluxservice_uid_null');
+  }
+
+  $options = array();
+  if (($results = $query->execute()) && $accounts = $results['fluxservice_account']) {
+    $accounts = entity_load('fluxservice_account', array_keys($accounts));
+    foreach ($accounts as $account) {
+      $options[$account->identifier()] = $account->label();
+    }
+  }
+
+  return $options;
+}
+
+/**
+ * Implements hook_query_TAG_alter().
+ */
+function fluxservice_query_fluxservice_uid_null_alter(SelectQueryInterface $query) {
+  // EntityFieldQuery does not support isNull() so we have to alter the query
+  // via hook_query_TAG_alter().
+  $query->isNull('uid');
+}
+
+/**
+ * Builds an array of account type options.
+ *
+ * @return array
+ *   An array of account type options.
+ */
+function fluxservice_account_plugin_options() {
+  return array_map(function ($item) {
+    return $item['label'];
+  }, fluxservice_get_account_plugin_info());
+}
+
+/**
+ * Builds an array of service type options.
+ *
+ * @return array
+ *   An array of service type options.
+ */
+function fluxservice_service_plugin_options() {
+  return array_map(function ($item) {
+    return $item['label'];
+  }, fluxservice_get_service_plugin_info());
+}
+
+/**
+ * Gets the property using the getter method.
+ */
+function fluxservice_entity_property_getter_method($object, array $options, $name) {
+  // Remove any underscores as classes are expected to use CamelCase.
+  $method = 'get' . strtr($name, array('_' => ''));
+  return $object->$method();
+}
+
+/**
+ * Entity property getter callback.
+ */
+function fluxservice_entity_get_account(RemoteEntityInterface $entity) {
+  return $entity->getAccount();
+}
+
+/**
+ * Entity property setter callback.
+ */
+function fluxservice_entity_set_account(RemoteEntityInterface $entity, $value) {
+  $account = entity_load_single('fluxservice_account', $value);
+  $entity->setAccount($account);
+}
+
+/**
+ * Implements hook_ctools_plugin_directory().
+ */
+function fluxservice_ctools_plugin_directory($module, $plugin) {
+  if ($module == 'ctools') {
+    return 'ctools/' . $plugin;
+  }
+}
+
+/**
+ * Implements hook_fluxservice_plugin_directory().
+ */
+function fluxservice_fluxservice_plugin_directory() {
+  return 'lib/Drupal/fluxservice/Plugin';
+}
+
+/**
+ * Implements hook_rules_directory().
+ *
+ * Aggregates fluxservice plugin directories and exposes them to Rules for
+ * Rules plugin handler discovery.
+ */
+function fluxservice_rules_directory() {
+  $dirs = fluxservice_get_plugin_directories();
+  foreach ($dirs as &$dir) {
+    $dir .= '/Rules/*';
+  }
+  return $dirs;
+}
+
+/**
+ * Returns an array of fluxservice plugin directories.
+ *
+ * @return array
+ *   An array of directories, keyed by the module below which the directory is.
+ */
+function fluxservice_get_plugin_directories() {
+  $dirs = array();
+  foreach (module_implements('fluxservice_plugin_directory') as $module) {
+    // Include all files once, so the discovery can find them.
+    $result = module_invoke($module, 'fluxservice_plugin_directory');
+    if (!is_array($result)) {
+      $result = array($module => $result);
+    }
+    $dirs += $result;
+  }
+  return $dirs;
+}
+
+/**
+ * Menu system account loader callback for OAuth account creation.
+ */
+function fluxservice_oauth_callback_account_load($key, $plugin) {
+  // Only upcast if the plugin is valid and implements the right interface.
+  if (($info = fluxservice_get_account_plugin_info($plugin)) && ($class = $info['class']) && is_subclass_of($class, 'Drupal\fluxservice\Service\OAuthAccountInterface')) {
+    return $class::getAccountForOAuthCallback($key, $plugin) ?: FALSE;
+  }
+  return FALSE;
+}
+
+/**
+ * Menu system access callback for OAuth account creation.
+ */
+function fluxservice_oauth_callback_access(OAuthAccountInterface $account) {
+  return $account->accessOAuthCallback();
+}
+
+/**
+ * Checks if a given account already exists.
+ *
+ * @param AccountInterface $account
+ *   A service account entity.
+ *
+ * @return bool
+ *   TRUE if the given account is already connected, FALSE otherwise.
+ */
+function fluxservice_account_connected(AccountInterface $account) {
+  $query = new EntityFieldQuery();
+  $query->entityCondition('entity_type', 'fluxservice_account')
+    ->propertyCondition('remote_id', $account->getRemoteIdentifier())
+    ->propertyCondition('service', $account->getService()->identifier())
+    ->range(0, 1);
+
+  // Query for user specific accounts if a user has been specified. If $uid
+  // is FALSE, query for site-wide accounts only (NULL).
+  if ($owner = $account->getOwner()) {
+    $query->propertyCondition('uid', entity_id('user', $owner));
+  }
+  else {
+    // EntityFieldQuery does not support isNull() so we have to alter the query
+    // via hook_query_TAG_alter().
+    $query->addTag('fluxservice_uid_null');
+  }
+
+  $result = $query->execute();
+  return !empty($result['fluxservice_account']);
+}
+
+/**
+ * Returns info about the icon used by the given service plugin.
+ *
+ * @return array
+ */
+function fluxservice_get_service_icon_info($plugin) {
+  return array_intersect_key(fluxservice_get_service_plugin_info($plugin), array(
+    'icon' => TRUE,
+    'icon path' => TRUE,
+    'icon font class' => TRUE,
+    'icon background color' => TRUE,
+    'module' => TRUE,
+  ));
+}

@@ -1,0 +1,113 @@
+<?php
+/**
+ * @file
+ * Raphael renderers for Hurricane.
+ */
+
+/**
+ * Implements hook_hurricane_renderers().
+ */
+function hurricane_raphael_hurricane_renderers() {
+  $path = drupal_get_path('module', 'hurricane_raphael');
+  return array(
+    'hurricane' => array(
+      'label' => t('Hurricane'),
+      'js' => array(
+        $path . '/hurricane_raphael.js' => array('group' => JS_LIBRARY),
+        $path . '/hurricane.js' => array(),
+      ),
+      'dependencies' => array(
+        array('hurricane_raphael', 'raphael'),
+      ),
+      'parameters' => array(
+        'color' => array('label' => t('Color'), 'default' => '#3182c5'),
+        'letter-spacing' => array('label' => t('Lines'), 'default' => 15),
+        'line-height' => array('label' => t('Length'), 'default' => 60),
+        'font-size' => array('label' => t('Thickness'), 'default' => 50),
+        'text-indent' => array('label' => t('Corners'), 'default' => 100),
+        'word-spacing' => array('label' => t('Speed'), 'default' => 20),
+        'font-weight' => array('label' => t('Trail'), 'default' => 5),
+      ),
+    ),
+    'twister' => array(
+      'label' => t('Twister'),
+      'js' => array(
+        $path . '/hurricane_raphael.js' => array('group' => JS_LIBRARY),
+        $path . '/twister.js' => array(),
+      ),
+      'dependencies' => array(
+        array('hurricane_raphael', 'raphael'),
+      ),
+      'parameters' => array(
+        'color' => array('label' => t('Active'), 'default' => '#3182c5'),
+        'background-color' => array('label' => t('Inactive'), 'default' => '#CCC'),
+        'word-spacing' => array('label' => t('Pulse'), 'default' => '25'),
+        'letter-spacing' => array('label' => t('Rotate'), 'default' => '25'),
+        'font-weight' => array('label' => t('Shape'), 'default' => '1'),
+        'line-height' => array('label' => t('Speed'), 'default' => 50),
+      ),
+    ),
+  );
+}
+
+/**
+ * Implements hook_library_info().
+ */
+function hurricane_raphael_library() {
+  $library = array();
+  $path = libraries_get_path('raphael');
+  if (!file_exists($path . '/raphael.js')) {
+    $msg = t('<a href="@lib">Raphaël</a> library is not installed. Please <a href="@download">download</a> and copy it into <a href="@folder">a libraries compliant folder</a> and clear all caches.', array(
+      '@lib' => 'http://raphaeljs.com/',
+      '@download' => 'http://raphaeljs.com/',
+      '@folder' => 'http://drupal.org/node/1440066',
+    ));
+    drupal_set_message($msg, 'error');
+    return array();
+  }
+  $library['raphael'] = array(
+    'title' => t('Hurricane Raphael'),
+    'website' => '',
+    'version' => '0.1',
+    'js' => array(
+      $path . '/raphael-min.js' => array(
+        'group' => JS_LIBRARY,
+        'weight' => -100,
+      ),
+    ),
+  );
+  return $library;
+}
+
+/**
+ * Implements hook_libraries_info().
+ */
+function hurricane_raphael_libraries_info() {
+  $libraries = array(
+    'raphael' => array(
+      'name' => 'Raphaël',
+      'vendor url' => 'http://raphaeljs.com/',
+      'download url' => 'http://raphaeljs.com/',
+      'version arguments' => array(
+        'file' => 'history.md',
+        'pattern' => '/^([0-9a-zA-Z.-]+)\ /',
+      ),
+      'files' => array(
+        'js' => array(
+          'raphael.js' => array(
+            'group' => JS_LIBRARY,
+            'weight' => -100,
+          ),
+        ),
+      ),
+      'variants' => array(
+        'minified' => array(
+          'js' => array(
+            'raphael-min.js',
+          ),
+        ),
+      ),
+    ),
+  );
+  return $libraries;
+}

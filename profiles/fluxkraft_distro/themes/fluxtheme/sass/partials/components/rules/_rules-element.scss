@@ -1,0 +1,72 @@
+.fluxkraft-rules-overview--element {
+  margin: $rowHeight 0 $rowHeight;
+  .title {
+    @include font-size(2.5);
+    margin: 0;
+  }
+  .label {
+    text-decoration: underline;
+  }
+  .show-more {
+    padding-left: 10px;
+    span {
+      @extend %element-invisible;
+    }
+  }
+  .fluxkraft-rules-overview--element--header,
+  .fluxkraft-rules-overview--element--header-more {
+    background: $cyan;
+    min-height: 3 * $rowHeight;
+    color: $white;
+    a {
+      color: $white;
+    }
+  }
+  .fluxkraft-rules-overview--element--header-more {
+    border-top: 1px dotted lighten($cyan, 10%);
+    @include font-size(1.2);
+  }
+  .fluxkraft-rules-overview--element--header--info,
+  .fluxkraft-rules-overview--element--header--status {
+    padding: .5 * $rowHeight;
+  }
+  .fluxkraft-rules-overview--element--header .fluxkraft-rules-overview--element--header--status {
+    background: darken($cyan, 10%);
+    font-size: 1.5em;
+    text-align: center;
+    text-transform: uppercase;
+    height: 3 * $rowHeight;
+    padding-top: $rowHeight;
+  }
+  .fluxkraft-rules-overview--element--content {
+    padding: .5 * $rowHeight;
+    background: $white;
+    border-bottom: 1px solid $grey-light;
+    border-left: 1px solid $grey-light;
+    border-right: 1px solid $grey-light;
+    @extend %clearfix;
+
+    .fluxkraft-rules-overview--element--content--operations {
+      text-align: center;
+      .fluxkraft-rules-operation a {
+        display: block;
+        width: 100px;
+        margin-bottom: 4px;
+        margin-right: auto;
+        margin-left: auto;
+      }
+    }
+  }
+}
+
+.fluxkraft-rules-conditions .fluxkraft-rules-element-type {
+  @extend %text-invisible;
+}
+
+.fluxkraft-rules-arrow-sign {
+  font-size: 50px;
+  line-height: 80px;
+  float: left;
+  margin: $baseLineHeightpx + 18px 20px 0 20px !important;
+  color: $grey;
+}

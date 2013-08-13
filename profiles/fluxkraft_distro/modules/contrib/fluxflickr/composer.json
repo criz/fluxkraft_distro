@@ -1,0 +1,26 @@
+{
+  "name": "drupal/fluxflickr",
+  "type": "drupal-module",
+  "description": "Provides integration for the Flickr API.",
+  "homepage": "http://drupal.org/project/fluxflickr",
+  "license": "GPL-2.0",
+  "authors": [
+    {
+      "name": "Wolfgang Ziegler",
+      "email": "nuppla@zites.net",
+      "role": "Project Lead"
+    },
+    {
+      "name": "Maximilian Mikus",
+      "email": "maximilianmikus@gmail.com",
+      "role": "Developer"
+    }
+  ],
+  "support": {
+    "issues": "http://drupal.org/project/issues/fluxflickr"
+  },
+  "require": {
+    "php": ">=5.3.2",
+    "guzzle/guzzle": "dev-master"
+  }
+}

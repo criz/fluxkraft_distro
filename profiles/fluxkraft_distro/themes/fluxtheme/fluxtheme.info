@@ -1,0 +1,112 @@
+name = fluxtheme
+description = Drupal theme for the fluxkraft distribution
+screenshot = screenshot.png
+engine = phptemplate
+core = 7.x
+base theme = omega
+
+; Stylesheets
+stylesheets[all][] = css/fluxtheme.normalize.css
+stylesheets[all][] = css/fluxtheme.hacks.css
+stylesheets[all][] = css/fluxtheme.styles.css
+
+; Javascripts
+scripts[] = js/fluxtheme.tooltip.js
+
+
+; Features.
+features[] = logo
+features[] = favicon
+features[] = name
+features[] = slogan
+features[] = node_user_picture
+features[] = comment_user_picture
+features[] = comment_user_verification
+
+; Panels integration.
+plugins[panels][layouts] = panels
+
+; Theme regions.
+regions[header]         = Header
+regions[highlighted]    = Highlighted
+regions[help]           = Help
+regions[content]        = Content
+regions[sidebar_first]  = First sidebar
+regions[sidebar_second] = Second sidebar
+regions[footer]         = Footer
+
+; Settings.
+
+settings[toggle_logo] = 1
+settings[toggle_name] = 1
+settings[toggle_slogan] = 1
+settings[toggle_node_user_picture] = 1
+settings[toggle_comment_user_picture] = 1
+settings[toggle_comment_user_verification] = 1
+settings[toggle_favicon] = 1
+settings[omega_toggle_front_page_content] = 1
+settings[default_logo] = 0
+settings[logo_path] = 'http://drunomics.com/files/styles/project_circle/public/fluxkraft_logo_500_0.png'
+settings[logo_upload] = ''
+settings[default_favicon] = 1
+settings[favicon_path] = ''
+settings[favicon_upload] = ''
+settings[omega_toggle_extension_layouts] = 0
+settings[omega_layout] = ohm-hero
+settings[omega_toggle_extension_development] = 0
+settings[omega_rebuild_theme_registry] = 0
+settings[omega_rebuild_aggregates] = 0
+settings[omega_browser_width_indicator] = 1
+settings[omega_livereload] = 1
+settings[omega_livereload_host] = localhost
+settings[omega_livereload_port] = ''
+settings[omega_demo_regions] = 0
+settings[omega_toggle_extension_compatibility] = 1
+settings[omega_conditional_classes_html] = 1
+settings[omega_apple_touch] = 1
+settings[omega_cleartype] = 1
+settings[omega_handheld_friendly] = 1
+settings[omega_mobile_optimized] = 1
+settings[omega_viewport] = 1
+settings[omega_viewport_initial_scale] = 1.0
+settings[omega_viewport_user_scaleable] = 1
+settings[omega_chrome_edge] = 1
+settings[omega_internet_explorer_support] = 7
+settings[omega_chrome_popup] = 0
+settings[omega_chrome_notice] = 1
+settings[omega_toggle_extension_assets] = 1
+settings[omega_css_exclude][] = panels/*
+settings[omega_css_exclude][] = views/*
+settings[omega_css_exclude][] = flexslider/*
+settings[omega_css_exclude][] = *flexslider.css
+settings[omega_css_exclude][] = flexslider.css
+settings[omega_libraries][selectivizr][status] = 1
+settings[omega_libraries][css3mediaqueries][status] = 0
+settings[omega_libraries][respond][status] = 0
+settings[omega_libraries][css3pie][status] = 0
+settings[omega_libraries][html5shiv][status] = 1
+settings[omega_libraries][messages][status] = 0
+settings[hurricane_renderers][drop] = drop
+settings[hurricane_renderers][spinjs] = 0
+settings[hurricane_font-family] = drop
+settings[hurricane_color] = #2A8B8B
+settings[hurricane_background-color] = #ebebeb
+settings[hurricane_line-height] = 60
+settings[hurricane_text-indent] = 50
+settings[hurricane_word-spacing] = 81
+settings[hurricane_letter-spacing] = 50
+settings[hurricane_font-size] = 50
+settings[hurricane_font-weight] = 3
+settings[hurricane_text-transform] = 0
+settings[hurricane_text-decoration] = 0
+settings[hurricane_text-align] = 0
+settings[hurricane_white-space] = 0
+settings[hurricane_font-style] = 0
+settings[omega_css_exclude_regex] = /^sites\/all\/modules\/panels\/(.*)|profiles\/fluxkraft_distro\/modules\/views\/(.*)|flexslider\/(.*)|(.*)flexslider\.css|flexslider\.css$/
+
+
+; Information added by drush on 2013-08-13
+version = ""
+project = "fluxtheme"
+datestamp = "1376420222"
+

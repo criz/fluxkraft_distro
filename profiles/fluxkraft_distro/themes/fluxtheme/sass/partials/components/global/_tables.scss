@@ -1,0 +1,15 @@
+
+th {
+  background-color: $grey-light;
+  font-weight: bold;
+}
+td {
+  padding: 0.5em 1em;
+}
+
+tr.odd {
+  background: lighten($grey-light, 5%);
+}
+tr.even {
+  background: lighten($grey-light, 7%);
+}

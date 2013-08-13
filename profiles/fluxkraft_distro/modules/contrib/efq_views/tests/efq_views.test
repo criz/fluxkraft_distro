@@ -1,0 +1,662 @@
+<?php
+
+/**
+ * @file
+ * Tests for EFQ Views query features.
+ */
+
+/**
+ * Abstract class for EFQ views testing.
+ */
+abstract class EFQViewsTestBase extends DrupalWebTestCase {
+  protected $postponeFields = FALSE;
+  protected $entities_array = array();
+  protected $fields = array(
+    array(
+      'field_name' => 'field_boolean',
+      'type' => 'list_boolean',
+      'settings' => array('allowed_values' => array('Off', 'On')),
+    ),
+  );
+  protected $instances = array(
+    array(
+      'field_name' => 'field_boolean',
+      'entity_type' => 'efq_views_test',
+      'bundle' => 'bundle1',
+      'label' => 'field boolean',
+    ),
+  );
+  protected function setUp() {
+    if (module_exists('mongodb') || (($module_data = system_rebuild_module_data()) && isset($module_data['mongodb']))) {
+      variable_set('field_storage_default', 'mongodb_field_storage');
+      parent::setUp('mongodb_field_storage', 'efq_views_test');
+      $this->pass('Running MongoDB');
+    }
+    else {
+      parent::setUp('efq_views_test');
+      $this->pass('Running MySQL');
+    }
+    if (empty($this->postponeFields)) {
+      $this->saveFieldsEntities();
+    }
+  }
+  protected function saveFieldsEntities() {
+    foreach ($this->fields as $field) {
+      field_create_field($field);
+    }
+    foreach ($this->instances as $instance) {
+      field_create_instance($instance);
+    }
+    // Load the test dataset.
+    foreach ($this->entities_array as $key => $entity_array) {
+      $entity = entity_create('efq_views_test', $entity_array);
+      entity_save('efq_views_test', $entity);
+      $this->assertFalse(empty($entity->eid), 'Entity saved');
+      $this->entities[$key] = $entity;
+    }
+  }
+  protected function view() {
+    $view = new view();
+    $view->base_table = 'efq_efq_views_test';
+    /* Display: Master */
+    $handler = $view->new_display('default');
+    $handler->display->display_options['row_options']['default_field_elements'] = FALSE;
+    $fields = array(
+      'entity_id',
+      'eid',
+      'language',
+      'test_boolean',
+      'test_date',
+      'test_decimal',
+      'test_duration',
+      'test_integer',
+      'test_text',
+      'uid',
+      'url',
+      'field_boolean',
+      'bundle',
+      'bundle_label',
+      'label',
+    );
+    foreach ($fields as $field) {
+      $handler->display->display_options['fields'][$field] = array(
+        'id' => $field,
+        'field' => $field,
+        'table' => 'efq_efq_views_test',
+      );
+    }
+    return $view;
+  }
+
+  protected function runView($view = NULL) {
+    if (!isset($view)) {
+      $view = $this->view();
+    }
+    $content = $view->preview();
+    $this->verbose($content);
+    $this->drupalSetContent($content);
+  }
+  function getIds($view_result) {
+    $ids = array();
+    foreach ($view_result as $result) {
+      $ids[$result->entity_id] = $result->entity_id;
+    }
+    return $ids;
+  }
+}
+
+class EFQViewsFieldTestCase extends EFQViewsTestBase {
+  static function getInfo() {
+    return array(
+      'name' => 'EFQ Views fields',
+      'description' => 'Tests EFQ Views field handlers',
+      'group' => 'EFQ Views',
+    );
+  }
+  protected $entities_array = array(
+    array(
+      'ebundle' => 'bundle1',
+      'elabel' => 'test label 1',
+      'uid' => 1,
+      'test_boolean' => TRUE,
+      'test_integer' => 15,
+      'test_decimal' => 78,
+      'test_duration' => 900,
+      'test_date' => 1336236850,
+      'test_text' => 'test text',
+      'field_boolean' => array(LANGUAGE_NONE => array(array('value' => 1))),
+    ),
+  );
+  function testFields() {
+    $this->runView();
+    $entity = $this->entities[0];
+    $this->assertPattern("/Entity ID: +$entity->eid/", 'Entity ID found');
+    $this->assertPattern("/Efq views test ID: +$entity->eid/", 'Entity ID (meta) found');
+    $this->assertPattern("/Test_boolean: +Yes/", 'Boolean found');
+    $this->assertPattern('/Test_decimal: +' . ($entity->test_decimal / 100) . '/', 'Decimal found');
+    $this->assertPattern('/Test_date: +' . preg_quote(format_date($entity->test_date), '/') . '/', 'Date found');
+    $this->assertPattern('/Test_text: +test text/', 'Test text found');
+    $url = url("custom/$entity->uid", array('absolute' => TRUE));
+    $this->assertPattern('/URL: +' . preg_quote(l($url, $url), '/') . '/', 'URL found');
+    $this->assertPattern('/field boolean: +On/', 'Boolean field API field found');
+    $this->assertPattern('/Bundle: +' . $entity->ebundle . '/', 'Bundle field found');
+    $this->assertPattern('/Bundle label: +' . preg_quote(t('Bundle 1'), '/') . '/', 'Bundle label field found');
+    $this->assertPattern('/Label: +' . preg_quote($entity->elabel, '/') . '/', 'Label field found');
+  }
+}
+
+class EFQViewsFilterTestCase extends EFQViewsTestBase {
+  static function getInfo() {
+    return array(
+      'name' => 'EFQ Views filters',
+      'description' => 'Tests EFQ Views filter handlers',
+      'group' => 'EFQ Views',
+    );
+  }
+
+  protected $entities_array = array(
+    array(
+      'ebundle' => 'bundle1',
+      'elabel' => 'test label 1',
+      'uid' => 1,
+      'test_boolean' => TRUE,
+      'test_integer' => 15,
+      'test_decimal' => 78,
+      'test_duration' => 900,
+      'test_date' => 1336236850,
+      'test_text' => 'test text',
+      'field_boolean' => array(LANGUAGE_NONE => array(array('value' => 1))),
+    ),
+    array(
+      'ebundle' => 'bundle1',
+      'elabel' => 'string label 2',
+      'uid' => 1,
+      'test_boolean' => FALSE,
+      'test_integer' => 17,
+      'test_decimal' => 80,
+      'test_duration' => 1500,
+      'test_date' => 1336366325,
+      'test_text' => 'another test text',
+      'field_boolean' => array(LANGUAGE_NONE => array(array('value' => 0))),
+    ),
+  );
+
+  function testFilters() {
+    // Boolean property.
+    foreach (array('1', '0') as $key => $value) {
+      $view = $this->view();
+      $handler = $view->display['default']->handler;
+      $handler->display->display_options['filters']['test_boolean']['id'] = 'test_boolean';
+      $handler->display->display_options['filters']['test_boolean']['table'] = 'efq_efq_views_test';
+      $handler->display->display_options['filters']['test_boolean']['field'] = 'test_boolean';
+      $handler->display->display_options['filters']['test_boolean']['value'] = $value;
+      $this->runView($view);
+      $this->assertEqual(count($view->result), 1);
+      $entity = $this->entities[$key];
+      $this->assertPattern("/Entity ID: +$entity->eid/", 'Entity ID found');
+    }
+    // Integer property. Each test array is a list of: value, operator,
+    // entity keys to be found.
+    $tests = array(
+      array('15', '=', 0),
+      array('16', '='),
+      array('15', NULL, 0),
+      array('16', NULL),
+      array('15', '>', 1),
+      array('15', '<'),
+      array('15', '<=', 0),
+      array('15', '>=', 0, 1),
+      array('15', '<>', 1),
+      array('17', '<', 0),
+      array('17', '<=', 0, 1),
+      array(array('16', '17'), 'BETWEEN', 1),
+      array(array('12', '18'), 'BETWEEN', 0, 1),
+    );
+    foreach ($tests as $test) {
+      $value = array_shift($test);
+      if (is_scalar($value)) {
+        $value = array('value' => $value);
+      }
+      else {
+        $value = array('min' => $value[0], 'max' => $value[1]);
+      }
+      $operator = array_shift($test);
+      $this->pass(strtr("test @value $operator", array('@value' => implode(' ', $value))));
+      $view = $this->view();
+      $handler = $view->display['default']->handler;
+      $handler->display->display_options['filters']['test_integer']['id'] = 'test_integer';
+      $handler->display->display_options['filters']['test_integer']['table'] = 'efq_efq_views_test';
+      $handler->display->display_options['filters']['test_integer']['field'] = 'test_integer';
+      if (isset($operator)) {
+        $handler->display->display_options['filters']['test_integer']['operator'] = $operator;
+      }
+      $handler->display->display_options['filters']['test_integer']['value'] = $value;
+      $this->runView($view);
+      $this->assertEqual(count($view->result), count($test));
+      foreach ($test as $key) {
+        $entity = $this->entities[$key];
+        $this->assertPattern("/Entity ID: +$entity->eid/", 'Entity ID found');
+      }
+    }
+
+    $view = $this->view();
+    $handler = $view->display['default']->handler;
+    $handler->display->display_options['arguments']['test_integer']['id'] = 'test_integer';
+    $handler->display->display_options['arguments']['test_integer']['table'] = 'efq_efq_views_test';
+    $handler->display->display_options['arguments']['test_integer']['field'] = 'test_integer';
+    $view->set_arguments(array(15));
+    $this->runView($view);
+    $this->assertEqual(count($view->result), 1);
+    $entity = $this->entities[0];
+    $this->assertPattern("/Entity ID: +$entity->eid/", 'Entity ID found');
+    $view = $this->view();
+    $handler = $view->display['default']->handler;
+    $handler->display->display_options['arguments']['test_integer']['id'] = 'test_integer';
+    $handler->display->display_options['arguments']['test_integer']['table'] = 'efq_efq_views_test';
+    $handler->display->display_options['arguments']['test_integer']['field'] = 'test_integer';
+    $handler->display->display_options['arguments']['test_integer']['break_phrase'] = TRUE;
+    $view->set_arguments(array('15+17'));
+    $this->runView($view);
+    $this->assertEqual(count($view->result), 2);
+    foreach (array(0, 1) as $eid) {
+      $entity = $this->entities[$eid];
+      $this->assertPattern("/Entity ID: +$entity->eid/", 'Entity ID found');
+    }
+    // Integer-stored list boolean.
+    foreach (array('1', '0') as $key => $value) {
+      foreach (array('filters', 'arguments') as $test_type) {
+        $view = $this->view();
+        $handler = $view->display['default']->handler;
+        $handler->display->display_options[$test_type]['field_boolean']['id'] = 'field_boolean';
+        $handler->display->display_options[$test_type]['field_boolean']['table'] = 'efq_efq_views_test';
+        $handler->display->display_options[$test_type]['field_boolean']['field'] = 'field_boolean';
+        if ($test_type == 'filters') {
+          $handler->display->display_options[$test_type]['field_boolean']['value'] = array($value);
+        }
+        else {
+          $view->set_arguments(array($value));
+        }
+        $this->runView($view);
+        $this->assertEqual(count($view->result), 1);
+        $entity = $this->entities[$key];
+        $this->assertPattern("/Entity ID: +$entity->eid/", 'Entity ID found');
+      }
+    }
+    // Label. Each test array is a list of: value, operator, entity keys to
+    // be found.
+    $tests = array(
+      array('test', 'STARTS_WITH', 0),
+      array('label', 'CONTAINS', 0, 1),
+      array('banana', 'STARTS_WITH'),
+      array('banana', 'CONTAINS'),
+      array('test label 1', '=', 0),
+      array('test label 1', NULL, 0),
+      array('test label 2', '='),
+      array('test label 2', NULL),
+    );
+    foreach ($tests as $test) {
+      $value = array_shift($test);
+      $operator = array_shift($test);
+      $this->pass("test $value $operator");
+      $view = $this->view();
+      $handler = $view->display['default']->handler;
+      $handler->display->display_options['filters']['label']['id'] = 'label';
+      $handler->display->display_options['filters']['label']['table'] = 'efq_efq_views_test';
+      $handler->display->display_options['filters']['label']['field'] = 'label';
+      if (isset($operator)) {
+        $handler->display->display_options['filters']['label']['operator'] = $operator;
+      }
+      $handler->display->display_options['filters']['label']['value'] = $value;
+      $this->runView($view);
+      $this->assertEqual(count($view->result), count($test));
+      foreach ($test as $key) {
+        $entity = $this->entities[$key];
+        $this->assertPattern("/Entity ID: +$entity->eid/", 'Entity ID found');
+      }
+    }
+  }
+}
+
+abstract class EFQViewsSortTestBase extends EFQViewsTestBase {
+
+  protected $fields = array(
+    array(
+      'field_name' => 'field_integer',
+      'type' => 'list_integer',
+      'settings' => array('allowed_values' => array(5, 6, 7, 8, 9)),
+    ),
+  );
+
+  protected $instances = array(
+    array(
+      'field_name' => 'field_integer',
+      'entity_type' => 'efq_views_test',
+      'bundle' => 'bundle1',
+      'label' => 'field integer',
+    ),
+  );
+
+  protected $entities_array = array(
+    array(
+      'ebundle' => 'bundle1',
+      'elabel' => 'test label 1',
+      'uid' => 1,
+      'test_boolean' => TRUE,
+      'test_integer' => 15,
+      'test_decimal' => 78,
+      'test_duration' => 900,
+      'test_date' => 1336236850,
+      'test_text' => 'test text',
+      'field_integer' => array(LANGUAGE_NONE => array(array('value' => 7))),
+    ),
+    array(
+      'ebundle' => 'bundle1',
+      'elabel' => 'string label 2',
+      'uid' => 1,
+      'test_boolean' => FALSE,
+      'test_integer' => 17,
+      'test_decimal' => 80,
+      'test_duration' => 1500,
+      'test_date' => 1336366325,
+      'test_text' => 'another test text',
+      'field_integer' => array(LANGUAGE_NONE => array(array('value' => 5))),
+    ),
+    array(
+      'ebundle' => 'bundle1',
+      'elabel' => 'test label 3',
+      'uid' => 1,
+      'test_boolean' => TRUE,
+      'test_integer' => 18,
+      'test_decimal' => -5,
+      'test_duration' => 900,
+      'test_date' => 1336234000,
+      'test_text' => 'test text',
+      'field_integer' => array(LANGUAGE_NONE => array(array('value' => 8))),
+    ),
+    array(
+      'ebundle' => 'bundle1',
+      'elabel' => 'string label 4',
+      'uid' => 1,
+      'test_boolean' => FALSE,
+      'test_integer' => 19,
+      'test_decimal' => 90,
+      'test_duration' => 1500,
+      'test_date' => 1336266000,
+      'test_text' => 'another test text',
+      'field_integer' => array(LANGUAGE_NONE => array(array('value' => 6))),
+    ),
+  );
+  protected function map($order) {
+    $return = array();
+    foreach ($order as $index) {
+      $return[] = (int) $this->entities[$index]->eid;
+    }
+    return $return;
+  }
+}
+
+class EFQViewsSortTestCase extends EFQViewsSortTestBase {
+  function runTestView($field, $expected_result) {
+    $view = new view();
+    $view->base_table = 'efq_efq_views_test';
+    $handler = $view->new_display('default');
+    $handler->display->display_options['row_options']['default_field_elements'] = FALSE;
+    $handler->display->display_options['fields']['entity_id']['id'] = 'entity_id';
+    $handler->display->display_options['fields']['entity_id']['field'] = 'entity_id';
+    $handler->display->display_options['fields']['entity_id']['table'] = 'efq_efq_views_test';
+    $handler->display->display_options['sorts'][$field]['id'] = $field;
+    $handler->display->display_options['sorts'][$field]['field'] = $field;
+    $handler->display->display_options['sorts'][$field]['table'] = 'efq_efq_views_test';
+    $asc_sorted_view = clone $view;
+    $view->execute();
+    $this->assertIdentical(array_keys($this->getIds($view->result)), $this->map($expected_result));
+    $view = clone $asc_sorted_view;
+    $handler = $view->display['default']->handler;
+    $handler->display->display_options['sorts'][$field]['order'] = 'DESC';
+    $view->execute();
+    $this->assertIdentical(array_keys($this->getIds($view->result)), $this->map(array_reverse($expected_result)));
+  }
+  function testSort() {
+    $this->runTestView('field_integer', array(1, 3, 0, 2));
+    $this->runTestView('label', array(1, 3, 0, 2));
+    $this->runTestView('entity_id', array(0, 1, 2, 3));
+  }
+}
+
+class EFQViewsClickSortTestCase extends EFQViewsSortTestBase {
+  static function getInfo() {
+    return array(
+      'name' => 'EFQ click sort',
+      'description' => 'Tests EFQ click sorts.',
+      'group' => 'EFQ Views',
+    );
+  }
+  function testClickSort() {
+    $view = new view();
+    $view->base_table = 'efq_efq_views_test';
+    $handler = $view->new_display('default');
+    $handler->display->display_options['row_options']['default_field_elements'] = FALSE;
+    $handler->display->display_options['fields']['field_integer']['id'] = 'field_integer';
+    $handler->display->display_options['fields']['field_integer']['field'] = 'field_integer';
+    $handler->display->display_options['fields']['field_integer']['table'] = 'efq_efq_views_test';
+    $handler->display->display_options['style_plugin'] = 'table';
+    $handler->display->display_options['style_options']['columns'] = array(
+      'field_integer' => 'field_integer',
+    );
+    $handler->display->display_options['style_options']['info'] = array(
+      'field_integer' => array(
+        'sortable' => 1,
+        'default_sort_order' => 'asc',
+        'align' => '',
+        'separator' => '',
+        'empty_column' => 0,
+      ),
+    );
+    $view->execute();
+    $view->field['field_integer']->click_sort('asc');
+    $view->execute();
+  }
+}
+
+class EFQViewsTermTestCase extends EFQViewsTestBase {
+  static function getInfo() {
+    return array(
+      'name' => 'EFQ Views Terms',
+      'description' => 'Tests EFQ Views taxonomy term integration',
+      'group' => 'EFQ Views',
+    );
+  }
+
+  protected $terms = array();
+  protected $map = array(
+    array(0),
+    array(1),
+    array(0, 1),
+    array(),
+  );
+  protected $expectedResults = array(
+    // First we test which entities have term 0. on them, that's where you see
+    // a 0 in the map, so it's 0th and 2nd.
+    array(0, 2),
+    // Now we test term 1. That's where you see an 1 in the map, so 1 and 2.
+    array(1, 2),
+    // Now we test term 0 or 1. That's where you see a 0 or a 1 in the map,
+    // so entities 0th, 1st, 2nd. Not the 3rd, however.
+    array(0, 1, 2),
+  );
+
+  protected $fields = array(
+    array(
+      'field_name' => 'field_term',
+      'type' => 'taxonomy_term_reference',
+      'cardinality' => FIELD_CARDINALITY_UNLIMITED,
+      'settings' => array('allowed_values' => array(array('vocabulary' => 'test_vocab'))),
+    ),
+  );
+
+  protected $instances = array(
+    array(
+      'field_name' => 'field_term',
+      'entity_type' => 'efq_views_test',
+      'bundle' => 'bundle1',
+      'label' => 'field term',
+    ),
+  );
+
+  protected $entities_array = array(
+    array(
+      'ebundle' => 'bundle1',
+      'elabel' => 'test label 1',
+      'uid' => 1,
+      'test_boolean' => TRUE,
+      'test_integer' => 15,
+      'test_decimal' => 78,
+      'test_duration' => 900,
+      'test_date' => 1336236850,
+      'test_text' => 'test text',
+    ),
+    array(
+      'ebundle' => 'bundle1',
+      'elabel' => 'string label 2',
+      'uid' => 1,
+      'test_boolean' => FALSE,
+      'test_integer' => 17,
+      'test_decimal' => 80,
+      'test_duration' => 1500,
+      'test_date' => 1336366325,
+      'test_text' => 'another test text',
+    ),
+    array(
+      'ebundle' => 'bundle1',
+      'elabel' => 'test label 3',
+      'uid' => 1,
+      'test_boolean' => TRUE,
+      'test_integer' => 18,
+      'test_decimal' => -5,
+      'test_duration' => 900,
+      'test_date' => 1336234000,
+      'test_text' => 'test text',
+    ),
+    array(
+      'ebundle' => 'bundle1',
+      'elabel' => 'string label 4',
+      'uid' => 1,
+      'test_boolean' => FALSE,
+      'test_integer' => 19,
+      'test_decimal' => 90,
+      'test_duration' => 1500,
+      'test_date' => 1336266000,
+      'test_text' => 'another test text',
+    ),
+  );
+  protected function setUp() {
+    $this->postponeFields = TRUE;
+    parent::setUp();
+    $vocabulary = (object) array(
+      'name' => 'Test vocabulary',
+      'machine_name' => 'test_vocab',
+    );
+    taxonomy_vocabulary_save($vocabulary);
+    for ($i = 0; $i < 2; $i++) {
+      $term = (object) array(
+        'name' => $this->randomName(),
+        'vid' => $vocabulary->vid,
+      );
+      taxonomy_term_save($term);
+      $this->terms[] = $term;
+    }
+    foreach ($this->entities_array as $key => &$entity_array) {
+      $delta = 0;
+      foreach ($this->map[$key] as $term_key) {
+        $entity_array['field_term'][LANGUAGE_NONE][$delta++]['tid'] = $this->terms[$term_key]->tid;
+      }
+    }
+    $this->saveFieldsEntities();
+  }
+  protected function testTermFilter() {
+    foreach ($this->map as $test_key => $test) {
+      if ($test) {
+        $view = new view();
+        $view->base_table = 'efq_efq_views_test';
+        $handler = $view->new_display('default');
+        $handler->display->display_options['fields']['entity_id']['id'] = 'entity_id';
+        $handler->display->display_options['fields']['entity_id']['table'] = 'efq_efq_views_test';
+        $handler->display->display_options['fields']['entity_id']['field'] = 'entity_id';
+        $handler->display->display_options['filters']['field_term']['id'] = 'field_term';
+        $handler->display->display_options['filters']['field_term']['table'] = 'efq_efq_views_test';
+        $handler->display->display_options['filters']['field_term']['field'] = 'field_term';
+        foreach ($test as $term_key) {
+          // Add a string cast just for kicks.
+          $handler->display->display_options['filters']['field_term']['value'][] = (string) $this->terms[$term_key]->tid;
+        }
+        $handler->display->display_options['filters']['field_term']['vocabulary'] = 'test_vocab';
+        $view->execute();
+        $ids = $this->getIds($view->result);
+        foreach ($this->expectedResults[$test_key] as $expectedResult) {
+          $eid = $this->entities[$expectedResult]->eid;
+          $this->assertTrue(isset($ids[$eid]));
+          unset($ids[$eid]);
+        }
+        $this->assertFalse($ids);
+      }
+    }
+  }
+}
+
+class EFQViewsNodeLinkTestCase extends EFQViewsTestBase {
+  static function getInfo() {
+    return array(
+      'name' => 'EFQ Views node link',
+      'description' => 'Tests EFQ Views sees a Views-defined special field.',
+      'group' => 'EFQ Views',
+    );
+  }
+
+  function view() {
+    $view = new view();
+    $view->base_table = 'efq_node';
+    /* Display: Master */
+    $handler = $view->new_display('default');
+    /* Field: Node: Edit link */
+    $handler->display->display_options['fields']['edit_node']['id'] = 'edit_node';
+    $handler->display->display_options['fields']['edit_node']['table'] = 'views_entity_node';
+    $handler->display->display_options['fields']['edit_node']['field'] = 'edit_node';
+    return $view;
+  }
+
+  function testNodeLink() {
+    $node = $this->drupalCreateNode();
+    $account = $this->drupalCreateUser(array('bypass node access'));
+    $this->drupalLogin($account);
+    $this->runView();
+    $this->assertRaw('Edit link:');
+    $this->clickLink('edit');
+    $this->assertFieldByName('title', $node->title);
+  }
+}
+
+class EFQViewsQueryTagsTestCase extends EFQViewsTestBase {
+  static function getInfo() {
+    return array(
+      'name' => 'EFQ Views query tags',
+      'description' => 'Tests adding tags to EFQ Views queries.',
+      'group' => 'EFQ Views',
+    );
+  }
+
+  function view() {
+    $view = parent::view();
+    $handler = $view->display['default'];
+    $handler->display_options['query']['options']['query_tags'] = array('test_query_tag');
+    return $view;
+  }
+
+  function testQueryTags() {
+    global $efq_test_query;
+    $this->runView();
+    // The query is present in the global variable when the query tag
+    // was inserted correctly.
+    // @see efq_views_test_query_test_query_tag_alter().
+    $this->assertNotNull($efq_test_query, 'The query must be present in the global variable');
+  }
+}

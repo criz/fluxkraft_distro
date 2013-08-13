@@ -1,0 +1,9 @@
+.default .sidebar-first,
+.default .sidebar-second {
+  background: #fff;
+  @include border-radius(5px);
+
+  .content-wrapper {
+    margin: 1em;
+  }
+}

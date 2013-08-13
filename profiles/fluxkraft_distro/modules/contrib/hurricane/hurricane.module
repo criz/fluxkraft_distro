@@ -1,0 +1,185 @@
+<?php
+/**
+ * @file
+ * Hurricane module implementation.
+ */
+
+/**
+ * Implements hook_library().
+ */
+function hurricane_library() {
+  $library = array();
+  $path = drupal_get_path('module', 'hurricane');
+
+  $renderers = hurricane_renderers();
+  $font_face = '';
+  foreach (array_keys(hurricane_renderers()) as $font) {
+    $font_face .= '@font-face{font-family:\'' . $font . '\';src:local(Arial),local(Droid);}';
+  }
+
+  $library['hurricane'] = array(
+    'title' => t('Hurricane'),
+    'website' => '',
+    'version' => '0.1',
+    'js' => array(
+      0 => array(
+        'type' => 'setting',
+        'data' => array('hurricane' => array('map' => _hurricane_property_map())),
+      ),
+      $path . '/hurricane.js' => array(),
+    ),
+    'css' => array(
+      $font_face => array('type' => 'inline'),
+    ),
+  );
+
+  global $theme;
+  $enabled_renderers = theme_get_setting('hurricane_renderers', $theme);
+  if (!$enabled_renderers) {
+    $enabled_renderers = array('drop' => 'drop');
+  }
+  if ($enabled_renderers) {
+    foreach ($renderers as $id => $info) {
+      if (in_array($id, $enabled_renderers) && $enabled_renderers[$id]) {
+        foreach (array('js', 'css', 'dependencies') as $type) {
+          if (array_key_exists($type, $info)) {
+            if (!array_key_exists($type, $library['hurricane'])) {
+              $library['hurricane'][$type] = array();
+            }
+            $library['hurricane'][$type] = array_merge($library['hurricane'][$type], $info[$type]);
+          }
+        }
+      }
+    }
+  }
+
+  return $library;
+}
+
+/**
+ * Available renderers.
+ */
+function hurricane_renderers() {
+  $cache = cache_get('hurricane_renderers');
+  if (empty($cache->data)) {
+    $cache->data = module_invoke_all('hurricane_renderers');
+    cache_set('hurricane_renderers', $cache->data);
+  }
+  return $cache->data;
+}
+
+/**
+ * Implements hook_hurricane_renderers().
+ */
+function hurricane_hurricane_renderers() {
+  return array(
+    'drop' => array(
+      'label' => t('Drop'),
+      'js' => array(
+        drupal_get_path('module', 'hurricane') . '/drop.js' => array(),
+      ),
+      'parameters' => array(
+        'color' => array('label' => t('Active'), 'default' => '#3182c5'),
+        'background-color' => array('label' => t('Inactive'), 'default' => '#CCCCCC'),
+        'word-spacing' => array('label' => t('Speed'), 'default' => 30),
+      ),
+    ),
+  );
+}
+
+/**
+ * Retrieve the map of available properties.
+ */
+function _hurricane_property_map() {
+  return array(
+    'line-height' => TRUE,
+    'text-indent' => TRUE,
+    'word-spacing' => TRUE,
+    'letter-spacing' => TRUE,
+    'font-size' => TRUE,
+    'font-weight' => array(
+      NULL,
+      100,
+      200,
+      300,
+      400,
+      500,
+      600,
+      700,
+      800,
+      900,
+    ),
+    'font-family' => array_keys(hurricane_renderers()),
+    'text-transform' => array(NULL, 'none', 'capitalize', 'uppercase'),
+    'text-decoration' => array(
+      NULL, 'none', 'underline', 'overline', 'line-through', 'blink',
+    ),
+    'text-align' => array(NULL, 'left', 'right', 'center', 'justify'),
+    'white-space' => array(
+      NULL, 'normal', 'pre', 'nowrap', 'pre-wrap', 'pre-line',
+    ),
+    'font-style' => array(NULL, 'normal', 'italic', 'oblique'),
+    'color' => FALSE,
+    'background-color' => FALSE,
+  );
+}
+
+
+/**
+ * Returns an associative array of default settings.
+ *
+ * @return array
+ *   array of default settings
+ */
+function hurricane_default_settings() {
+  return array(
+    'font-family' => 'drop',
+    'line-height' => 90,
+    'text-indent' => 50,
+    'word-spacing' => 30,
+    'letter-spacing' => 50,
+    'font-size' => 50,
+    'font-weight' => 3,
+    'text-transform' => 0,
+    'text-decoration' => 0,
+    'text-align' => 0,
+    'white-space' => 0,
+    'font-style' => 0,
+    'color' => '#3182c5',
+    'background-color' => '#000000',
+  );
+}
+
+/**
+ * Implements hook_form_system_theme_settings_alter().
+ */
+function hurricane_form_system_theme_settings_alter(&$form, &$form_state) {
+  $theme = FALSE;
+  if (preg_match('/^theme_(.+)_settings$/', $form['var']['#value'], $matches)) {
+    $theme = $matches[1];
+  }
+  $settings = theme_get_setting('hurricane_renderers', $theme);
+  $collapsed = FALSE;
+  if ($settings) {
+    foreach ($settings as $set) {
+      if ($set) {
+        $collapsed = TRUE;
+      }
+    }
+  }
+  $form['hurricane'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Hurricane renderers'),
+    '#description' => t('Enable specific renderers for this theme.'),
+    '#collapsible' => $collapsed,
+    '#collapsed' => $collapsed,
+    'hurricane_renderers' => array(
+      '#type' => 'checkboxes',
+      '#default_value' => $settings ? $settings : array(),
+    ),
+  );
+  $renderers = hurricane_renderers();
+  foreach ($renderers as $id => $info) {
+    $form['hurricane']['hurricane_renderers']['#options'][$id] = $info['label'];
+  }
+}

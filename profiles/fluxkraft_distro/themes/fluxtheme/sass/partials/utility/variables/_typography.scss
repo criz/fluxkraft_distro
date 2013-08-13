@@ -1,0 +1,33 @@
+@import url(http://fonts.googleapis.com/css?family=Open+Sans:400,300,700);
+
+// Fonts.
+$baseFontSizepx: 17px;
+$baseFontSizerem: 1.7rem;
+$baseFontFamily: "Open Sans", "Lucida Sans", "DejaVu LGC Sans", "DejaVu Sans", "Bitstream Vera Sans", "Liberation Sans", Verdana, "Verdana Ref", sans-serif;
+$baseLineHeightpx: 25px;
+$baseLineHeightrem: 2.5rem;
+$headingsFontFamily: 'Open Sans', Georgia, 'Lucida Bright', Lucidabright, 'Lucida Serif', Lucida, 'DejaVu LGC Serif', 'DejaVu Serif', 'Bitstream Vera Serif', 'Liberation Serif', 'Nimbus Roman No9 L', serif;
+$headingsFontWeight: normal;
+$smallFontSizepx: 12px;
+$smallFontSizerem: 1.2rem;
+$baseFontColor: #2f2f2f;
+$headingColor: #2f2f2f;
+$dateFontSizepx: 12px;
+$dateFontSizerem: 1.2rem;
+
+// Placeholders.
+$placeholderColor: #999999;
+$placeholderStyle: italic;
+
+// Links
+$linkColor: $cyan;
+$linkColorActive: $black;
+$linkColorHover: $black;
+
+// Textshadow
+$default-text-shadow-color: rgba(black, 0.6);
+$default-text-shadow-blur: 3px;
+$default-text-shadow-v-offset: 1px;
+
+// FontAwesome
+$FontAwesomePath: "../components/font-awesome/font";

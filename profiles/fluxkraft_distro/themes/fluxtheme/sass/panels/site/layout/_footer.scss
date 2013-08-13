@@ -1,0 +1,43 @@
+// Load all dependencies.
+@import "partials/utility";
+
+// Footer Columns Layout
+
+.l-footer-columns {
+  @include container;
+}
+
+
+@include breakpoint($l-panels-beside) {
+  .l-footer-columns {
+    .l-footer-columns__left,
+    .l-footer-columns__middle_left,
+    .l-footer-columns__middle_right,
+    .l-footer-columns__right {
+      @include span-columns(3);
+    }
+    .l-footer-columns__right {
+      @include omega;
+    }
+  }
+}
+
+@include breakpoint($l-mobile-up) {
+  @media (max-width: 410px) {
+    .l-footer-columns {
+      .l-footer-columns__left,
+      .l-footer-columns__middle_left,
+      .l-footer-columns__middle_right,
+      .l-footer-columns__right {
+        @include span-columns(12);
+        text-align: center;
+        @include omega;
+      }
+    }
+  }
+}
+
+.l-footer--bottom,
+.l-footer--columns {
+  @include container;
+}

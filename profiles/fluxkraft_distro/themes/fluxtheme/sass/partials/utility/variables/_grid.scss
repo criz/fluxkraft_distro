@@ -1,0 +1,13 @@
+//vertical spacing
+$rowHeight: 25px;
+//horizontal spacing
+$colWidth: 20px;
+
+// Susy grid.
+$container-style  : magic;
+$container-width  : 1200px;
+$total-columns    : 12;
+$column-width     : 3 * $colWidth;
+$gutter-width     : $colWidth;
+$grid-padding     : $gutter-width;
+$debug-grid       : false;

@@ -1,0 +1,127 @@
+//source: foundation buttons http://forrst.com/posts/Foundation_4_Scss_Button_Mixin-HMU
+
+//
+// PLACEHOLDER CLASSES USED TO BUILD MIXIN LOGIC
+// CAN BE USED BY THEMSELVES TO BUILD OUT STYLES AS WELL.
+//
+
+// Placeholder Class for Shared Styles
+%btnBaseStyles {
+  border-width: $btnBorderWidth;
+  border-style: $btnBorderStyle;
+  cursor: pointer;
+  font-family: inherit;
+  font-weight: bold;
+  line-height: 1;
+  margin: 0;
+  position: relative;
+  text-decoration: none;
+  width: auto;
+  color: $btnFontColor;
+  @include box-shadow($btnShinyEdge);
+  @include single-transition(background-color, $btnTransitionSpeed, $btnTransitionEase);
+  &:active { @include box-shadow($btnDarkEdge); }
+}
+
+// Primary Button Base
+%btnPrimaryBase {
+  background-color: $primaryColor;
+  border: none;
+  &:hover,
+  &:focus { color: $btnFontColor; background-color: darken($primaryColor, 5%); }
+}
+%btnHoverLighten {
+  &:hover,
+  &:focus { color: $btnFontColor; background-color: lighten($primaryColor, $hoverChange); }
+}
+%btnHoverDarken {
+  &:hover,
+  &:focus { color: $btnFontColor; background-color: darken($primaryColor, $hoverChange); }
+}
+// Secondary Button Base
+%btnSecondaryBase {
+  background-color: $secondaryColor;
+  border: none;
+  color: #333;
+  &:hover,
+  &:focus { background-color: darken($secondaryColor, 10%); }
+}
+// Alert Button Base
+%btnAlertBase {
+  background-color: $alertColor;
+  border-color: darken($alertColor, 15%);
+  &:hover,
+  &:focus { background-color: darken($alertColor, 10%); }
+}
+// Success Button Base
+%btnSuccessBase {
+  background-color: $successColor;
+  border-color: darken($successColor, 15%);
+  &:hover,
+  &:focus { background-color: darken($successColor, 10%); }
+}
+// Extend Button Width
+%btnExtendStyle {
+  width: 100%;
+  padding-left: 0px !important;
+  padding-right: 0px !important;
+}
+// Disabled Button Base
+%btnDisabledBase {
+  opacity: $btnDisabledOpacity;
+  cursor: default;
+  @include box-shadow(none);
+}
+// Disabled Background Colors
+%btnPrimaryDisabled { background-color: $primaryColor;
+  &:hover,
+  &:focus { background-color: $primaryColor; }
+}
+%btnSecondaryDisabled { background-color: $secondaryColor;
+  &:hover,
+  &:focus { background-color: $secondaryColor; }
+}
+%btnSuccessDisabled { background-color: $successColor;
+  &:hover,
+  &:focus { background-color: $successColor; }
+}
+%btnAlertDisabled { background-color: $alertColor;
+  &:hover,
+  &:focus { background-color: $alertColor; }
+}
+
+// Button Size Shared Styles
+// @todo: btnSidePad() and btnBtmPad() broken.
+%btnTinyStyles {
+  font-size: $btnTinyFontSizepx;
+  font-size: $btnTinyFontSizerem;
+  padding: $btnTinyBase btnSidePad($btnTinyBase) btnBtmPad($btnTinyBase);
+}
+%btnSmallStyles {
+  font-size: $btnSmallFontSizepx;
+  font-size: $btnSmallFontSizerem;
+  padding: $btnSmallBase btnSidePad($btnSmallBase) btnBtmPad($btnSmallBase);
+}
+%btnMediumStyles {
+  font-size: $btnFontSizepx;
+  font-size: $btnFontSizerem;
+  padding: $btnBase btnSidePad($btnBase) btnBtmPad($btnBase);
+}
+%btnLargeStyles {
+  font-size: $btnLargeFontSizepx;
+  font-size: $btnLargeFontSizerem;
+  padding: $btnLargeBase btnSidePad($btnLargeBase) btnBtmPad($btnLargeBase);
+}
+
+// Button Radii
+%btnRadiusRound { @include border-radius($btnRadius); }
+%btnRadiusPill { @include border-radius(1000px); }
+
+// Button Text Alignment
+%btnTextCenter { text-align: center; }
+%btnTextLeft { text-align: left; text-indent: $btnAlignIndention; }
+%btnTextRight { text-align: right; padding-right: $btnAlignIndention; }
+
+// Button Display Property
+%inlineBlock { display: inline-block; }
+%block { display: block; }

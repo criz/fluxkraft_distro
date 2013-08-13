@@ -1,0 +1,31 @@
+.chromeframe {
+  display: block;
+  width: 100%;
+  padding: 50px;
+  height: 600px;
+  background: $blue;
+  border-bottom: 8px $grey;
+  div {
+    width: 800px;
+    height: 600px;
+    margin: auto;
+    padding: 20px;
+    background: $blue;
+    color: #fff;
+    h2 {
+      line-hegiht: 40px;
+      @include font-size(4);
+      color: #fff;
+    }
+
+    p {
+      line-height: 34px;
+      @include font-size(2.4);
+
+      a {
+        color: #fff;
+      }
+    }
+  }
+
+}

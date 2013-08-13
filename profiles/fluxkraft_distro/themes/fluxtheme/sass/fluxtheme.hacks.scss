@@ -1,0 +1,23 @@
+// Hide the toolbar or admin menu on small screens.
+@media all and (max-width: 800px) {
+  #toolbar, #admin-menu {
+    display: none;
+  }
+
+  html {
+    body.toolbar, body.admin-menu {
+      padding-top: 0 !important;
+      margin-top: 0 !important;
+    }
+  }
+}
+
+// Disable/Enable environment indicator
+/*
+body.environment-indicator-adjust.environment-indicator-left {
+  margin-left: 0;
+}
+#environment-indicator {
+  display: none;
+}
+*/

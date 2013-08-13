@@ -1,0 +1,8 @@
+/**
+ * @file
+ * CSS style for the test-throbber.
+ */
+div.hurricane-test-throbber div.throbber {
+  height: 128px;
+  width: 128px;
+}

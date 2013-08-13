@@ -1,0 +1,19 @@
+@import "../../partials/utility/variables/grid";
+
+// Override the container width.
+$container-width  : 1200px;
+
+// Print no-query fallbacks for anything lower than Internet Explorer 8.
+$breakpoint-no-query-fallbacks: true;
+$breakpoint-no-queries: true;
+
+@import "layout/*";
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,29 @@
+/**
+ * @file
+ * Overrides of Drupal core ajax css to support hurricane throbbers.
+ */
+
+/* Remove the background image from standard ajax throbbers. */
+.ajax-progress div.throbber {
+  background-image: none;
+}
+
+/* Special case: managed file fields. */
+div.form-managed-file {
+  position: relative;
+}
+
+div.form-managed-file div.ajax-progress,
+div.form-managed-file div.throbber {
+  *display: inline;
+  display: inline-block;
+  display: -moz-inline-stack;
+  height: 1em;
+  margin: 0em;
+  margin-left: 0.5em;
+  margin-top: -0.5em;
+  padding: 0em;
+  position: absolute;
+  top: 50%;
+  zoom: 1;
+}

@@ -1,0 +1,34 @@
+%menu-base {
+  @extend %clearfix;
+  margin: 0;
+  padding: 0;
+
+  li {
+    list-style: none;
+    display: inline;
+    margin: 0 0.5em 0 0;
+    padding: 0 0.5em 0 0;
+
+    &:last-child {
+      margin-right: 0;
+      padding-right: 0;
+    }
+  }
+
+  a {
+    text-decoration: none;
+  }
+}
+
+%menu-rtl {
+  li {
+    float: right;
+    margin: 0 0 0 0.5em;
+    padding: 0 0 0 0.5em;
+
+    &:last-child {
+      margin-left: 0;
+      padding-left: 0;
+    }
+  }
+}

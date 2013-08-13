@@ -1,0 +1,27 @@
+{
+  "name": "drupal/fluxdropbox",
+  "type": "drupal-module",
+  "description": "Provides integration for the Dropbox API.",
+  "homepage": "http://drupal.org/project/fluxdropbox",
+  "license": "GPL-2.0",
+  "authors": [
+    {
+      "name": "Wolfgang Ziegler",
+      "email": "nuppla@zites.net",
+      "role": "Project Lead"
+    },
+    {
+      "name": "Maximilian Mikus",
+      "email": "maximilianmikus@gmail.com",
+      "role": "Developer"
+    }
+  ],
+  "support": {
+    "issues": "http://drupal.org/project/issues/fluxdropbox"
+  },
+  "require": {
+    "php": ">=5.3.2",
+    "guzzle/guzzle": "dev-master",
+    "benthedesigner/dropbox" : "dev-master"
+  }
+}

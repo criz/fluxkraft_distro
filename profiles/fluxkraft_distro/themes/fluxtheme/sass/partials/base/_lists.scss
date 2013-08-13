@@ -1,0 +1,8 @@
+ul.inline li {
+  padding: 0;
+  margin-right: .5em;
+
+  &:last-child {
+    margin-right: 0;
+  }
+}

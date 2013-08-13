@@ -1,0 +1,25 @@
+.form-wrapper {
+  margin-bottom: $rowHeight;
+}
+
+fieldset {
+  margin-left: 0;
+  margin-right: 0;
+  padding: ($rowHeight / 2) $colWidth $rowHeight $colWidth;
+  border-color: $grey-light;
+}
+
+legend {
+  padding: 0 0.8em;
+  color: $grey;
+}
+
+.fieldset-description {
+  margin-bottom: $rowHeight / 2;
+  color: $grey;
+  font-style: italic;
+}
+
+.vertical-tabs fieldset.vertical-tabs-pane {
+  padding: $rowHeight $colWidth;
+}

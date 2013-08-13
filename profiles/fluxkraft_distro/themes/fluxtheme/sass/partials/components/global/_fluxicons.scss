@@ -1,0 +1,27 @@
+.fluxicons {
+  @extend %clearfix;
+  margin: $rowHeight auto $rowHeight auto;
+  max-width: 700px;
+}
+
+.fluxicon {
+  background: white;
+  height: 100px;
+  width: 100px;
+  color: $cyan;
+  @include font-size(8);
+  text-align: center;
+  i {
+    display: block;
+    line-height: 100%;
+    margin-top: 10px;
+  }
+  float: left;
+  margin-right: .5em;
+}
+.fluxicon--event {
+  @include border-radius(20px);
+}
+.fluxicon--action {
+  @include border-radius(500px);
+}

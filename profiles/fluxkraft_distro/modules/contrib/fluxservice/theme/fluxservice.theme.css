@@ -1,0 +1,33 @@
+.fluxservice-add-account-by-service li,
+.fluxservice-add-account-by-service.admin-list li {
+  list-style: none;
+  clear: both;
+}
+
+.fluxservice-icon {
+  display: block;
+  float: left;
+  height: 1.2em;
+  width: 1.2em;
+  color: #fff;
+  font-size: 4em;
+  text-align: center;
+  line-height: 1.2em;
+  margin: 0 0.5em 0.5em 0;
+}
+.fluxservice-add-account-by-service li .description {
+  line-height: 1.2em;
+  color: #666;
+}
+.fluxservice-add-account-by-service li a {
+  display: block;
+  padding-top: 0.7em;
+  font-size: 1.2em;
+  line-height: 1.2em;
+}
+.fluxservice-icon img {
+  margin: 10% 0;
+  padding: 0;
+  max-width: 80%;
+  max-height: 80%;
+}

@@ -1,0 +1,36 @@
+.fluxkraft-rules-operation,
+.rules-elements-table ul.rules-operations {
+  a {
+    @extend %btnBaseStyles;
+    @extend %btnSecondaryBase;
+    @extend %btnSmallStyles;
+    @extend %btnRadiusRound;
+    @extend %btnHoverDarken;
+    padding: .5em;
+    white-space: nowrap;
+    color: #fff;
+  }
+}
+
+.rules-operations {
+  li.delete_event,
+  li.delete {
+    a {
+      &:before {
+        @include icon-font('\f00d');
+        margin-right: .8em;
+        color: #fff;
+      }
+    }
+  }
+  li.edit_event,
+  li.edit {
+    a {
+      &:before {
+        @include icon-font('\f040');
+        margin-right: .8em;
+        color: #fff;
+      }
+    }
+  }
+}

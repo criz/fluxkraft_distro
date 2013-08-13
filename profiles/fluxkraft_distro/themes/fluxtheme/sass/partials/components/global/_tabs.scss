@@ -1,0 +1,11 @@
+.tabs--primary,
+.tabs {
+  white-space: normal;
+  a:hover {
+    background: #f2f2f2;
+  }
+  a.active {
+    background: $white;
+    font-weight: normal;
+  }
+}

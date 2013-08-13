@@ -1,0 +1,13 @@
+name = flux LinkedIn
+description = Provides integration for the LinkedIn API.
+package = fluxkraft
+core = 7.x
+php = 5.3
+dependencies[] = fluxservice
+
+
+; Information added by drush on 2013-08-13
+version = ""
+project = "fluxlinkedin"
+datestamp = "1376420222"
+

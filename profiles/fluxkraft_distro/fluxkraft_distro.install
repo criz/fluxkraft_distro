@@ -1,0 +1,129 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for the fluxkraft distribution.
+ */
+
+/**
+ * Implements hook_install().
+ *
+ * Perform actions to set up the site for this profile.
+ *
+ * @see system_install()
+ */
+function fluxkraft_distro_install() {
+  require_once DRUPAL_ROOT . '/' . drupal_get_path('profile', 'standard') . "/standard.install";
+  standard_install();
+
+  user_role_grant_permissions(DRUPAL_AUTHENTICATED_RID, array('configure personal rules'));
+  variable_set('user_register', USER_REGISTER_ADMINISTRATORS_ONLY);
+  variable_set('site_frontpage', 'fluxkraft/rules');
+
+  theme_enable(array('fluxtheme'));
+  variable_set('theme_default', 'fluxtheme');
+  variable_set('admin_theme', 'fluxtheme');
+  variable_set('error_level', ERROR_REPORTING_DISPLAY_SOME);
+
+  _fluxkraft_add_content();
+
+  // Setting up menu items.
+  $menu_item = array(
+    'link_path' => 'about',
+    'link_title' => st('About'),
+    'menu_name' => 'menu-footer-menu',
+  );
+  menu_link_save($menu_item);
+
+  // Remove home link.
+  $result = db_query("SELECT mlid FROM {menu_links} WHERE link_path = '<front>'");
+  $row = $result->fetchCol();
+  menu_link_delete(reset($row));
+
+}
+
+/**
+ * Implements hook_install_tasks().
+ */
+function fluxkraft_distro_install_tasks($install_state) {
+  // Skip these steps if the installer is run from the command line.
+  if (drupal_is_cli()) {
+    return;
+  }
+  // Display fluxkraft as site name during the whole installation process.
+  if (!isset($GLOBALS['conf']['site_name'])) {
+    $GLOBALS['conf']['site_name'] = 'fluxkraft';
+  }
+
+  // Set the installation theme.
+  _fluxkraft_distro_set_theme('fluxtheme');
+
+  // Add a page to list missing dependencies.
+  $tasks['fluxkraft_distro_verify_requirements'] = array(
+    'display_name' => st('Validating installation'),
+    'display' => FALSE,
+    'type' => 'normal',
+  );
+
+  // Add a page for directly adding and configuring service endpoints.
+  $tasks['fluxkraft_distro_configure_endpoints_form'] = array(
+    'display_name' => st('Configure services'),
+    'type' => 'form',
+  );
+
+  return $tasks;
+}
+
+/**
+ * Force-set a theme at any point during the execution of the request.
+ *
+ * Drupal doesn't give us the option to set the theme during the installation
+ * process and forces enable the maintenance theme too early in the request
+ * for us to modify it in a clean way.
+ */
+function _fluxkraft_distro_set_theme($target_theme) {
+  if ($GLOBALS['theme'] != $target_theme) {
+    unset($GLOBALS['theme']);
+
+    drupal_static_reset();
+    $GLOBALS['conf']['maintenance_theme'] = $target_theme;
+    _drupal_maintenance_theme();
+  }
+}
+
+/**
+ * Adds default content pages.
+ */
+function _fluxkraft_add_content() {
+
+  // Add about page.
+  $node = entity_create('node', array('title' => 'About',  'type' => 'page'));
+  $node->path = array('alias' => 'about');
+  $wrapper = entity_metadata_wrapper('node', $node);
+
+  $wrapper->body->set(array('format' => 'full_html', 'value' =>
+
+'fluxkraft is a free software started by <a href="http://drunomics.com/en">drunomics</a>, sponsored by <a href="http://www.netidee.at">netidee - powerful innovations</a>.
+ <p>See <a href="http://www.fluxkraft.com">fluxkraft.com</a> for more information about the project.
+ For support please refer and contribute to <a href="http://stackoverflow.com/questions/tagged/fluxkraft">fluxkraft on stackoverflow</a>.
+ The latest version and issue trackers for improving the software can be found at the <a href="http://drupal.org/project/fluxkraft_distro">project page</a> on drupal.org.</p>
+ <p>Copyright 2013,  <a href="http://drunomics.com/en">drunomics GmbH</a></p>
+
+ <h3>License</h3>
+ <p>This program is free software: you can redistribute it and/or modify
+     it under the terms of the GNU General Public License as published by
+     the Free Software Foundation, either version 2 of the License, or
+     (at your option) any later version.</p>
+
+ <p>This program is distributed in the hope that it will be useful,
+     but WITHOUT ANY WARRANTY; without even the implied warranty of
+     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+     GNU General Public License for more details.</p>
+
+ <p> You should have received a copy of the GNU General Public License
+     along with this program.  If not, see http://www.gnu.org/licenses/gpl.html</p>
+
+  '));
+  $wrapper->save();
+
+}

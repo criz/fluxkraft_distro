@@ -1,0 +1,83 @@
+.comment-form {
+  input[type="submit"] {
+    margin-top: 0.5em;
+    margin-right: 0.5em;
+  }
+}
+
+.comment {
+  margin-bottom: 40px;
+  position: relative;
+
+  .comment__links {
+    position: absolute;
+    right: 5px;
+    bottom: 5px;
+    margin: 0;
+  }
+
+  .comment__submitted {
+    span:last-child {
+      @include font-size(1.2);
+      margin-left: .5em;
+    }
+  }
+
+  .comment__info .permalink {
+    @include font-size(1.2);
+    color: $grey;
+  }
+
+  .comment__content h3 {
+    margin: 0;
+  }
+
+  .field--name-comment-body  {
+    position: relative;
+    margin-top: 15px;
+    border: 1px solid $grey-light;
+    background: #fff;
+
+    &:before {
+      content: "";
+      display: block;
+
+      position: absolute;
+      top: -20px;
+      left: 110px;
+      height: 0;
+      width: 0;
+      border-color: transparent transparent $grey-light transparent;
+      border-width: 10px;
+      border-style: solid;
+    }
+
+    &:after {
+      content: "";
+      display: block;
+
+      position: absolute;
+      top: -23px;
+      left: 105px;
+      height: 0;
+      width: 0;
+      border-color: transparent transparent #fff transparent;
+      border-width: 15px;
+      border-style: solid;
+    }
+
+    h3,
+    p,
+    ul {
+      margin-left: 20px;
+    }
+
+    h3 {
+      margin-bottom: 0;
+    }
+
+    p {
+      margin-top: 10px;
+    }
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "name": "fluxtheme",
+  "version": "1.0.0",
+  "dependencies": {
+    "selectivizr": "latest",
+    "html5shiv-dist": "latest"
+  },
+  "devDependencies": {
+    "livereload": "livereload/livereload-js"
+  }
+}

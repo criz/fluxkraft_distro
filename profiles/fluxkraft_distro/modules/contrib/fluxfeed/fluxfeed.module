@@ -1,0 +1,13 @@
+<?php
+
+/**
+ * @file
+ * Main module file.
+ */
+
+/**
+ * Implements hook_fluxservice_plugin_directory().
+ */
+function fluxfeed_fluxservice_plugin_directory() {
+  return 'lib/Drupal/fluxfeed/Plugin';
+}

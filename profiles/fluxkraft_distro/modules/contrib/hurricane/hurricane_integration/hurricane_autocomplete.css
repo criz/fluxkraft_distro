@@ -1,0 +1,24 @@
+/**
+ * @file
+ * CSS for hurricane autocomplete textfields.
+ */
+
+.hurricane-autocomplete {
+  display: block;
+  position: absolute;
+}
+
+.hurricane-autocomplete .throbber {
+  display: block;
+  margin: 0;
+  z-index: 5;
+}
+
+html.js .form-item input.form-autocomplete {
+  background-image: none;
+}
+
+/* Remove the background image from standard ajax throbbers. */
+.ajax-progress div.throbber {
+  background-image: none;
+}

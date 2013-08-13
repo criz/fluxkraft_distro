@@ -1,0 +1,13 @@
+// Load all dependencies.
+@import "partials/utility";
+
+.panels-dnd {
+  header[role="banner"],
+  .l-main-content,
+  .l-bottom,
+  .l-header {
+    background: none;
+    height: auto;
+    @include container;
+  }
+}

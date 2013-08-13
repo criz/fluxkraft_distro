@@ -1,0 +1,52 @@
+
+input, select, textarea {
+  max-width: 100%;
+  outline: none;
+}
+
+input[type="text"], input[type="password"], textarea {
+  @include border-radius(3px);
+  @include input-placeholder {
+    color: $placeholderColor;
+    font-style: $placeholderStyle;
+  }
+  border: 1px solid $grey;
+  padding: .5em;
+  .form-item-border & {
+    border: none;
+  }
+}
+
+.form-item-border {
+  @include border-radius(5px);
+  padding: 6px;
+  background-color: rgba(0, 0, 0, 0.25);
+  display: inline-block;
+  max-width: 100%;
+}
+
+.grippie {
+  @include border-bottom-radius(3px);
+}
+
+.resizable.textarea-processed textarea {
+  @include border-bottom-radius(0);
+}
+
+input[type="submit"],
+input[type="reset"],
+input[type="button"] {
+  @extend %btnBaseStyles;
+  @extend %btnPrimaryBase;
+  @extend %btnMediumStyles;
+  @extend %btnRadiusRound;
+  @extend %btnHoverDarken;
+  padding: .5em;
+  background-repeat: no-repeat;
+  white-space: nowrap;
+  margin-right: 1em;
+}
+
+form .description {
+  color: $grey;
+}

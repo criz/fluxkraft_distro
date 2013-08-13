@@ -1,0 +1,123 @@
+.l-maintenance-page {
+  margin: auto;
+  border: 1px solid #ccc;
+  text-align: center;
+  background: #fff;
+  input.form-text {
+    text-align: center;
+  }
+}
+.site-branding__logo {
+  margin-left: 25px;
+  top: -12px;
+}
+.task-list {
+  margin-left: 0; /* LTR */
+  list-style-type: none;
+  list-style-image: none;
+  padding-left: 0; /* LTR */
+  padding-bottom: 1em;
+  @include font-size(1.4);
+  width: 90%;
+  }
+.task-list li {
+  padding: 0.4em 0em 0.4em 0; /* LTR */
+  color: #1a1a1a;
+}
+.task-list li.active {
+  background: #ebeae4;
+  position: relative;
+  font-weight: normal;
+}
+.task-list li.active:after {
+  left: 100%; /* LTR */
+  border: solid transparent;
+  border-color: rgba(235, 234, 228, 0);
+  border-left-color: #ebeae4; /* LTR */
+  border-width: 17px;
+  content: " ";
+  height: 0;
+  width: 0;
+  position: absolute;
+  pointer-events: none;
+  top: 50%;
+  margin-top: -17px;
+}
+.task-list li.done {
+  color: $grey;
+}
+
+.install-configure-form {
+  input,
+  select {
+    max-width: 300px;
+  }
+  fieldset {
+    background-color: #fafafa;
+  }
+  #edit-account-pass-pass1,
+  #edit-account-pass-pass2 {
+    width: 10em;
+  }
+  .password-strength,
+  .password-confirm {
+    width: 16em;
+  }
+  .password-suggestions {
+    text-align: left;
+    max-width: 300px;
+    margin: auto;
+  }
+}
+.system-status-report tr.error {
+  background: none;
+}
+
+// Services Configuration Page
+.fluxkraft-distro-configure-endpoints-form {
+  .form-actions {
+    clear: both;
+    padding-top: 20px;
+  }
+  .fluxservice-icon {
+    width: 50%;
+    height: 220px;
+    margin: 0;
+    input {
+      display: block;
+      background-color: #fff;
+      @include opacity(0.8);
+      color: $black-light;
+      @include font-size(2.0);
+      text-transform: uppercase;
+      width: 90%;
+      @include border-radius(0px);
+      margin: auto;
+      &:hover {
+        color: $black;
+        @include opacity(1);
+      }
+    }
+  }
+  .fluxservice-icon-file,
+  .fluxservice-icon-font {
+    height: 150px;
+    display: block;
+    font-size: 150px;
+    img {
+      max-height: 100px;
+      max-width: 100px;
+      margin: $rowHeight 0 0 0;
+    }
+  }
+  .fluxservice-created {
+    .fluxservice-icon-file,
+    .fluxservice-icon-font {
+      &:after {
+        @include icon-font('\f00c');
+        font-size: 40px;
+      }
+    }
+  }
+
+}

@@ -1,0 +1,26 @@
+{
+  "name": "drupal/fluxservice",
+  "type": "drupal-module",
+  "description": "Service integration API for the fluxkraft module suite.",
+  "homepage": "http://drupal.org/project/fluxservice",
+  "license": "GPL-2.0",
+  "authors": [
+    {
+      "name": "Wolfgang Ziegler",
+      "email": "nuppla@zites.net",
+      "role": "Project Lead"
+    },
+    {
+      "name": "Sebastian Siemssen",
+      "email": "fubhy@fubhy.com",
+      "role": "Developer"
+    }
+  ],
+  "support": {
+    "issues": "http://drupal.org/project/issues/fluxservice"
+  },
+  "require": {
+    "php": ">=5.3.2",
+    "doctrine/collections": "dev-master"
+  }
+}

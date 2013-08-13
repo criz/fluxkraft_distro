@@ -1,0 +1,36 @@
+
+// Disable svg image and set data-symbol attribute as fallback.
+.fluxkraft-rules-icon {
+  .fluxkraft-icon-file {
+    color: $white;
+    line-height: 80px;
+    text-transform: uppercase;
+    font-size: 50px;
+    &:before {
+      content: attr(data-symbol);
+      speak: none;
+    }
+    img {
+      display: none;
+    }
+  }
+}
+
+// Correct position of rules element condition icon.
+.fluxkraft-rules-condition {
+  .fluxkraft-rules-icon {
+    margin-left: 0px;
+    span {
+      padding-right: 29px;
+      padding-top: 6px;
+    }
+    .fluxkraft-icon-file {
+      font-size: 35px;
+      line-height: 45px;
+    }
+  }
+}
+// Correct position of rules element arrow.
+.fluxkraft-rules-arrow-sign {
+  line-height: 50px;
+}

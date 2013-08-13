@@ -1,0 +1,98 @@
+{
+  "name": "Flickr",
+  "apiVersion": "1.0a",
+  "description": "Flickr API",
+  "operations": {
+    "getPhoto": {
+      "httpMethod": "GET",
+      "uri": "?method=flickr.photos.getInfo&nojsoncallback=1",
+      "parameters": {
+        "photo_id": {
+          "location": "query",
+          "type": "string",
+          "description": "Photo ID.",
+          "required": true
+        },
+        "format": {
+          "location": "query",
+          "type": "string",
+          "description": "Desired format (json/rest) (*rest=xml)."
+        }
+      }
+    },
+    "getSizes": {
+      "httpMethod": "GET",
+      "uri": "?method=flickr.photos.getSizes&nojsoncallback=1",
+      "parameters": {
+        "photo_id": {
+          "location": "query",
+          "type": "string",
+          "description": "Photo ID.",
+          "required": true
+        },
+        "format": {
+          "location": "query",
+          "type": "string",
+          "description": "Desired format (json/rest) (*rest=xml)."
+        }
+      }
+    },
+    "searchPhotos": {
+      "httpMethod": "GET",
+      "uri": "?method=flickr.photos.search&nojsoncallback=1",
+      "parameters": {
+        "text": {
+          "location": "query",
+          "type": "string",
+          "description": "A free text search. Photos who's title, description or tags contain the text will be returned. You can exclude results that match a term by prepending it with a - character."
+        },
+        "tags_mode": {
+          "location": "query",
+          "type": "string",
+          "description": "Either 'any' for an OR combination of tags, or 'all' for an AND combination. Defaults to 'any' if not specified."
+        },
+        "tags": {
+          "location": "query",
+          "type": "string",
+          "description": "A comma-delimited list of tags. Photos with one or more of the tags listed will be returned. You can exclude results that match a term by prepending it with a - character."
+        },
+        "format": {
+          "location": "query",
+          "type": "string",
+          "description": "Desired format (json/rest) (*rest=xml)."
+        },
+        "min_upload_date": {
+          "location": "query",
+          "type": "string",
+          "description": "Minimum upload date. Photos with an upload date greater than or equal to this value will be returned. The date can be in the form of a unix timestamp or mysql datetime."
+        },
+        "sort": {
+          "location": "query",
+          "type": "string",
+          "description": "The order in which to sort returned photos. Deafults to date-posted-desc (unless you are doing a radial geo query, in which case the default sorting is by ascending distance from the point specified). The possible values are: date-posted-asc, date-posted-desc, date-taken-asc, date-taken-desc, interestingness-desc, interestingness-asc, and relevance."
+        },
+        "privacy_filter": {
+          "location": "query",
+          "type": "integer",
+          "description": "Return photos only matching a certain privacy level. This only applies when making an authenticated call to view photos you own."
+        },
+        "extras": {
+          "location": "query",
+          "type": "string",
+          "description": "A comma-delimited list of extra information to fetch for each returned record."
+        }
+      }
+    },
+    "sendPhoto": {
+      "httpMethod": "POST",
+      "uri": "http://up.flickr.com/services/upload/",
+      "parameters": {
+        "photo": {
+          "location": "query",
+          "type": "string",
+          "description": "The photo to be uploaded."
+        }
+      }
+    }
+  }
+}

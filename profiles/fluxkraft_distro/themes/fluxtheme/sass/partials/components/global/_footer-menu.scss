@@ -1,0 +1,8 @@
+
+.footer--bottom {
+  .menu {
+    @extend %menu-base;
+    text-align: center;
+    margin-bottom: .5 * $rowHeight;
+  }
+}

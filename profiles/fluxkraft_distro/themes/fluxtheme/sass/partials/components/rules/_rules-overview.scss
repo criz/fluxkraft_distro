@@ -1,0 +1,38 @@
+table tr.rules-elements-add {
+  background: none;
+}
+
+tr.rules-elements-add td {
+  padding: 0.5 * $rowHeight 0 0.5 * $rowHeight 0;
+}
+
+.fluxkraft-rules-overview--filter,
+.fluxkraft-rules-overview--help {
+  .content {
+    padding: .5 * $colWidth;
+    .form-item select {
+      width: 100%;
+    }
+  }
+  background: $white;
+  margin-bottom: $rowHeight;
+  h2 {
+    display: block;
+    background: $cyan;
+    width: 100%;
+    color: $white;
+    padding: .5 * $colWidth;
+    margin: 0;
+  }
+}
+
+.fluxkraft-rules-overview--list {
+  list-style-type: none;
+  list-style-position: indent;
+  margin: 0;
+  padding: 0;
+  li {
+    margin-top: 0;
+    margin-bottom: $rowHeight;
+  }
+}

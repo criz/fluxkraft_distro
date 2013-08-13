@@ -1,0 +1,27 @@
+.site-branding {
+  position: absolute;
+}
+
+.site-branding__logo {
+  display: block;
+  background: $white;;
+  padding: 0;
+  margin: 0 1em 0;
+  border: 1px solid #f3f3f3;
+  position: relative;
+  top: -8px;
+  float: left;
+  @include circle-image-wrapper(100px);
+  img {
+    width: 100%;
+  }
+}
+
+.site-branding__name {
+  @include font-size(2.6);
+  float: left;
+  color: #fff;
+  margin-top: 1 * $rowHeight;
+  display: block;
+  text-transform: uppercase;
+}

@@ -1,0 +1,49 @@
+name = fluxkraft distribution
+description = "Web automation simplified with the power of Rules!"
+core = 7.x
+exclusive = TRUE
+distribution_name = fluxkraft
+php = 5.3.10
+
+; Install necessary core modules.
+dependencies[] = block
+dependencies[] = comment
+dependencies[] = contextual
+dependencies[] = dashboard
+dependencies[] = help
+dependencies[] = image
+dependencies[] = list
+dependencies[] = menu
+dependencies[] = number
+dependencies[] = options
+dependencies[] = path
+dependencies[] = taxonomy
+dependencies[] = dblog
+dependencies[] = search
+dependencies[] = field_ui
+dependencies[] = file
+dependencies[] = rdf
+
+; Install fluxkraft dependency UIs and add-on modules
+dependencies[] = rules_admin
+dependencies[] = rules_scheduler
+dependencies[] = views_ui
+
+; Install the fluxkraft modules.
+dependencies[] = fluxkraft
+dependencies[] = fluxtwitter
+dependencies[] = fluxfeed
+dependencies[] = fluxfacebook
+dependencies[] = fluxflickr
+dependencies[] = fluxdropbox
+
+
+; Install theme related stuff.
+dependencies[] = fluxkraft_layout
+dependencies[] = libraries
+dependencies[] = hurricane
+dependencies[] = hurricane_integration
+
+;Utility
+dependencies[] = admin_menu_toolbar
+dependencies[] = module_filter

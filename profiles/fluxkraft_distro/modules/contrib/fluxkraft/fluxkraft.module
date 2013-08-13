@@ -1,0 +1,44 @@
+<?php
+
+/**
+ * @file
+ * Main module file.
+ */
+
+/**
+ * Implements hook_menu().
+ */
+function fluxkraft_menu() {
+  // Provide personal UI.
+  $path = 'fluxkraft/%user/service-accounts';
+  $items = \Drupal\fluxservice_user\PersonalAccountUIController::factory($path)
+    ->setBasePathReplacements('%user', 1)
+    ->hook_menu();
+
+  $items['fluxkraft/service-accounts'] = array(
+    'title' => 'Service accounts',
+    'page callback' => 'fluxkraft_page_current_user',
+    'access callback' => TRUE,
+    'menu_name' => 'main-menu',
+  );
+
+  return $items;
+}
+
+/**
+ * Page callback forwarding generic menu items to the ones of the current user.
+ */
+function fluxkraft_page_current_user() {
+  global $user;
+
+  if ($user->uid) {
+    // Adjust fluxkraft/page/X pages to fluxkraft/CURRENT_UID/page/X.
+    $arg = arg(1);
+    $path = str_replace("fluxkraft/$arg", "fluxkraft/$user->uid/$arg", current_path());
+    menu_set_active_item($path);
+    return menu_execute_active_handler(NULL, FALSE);
+  }
+  else {
+    return MENU_ACCESS_DENIED;
+  }
+}

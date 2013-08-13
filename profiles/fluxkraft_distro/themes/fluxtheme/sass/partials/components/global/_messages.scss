@@ -1,0 +1,65 @@
+/**
+ * $MESSAGES
+ */
+.messages {
+  padding: $rowHeight 2 * $rowHeight + $colWidth;
+  margin-bottom: $rowHeight;
+  color: darken($grey, 20%);
+  border: 0;
+  background-position: $colWidth $rowHeight;
+  @include single-transition(background-color, 2s, ease-in);
+}
+
+.messages--status {
+  background-color: $yellow-light;
+  background-image: none;
+  position: relative;
+  &:hover {
+    background-color: darken($yellow-light, 20%);
+  }
+  &:before {
+    @include icon-font('\f05a');
+    @include font-size(4.5);
+    position: absolute;
+    top: .6em;
+    left: .3em;
+    color: #fff;
+  }
+}
+
+.messages--warning,
+.messages.warning {
+  background-color: $yellow-light;
+  background-image: none;
+  position: relative;
+  &:hover {
+    background-color: darken($yellow-light, 20%);
+  }
+}
+
+.messages--warning:before {
+  @include icon-font('\f071');
+  @include font-size(4.5);
+  position: absolute;
+  top: .6em;
+  left: .3em;
+  color: #fff;
+}
+
+.messages--error {
+  background-color: $red-light;
+  background-image: none;
+  position: relative;
+  &:hover {
+    background-color: darken($red-light, 20%);
+  }
+
+  &:before {
+    @include icon-font('\f057');
+    @include font-size(4.5);
+    position: absolute;
+    top: .6em;
+    left: .3em;
+    color: #fff;
+  }
+}

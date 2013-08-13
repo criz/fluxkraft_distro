@@ -1,0 +1,958 @@
+{
+  "name": "Twitter",
+  "apiVersion": "1.1",
+  "description": "Twitter API",
+  "operations": {
+    "GetUserTimeline": {
+      "httpMethod": "GET",
+      "uri": "statuses/user_timeline.json",
+      "summary": "Returns a collection of the most recent Tweets posted by the user indicated by the screen_name or user_id parameters.",
+      "parameters": {
+        "user_id": {
+          "location": "query",
+          "type": "integer",
+          "description": "The ID of the user for whom to return results for."
+        },
+        "screen_name": {
+          "location": "query",
+          "type": "string",
+          "description": "The screen name of the user for whom to return results for."
+        },
+        "since_id": {
+          "location": "query",
+          "type": "integer",
+          "description": "Returns results with an ID greater than (that is, more recent than) the specified ID. There are limits to the number of Tweets which can be accessed through the API. If the limit of Tweets has occured since the since_id, the since_id will be forced to the oldest ID available."
+        },
+        "count": {
+          "location": "query",
+          "type": "integer",
+          "maximum": 200,
+          "description": "Specifies the number of records to retrieve. Must be less than or equal to 200. Defaults to 20."
+        },
+        "max_id": {
+          "location": "query",
+          "type": "integer",
+          "description": "Returns results with an ID less than (that is, older than) or equal to the specified ID."
+        },
+        "trim_user": {
+          "location": "query",
+          "type": "boolean",
+          "description": "When set to either true, t or 1, each tweet returned in a timeline will include a user object including only the status authors numerical ID. Omit this parameter to receive the complete user object."
+        },
+        "exclude_replies": {
+          "location": "query",
+          "type": "boolean",
+          "description": "This parameter will prevent replies from appearing in the returned timeline. Using exclude_replies with the count parameter will mean you will receive up-to count tweets — this is because the count parameter retrieves that many tweets before filtering out retweets and replies. This parameter is only supported for JSON and XML responses."
+        },
+        "contributor_details": {
+          "location": "query",
+          "type": "boolean",
+          "description": "This parameter enhances the contributors element of the status response to include the screen_name of the contributor. By default only the user_id of the contributor is included."
+        },
+        "include_rts": {
+          "location": "query",
+          "type": "boolean",
+          "description": "When set to false, the timeline will strip any native retweets (though they will still count toward both the maximal length of the timeline and the slice selected by the count parameter). Note: If you're using the trim_user parameter in conjunction with include_rts, the retweets will still contain a full user object."
+        }
+      }
+    },
+    "GetHomeTimeline": {
+      "httpMethod": "GET",
+      "uri": "statuses/home_timeline.json",
+      "summary": "Returns a collection of the most recent Tweets and retweets posted by the authenticating user and the users they follow. The home timeline is central to how most users interact with the Twitter service.",
+      "parameters": {
+        "count": {
+          "location": "query",
+          "type": "integer",
+          "maximum": 200,
+          "description": "Specifies the number of records to retrieve. Must be less than or equal to 200. Defaults to 20."
+        },
+        "since_id": {
+          "location": "query",
+          "type": "integer",
+          "description": "Returns results with an ID greater than (that is, more recent than) the specified ID. There are limits to the number of Tweets which can be accessed through the API. If the limit of Tweets has occured since the since_id, the since_id will be forced to the oldest ID available."
+        },
+        "max_id": {
+          "location": "query",
+          "type": "integer",
+          "description": "Returns results with an ID less than (that is, older than) or equal to the specified ID."
+        },
+        "trim_user": {
+          "location": "query",
+          "type": "boolean",
+          "description": "When set to either true, t or 1, each tweet returned in a timeline will include a user object including only the status authors numerical ID. Omit this parameter to receive the complete user object."
+        },
+        "exclude_replies": {
+          "location": "query",
+          "type": "boolean",
+          "description": "This parameter will prevent replies from appearing in the returned timeline. Using exclude_replies with the count parameter will mean you will receive up-to count tweets — this is because the count parameter retrieves that many tweets before filtering out retweets and replies."
+        },
+        "contributor_details": {
+          "location": "query",
+          "type": "boolean",
+          "description": "This parameter enhances the contributors element of the status response to include the screen_name of the contributor. By default only the user_id of the contributor is included."
+        },
+        "include_entities": {
+          "location": "query",
+          "type": "boolean",
+          "description": "The entities node will be disincluded when set to false."
+        }
+      }
+    },
+    "GetMentionsTimeline": {
+      "httpMethod": "GET",
+      "uri": "statuses/mentions_timeline.json",
+      "summary": "Returns the 20 most recent mentions for the authenticating user.",
+      "parameters": {
+        "count": {
+          "location": "query",
+          "type": "integer",
+          "maximum": 200,
+          "description": "Specifies the number of tweets to try and retrieve, up to a maximum of 200. The value of count is best thought of as a limit to the number of tweets to return because suspended or deleted content is removed after the count has been applied. We include retweets in the count, even if include_rts is not supplied. It is recommended you always send include_rts=1 when using this API method."
+        },
+        "since_id": {
+          "location": "query",
+          "type": "integer",
+          "description": "Returns results with an ID greater than (that is, more recent than) the specified ID. There are limits to the number of Tweets which can be accessed through the API. If the limit of Tweets has occured since the since_id, the since_id will be forced to the oldest ID available."
+        },
+        "max_id": {
+          "location": "query",
+          "type": "integer",
+          "description": "Returns results with an ID less than (that is, older than) or equal to the specified ID."
+        },
+        "trim_user": {
+          "location": "query",
+          "type": "boolean",
+          "description": "When set to either true, t or 1, each tweet returned in a timeline will include a user object including only the status authors numerical ID. Omit this parameter to receive the complete user object."
+        },
+        "contributor_details": {
+          "location": "query",
+          "type": "boolean",
+          "description": "This parameter enhances the contributors element of the status response to include the screen_name of the contributor. By default only the user_id of the contributor is included."
+        },
+        "include_entities": {
+          "location": "query",
+          "type": "boolean",
+          "description": "The entities node will be disincluded when set to false."
+        }
+      }
+    },
+    "GetRetweetsOfMe": {
+      "httpMethod": "GET",
+      "uri": "statuses/retweets_of_me.json",
+      "summary": "Returns the most recent mentions for the authenticating user.",
+      "parameters": {
+        "count": {
+          "location": "query",
+          "type": "integer",
+          "maximum": 100,
+          "description": "Specifies the number of records to retrieve. Must be less than or equal to 100. If omitted, 20 will be assumed."
+        },
+        "since_id": {
+          "location": "query",
+          "type": "integer",
+          "description": "Returns results with an ID greater than (that is, more recent than) the specified ID. There are limits to the number of Tweets which can be accessed through the API. If the limit of Tweets has occured since the since_id, the since_id will be forced to the oldest ID available."
+        },
+        "max_id": {
+          "location": "query",
+          "type": "integer",
+          "description": "Returns results with an ID less than (that is, older than) or equal to the specified ID."
+        },
+        "trim_user": {
+          "location": "query",
+          "type": "boolean",
+          "description": "When set to either true, t or 1, each tweet returned in a timeline will include a user object including only the status authors numerical ID. Omit this parameter to receive the complete user object."
+        },
+        "include_entities": {
+          "location": "query",
+          "type": "boolean",
+          "description": "The entities node will be disincluded when set to false."
+        },
+        "include_user_entities": {
+          "location": "query",
+          "type": "boolean",
+          "description": "The user entities node will be disincluded when set to false."
+        }
+      }
+    },
+    "GetRetweets": {
+      "httpMethod": "GET",
+      "uri": "statuses/retweets/{id}.json",
+      "summary": "Returns up to 100 of the first retweets of a given tweet.",
+      "parameters": {
+        "id": {
+          "location": "uri",
+          "type": "integer",
+          "required": true,
+          "description": "Specifies the number of records to retrieve. Must be less than or equal to 100."
+        },
+        "count": {
+          "location": "query",
+          "type": "integer",
+          "maximum": 100,
+          "description": "Specifies the number of records to retrieve. Must be less than or equal to 100."
+        },
+        "trim_user": {
+          "location": "query",
+          "type": "boolean",
+          "description": "When set to either true, t or 1, each tweet returned in a timeline will include a user object including only the status authors numerical ID. Omit this parameter to receive the complete user object."
+        }
+      }
+    },
+    "GetTweet": {
+      "httpMethod": "GET",
+      "uri": "statuses/show.json",
+      "summary": "Returns a single Tweet, specified by the id parameter. The Tweet's author will also be embedded within the tweet.",
+      "parameters": {
+        "id": {
+          "location": "query",
+          "type": "integer",
+          "required": true,
+          "description": "Specifies the number of records to retrieve. Must be less than or equal to 100."
+        },
+        "trim_user": {
+          "location": "query",
+          "type": "boolean",
+          "description": "When set to either true, t or 1, each tweet returned in a timeline will include a user object including only the status authors numerical ID. Omit this parameter to receive the complete user object."
+        },
+        "include_my_retweet": {
+          "location": "query",
+          "type": "boolean",
+          "description": "When set to either true, t or 1, any Tweets returned that have been retweeted by the authenticating user will include an additional current_user_retweet node, containing the ID of the source status for the retweet."
+        },
+        "include_entities": {
+          "location": "query",
+          "type": "boolean",
+          "description": "The entities node will be disincluded when set to false."
+        }
+      }
+    },
+    "DeleteTweet": {
+      "httpMethod": "POST",
+      "uri": "statuses/destroy/{id}.json",
+      "summary": "Destroys the status specified by the required ID parameter. The authenticating user must be the author of the specified status. Returns the destroyed status if successful.",
+      "parameters": {
+        "id": {
+          "location": "uri",
+          "type": "integer",
+          "required": true,
+          "description": "The numerical ID of the desired status."
+        },
+        "trim_user": {
+          "location": "query",
+          "type": "boolean",
+          "description": "When set to either true, t or 1, each tweet returned in a timeline will include a user object including only the status authors numerical ID. Omit this parameter to receive the complete user object."
+        }
+      }
+    },
+    "SendTweet": {
+      "httpMethod": "POST",
+      "uri": "statuses/update.json",
+      "parameters": {
+        "status": {
+          "location": "query",
+          "type": "string",
+          "required": true,
+          "description": "The text of your status update, typically up to 140 characters. URL encode as necessary. t.co link wrapping may effect character counts. There are some special commands in this field to be aware of. For instance, preceding a message with \"D \" or \"M \" and following it with a screen name can create a direct message to that user if the relationship allows for it."
+        },
+        "in_reply_to_status_id": {
+          "location": "query",
+          "type": "integer",
+          "description": "The ID of an existing status that the update is in reply to. This parameter will be ignored unless the author of the tweet this parameter references is mentioned within the status text. Therefore, you must include @username, where username is the author of the referenced tweet, within the update."
+        },
+        "lat": {
+          "location": "query",
+          "type": "integer",
+          "description": "The latitude of the location this tweet refers to. This parameter will be ignored unless it is inside the range -90.0 to +90.0 (North is positive) inclusive. It will also be ignored if there isn't a corresponding long parameter."
+        },
+        "long": {
+          "location": "query",
+          "type": "integer",
+          "description": "The longitude of the location this tweet refers to. The valid ranges for longitude is -180.0 to +180.0 (East is positive) inclusive. This parameter will be ignored if outside that range, if it is not a number, if geo_enabled is disabled, or if there not a corresponding lat parameter."
+        },
+        "place_id": {
+          "location": "query",
+          "type": "string",
+          "description": "A place in the world. These IDs can be retrieved from GET geo/reverse_geocode."
+        },
+        "display_coordinates": {
+          "location": "query",
+          "type": "boolean",
+          "description": "Whether or not to put a pin on the exact coordinates a tweet has been sent from."
+        },
+        "trim_user": {
+          "location": "query",
+          "type": "boolean",
+          "description": "When set to either true, t or 1, each tweet returned in a timeline will include a user object including only the status authors numerical ID. Omit this parameter to receive the complete user object."
+        }
+      }
+    },
+    "Retweet": {
+      "httpMethod": "POST",
+      "uri": "statuses/retweet/{id}.json",
+      "summary": "Retweets a tweet. Returns the original tweet with retweet details embedded.",
+      "parameters": {
+        "id": {
+          "location": "uri",
+          "type": "integer",
+          "required": true,
+          "description": "The numerical ID of the desired status."
+        },
+        "trim_user": {
+          "location": "query",
+          "type": "boolean",
+          "description": "When set to either true, t or 1, each tweet returned in a timeline will include a user object including only the status authors numerical ID. Omit this parameter to receive the complete user object."
+        }
+      }
+    },
+    "TweetWithMedia": {
+      "httpMethod": "POST",
+      "uri": "statuses/update_with_media.json",
+      "summary": "Updates the authenticating user's current status and attaches media for upload. In other words, it creates a Tweet with a picture attached.",
+      "parameters": {
+        "status": {
+          "location": "query",
+          "type": "string",
+          "required": true,
+          "description": "The text of your status update. URL encode as necessary. t.co link wrapping may affect character counts if the post contains URLs. You must additionally account for the characters_reserved_per_media per uploaded media, additionally accounting for space characters in between finalized URLs. Request the GET help/configuration endpoint to get the current characters_reserved_per_media and max_media_per_upload values."
+        },
+        "media": {
+          "location": "postFile",
+          "type": ["string", "array"],
+          "required": true,
+          "description": "Up to max_media_per_upload files may be specified in the request, each named media[]. Supported image formats are PNG, JPG and GIF. Animated GIFs are not supported. Request the GET help/configuration endpoint to get the current max_media_per_upload and photo_size_limit values."
+        },
+        "possibly_sensitive": {
+          "location": "query",
+          "type": "boolean",
+          "description": "Set to true for content which may not be suitable for every audience."
+        },
+        "in_reply_to_status_id": {
+          "location": "query",
+          "type": "integer",
+          "description": "The ID of an existing status that the update is in reply to. This parameter will be ignored unless the author of the tweet this parameter references is mentioned within the status text. Therefore, you must include @username, where username is the author of the referenced tweet, within the update."
+        },
+        "lat": {
+          "location": "query",
+          "type": "integer",
+          "description": "The latitude of the location this tweet refers to. This parameter will be ignored unless it is inside the range -90.0 to +90.0 (North is positive) inclusive. It will also be ignored if there isn't a corresponding long parameter."
+        },
+        "long": {
+          "location": "query",
+          "type": "integer",
+          "description": "The longitude of the location this tweet refers to. The valid ranges for longitude is -180.0 to +180.0 (East is positive) inclusive. This parameter will be ignored if outside that range, if it is not a number, if geo_enabled is disabled, or if there not a corresponding lat parameter."
+        },
+        "place_id": {
+          "location": "query",
+          "type": "string",
+          "description": "A place in the world. These IDs can be retrieved from GET geo/reverse_geocode."
+        },
+        "display_coordinates": {
+          "location": "query",
+          "type": "boolean",
+          "description": "Whether or not to put a pin on the exact coordinates a tweet has been sent from."
+        }
+      }
+    },
+    "GetOEmbed": {
+      "httpMethod": "GET",
+      "uri": "statuses/oembed.json",
+      "summary": "Returns information allowing the creation of an embedded representation of a Tweet on third party sites. See the oEmbed specification for information about the response format. While this endpoint allows a bit of customization for the final appearance of the embedded Tweet, be aware that the appearance of the rendered Tweet may change over time to be consistent with Twitter's Display Requirements. Do not rely on any class or id parameters to stay constant in the returned markup.",
+      "parameters": {
+        "id": {
+          "location": "query",
+          "type": "integer",
+          "description": "The Tweet/status ID to return embed code for."
+        },
+        "url": {
+          "location": "query",
+          "type": "string",
+          "description": "The URL of the Tweet/status to be embedded."
+        },
+        "maxwidth": {
+          "location": "query",
+          "type": "integer",
+          "minimum": "250",
+          "maximum": "550",
+          "description": "The maximum width in pixels that the embed should be rendered at. This value is constrained to be between 250 and 550 pixels. Note that Twitter does not support the oEmbed maxheight parameter. Tweets are fundamentally text, and are therefore of unpredictable height that cannot be scaled like an image or video. Relatedly, the oEmbed response will not provide a value for height. Implementations that need consistent heights for Tweets should refer to the hide_thread and hide_media parameters below."
+        },
+        "hide_media": {
+          "location": "query",
+          "type": "boolean",
+          "description": "Specifies whether the embedded Tweet should automatically expand images which were uploaded via POST statuses/update_with_media. When set to either true, t or 1 images will not be expanded. Defaults to false."
+        },
+        "hide_thread": {
+          "location": "query",
+          "type": "boolean",
+          "description": "Specifies whether the embedded Tweet should automatically show the original message in the case that the embedded Tweet is a reply. When set to either true, t or 1 the original Tweet will not be shown. Defaults to false."
+        },
+        "omit_script": {
+          "location": "query",
+          "type": "boolean",
+          "description": "Specifies whether the embedded Tweet HTML should include a 'script' element pointing to widgets.js. In cases where a page already includes widgets.js, setting this value to true will prevent a redundant script element from being included. When set to either true, t or 1 the 'script' element will not be included in the embed HTML, meaning that pages must include a reference to widgets.js manually. Defaults to false."
+        },
+        "align": {
+          "location": "query",
+          "type": "string",
+          "enum": ["left", "right", "center", "none"],
+          "description": "Specifies whether the embedded Tweet should be left aligned, right aligned, or centered in the page. Valid values are left, right, center, and none. Defaults to none, meaning no alignment styles are specified for the Tweet."
+        },
+        "related": {
+          "location": "query",
+          "type": "string",
+          "description": "A value for the TWT related parameter, as described in Web Intents. This value will be forwarded to all Web Intents calls."
+        },
+        "lang": {
+          "location": "query",
+          "type": "string",
+          "description": "Language code for the rendered embed. This will affect the text and localization of the rendered HTML."
+        }
+      }
+    },
+    "SearchTweets": {
+      "httpMethod": "GET",
+      "uri": "search/tweets.json",
+      "summary": "Please note that Twitter's search service and, by extension, the Search API is not meant to be an exhaustive source of Tweets. Not all Tweets will be indexed or made available via the search interface.",
+      "parameters": {
+        "q": {
+          "location": "query",
+          "type": "string",
+          "required": true,
+          "description": "A UTF-8, URL-encoded search query of 1,000 characters maximum, including operators. Queries may additionally be limited by complexity."
+        },
+        "geocode": {
+          "location": "query",
+          "type": "numeric",
+          "description": "Returns tweets by users located within a given radius of the given latitude/longitude. The location is preferentially taking from the Geotagging API, but will fall back to their Twitter profile. The parameter value is specified by 'latitude,longitude,radius'', where radius units must be specified as either 'mi' (miles) or 'km' (kilometers). Note that you cannot use the near operator via the API to geocode arbitrary locations; however you can use this geocode parameter to search near geocodes directly. A maximum of 1,000 distinct 'sub-regions' will be considered when using the radius modifier."
+        },
+        "lang": {
+          "location": "query",
+          "type": "string",
+          "description": "Language code for the rendered embed. This will affect the text and localization of the rendered HTML."
+        },
+        "locale": {
+          "location": "query",
+          "type": "string",
+          "description": "Specify the language of the query you are sending (only ja is currently effective). This is intended for language-specific consumers and the default should work in the majority of cases."
+        },
+        "result_type": {
+          "location": "query",
+          "type": "string",
+          "enum": ["mixed", "recent", "popular"],
+          "description": "Optional. Specifies what type of search results you would prefer to receive. The current default is 'mixed'."
+        },
+        "count": {
+          "location": "query",
+          "type": "integer",
+          "maximum": "100",
+          "description": "The number of tweets to return per page, up to a maximum of 100. Defaults to 15. This was formerly the 'rpp' parameter in the old Search API."
+        },
+        "until": {
+          "location": "query",
+          "type": "any",
+          "format": "date",
+          "description": "Returns tweets generated before the given date. Date should be formatted as YYYY-MM-DD. Keep in mind that the search index may not go back as far as the date you specify here."
+        },
+        "since_id": {
+          "location": "query",
+          "type": "integer",
+          "description": "Returns results with an ID greater than (that is, more recent than) the specified ID. There are limits to the number of Tweets which can be accessed through the API. If the limit of Tweets has occured since the since_id, the since_id will be forced to the oldest ID available."
+        },
+        "max_id": {
+          "location": "query",
+          "type": "integer",
+          "description": "Returns results with an ID less than (that is, older than) or equal to the specified ID."
+        },
+        "include_entities": {
+          "location": "query",
+          "type": "boolean",
+          "description": "The entities node will be disincluded when set to false."
+        },
+        "callback": {
+          "location": "query",
+          "type": "string",
+          "description": "If supplied, the response will use the JSONP format with a callback of the given name. The usefulness of this parameter is somewhat diminished by the requirement of authentication for requests to this endpoint."
+        }
+      }
+    },
+    "GetDirectMessages": {
+      "httpMethod": "GET",
+      "uri": "direct_messages.json",
+      "summary": "Returns the 20 most recent direct messages sent to the authenticating user. Includes detailed information about the sender and recipient user. You can request up to 200 direct messages per call, up to a maximum of 800 incoming DMs.",
+      "parameters": {
+        "since_id": {
+          "location": "query",
+          "type": "integer",
+          "description": "Returns results with an ID greater than (that is, more recent than) the specified ID. There are limits to the number of Tweets which can be accessed through the API. If the limit of Tweets has occured since the since_id, the since_id will be forced to the oldest ID available."
+        },
+        "max_id": {
+          "location": "query",
+          "type": "integer",
+          "description": "Returns results with an ID less than (that is, older than) or equal to the specified ID."
+        },
+        "count": {
+          "location": "query",
+          "type": "integer",
+          "maximum": "100",
+          "description": "The number of tweets to return per page, up to a maximum of 100. Defaults to 15. This was formerly the 'rpp' parameter in the old Search API."
+        },
+        "include_entities": {
+          "location": "query",
+          "type": "boolean",
+          "description": "The entities node will be disincluded when set to false."
+        },
+        "skip_status": {
+          "location": "query",
+          "type": "boolean",
+          "description": "When set to either true, t or 1 statuses will not be included in the returned user objects."
+        }
+      }
+    },
+    "GetSentDirectMessages": {
+      "httpMethod": "GET",
+      "uri": "direct_messages/sent.json",
+      "summary": "Returns the 20 most recent direct messages sent by the authenticating user. Includes detailed information about the sender and recipient user. You can request up to 200 direct messages per call, up to a maximum of 800 outgoing DMs.",
+      "parameters": {
+        "since_id": {
+          "location": "query",
+          "type": "integer",
+          "description": "Returns results with an ID greater than (that is, more recent than) the specified ID. There are limits to the number of Tweets which can be accessed through the API. If the limit of Tweets has occured since the since_id, the since_id will be forced to the oldest ID available."
+        },
+        "max_id": {
+          "location": "query",
+          "type": "integer",
+          "description": "Returns results with an ID less than (that is, older than) or equal to the specified ID."
+        },
+        "count": {
+          "location": "query",
+          "type": "integer",
+          "maximum": "100",
+          "description": "The number of tweets to return per page, up to a maximum of 100. Defaults to 15. This was formerly the 'rpp' parameter in the old Search API."
+        },
+        "page": {
+          "location": "query",
+          "type": "integer",
+          "description": "Specifies the page of results to retrieve."
+        },
+        "include_entities": {
+          "location": "query",
+          "type": "boolean",
+          "description": "The entities node will be disincluded when set to false."
+        }
+      }
+    },
+    "GetDirectMessage": {
+      "httpMethod": "GET",
+      "uri": "direct_messages/show.json",
+      "summary": "Returns a single direct message, specified by an id parameter. Like the /1.1/direct_messages.format request, this method will include the user objects of the sender and recipient.",
+      "parameters": {
+        "id": {
+          "location": "query",
+          "type": "integer",
+          "required": true,
+          "description": "The ID of the direct message."
+        }
+      }
+    },
+    "DeleteDirectMessage": {
+      "httpMethod": "GET",
+      "uri": "direct_messages/destroy.json",
+      "summary": "Destroys the direct message specified in the required ID parameter. The authenticating user must be the recipient of the specified direct message.",
+      "parameters": {
+        "id": {
+          "location": "query",
+          "type": "integer",
+          "required": true,
+          "description": "The ID of the direct message."
+        },
+        "include_entities": {
+          "location": "query",
+          "type": "boolean",
+          "description": "The entities node will be disincluded when set to false."
+        }
+      }
+    },
+    "SendDirectMessage": {
+      "httpMethod": "POST",
+      "uri": "direct_messages/new.json",
+      "summary": "Sends a new direct message to the specified user from the authenticating user. Requires both the user and text parameters and must be a POST. Returns the sent message in the requested format if successful.",
+      "parameters": {
+        "user_id": {
+          "location": "query",
+          "type": "integer",
+          "description": "The ID of the user who should receive the direct message. Helpful for disambiguating when a valid user ID is also a valid screen name."
+        },
+        "screen_name": {
+          "location": "query",
+          "type": "string",
+          "description": "The screen name of the user who should receive the direct message. Helpful for disambiguating when a valid screen name is also a user ID."
+        },
+        "text": {
+          "location": "query",
+          "type": "string",
+          "required": true,
+          "maxLength": "140",
+          "description": "The text of your direct message. Be sure to URL encode as necessary, and keep the message under 140 characters."
+        }
+      }
+    },
+    "GetFollowedUserIdsNoRetweets": {
+      "httpMethod": "GET",
+      "uri": "friendships/no_retweets/ids.json",
+      "summary": "Returns a collection of user_ids that the currently authenticated user does not want to receive retweets from.",
+      "parameters": {
+        "stringify_ids": {
+          "location": "query",
+          "type": "boolean",
+          "description": "Many programming environments will not consume our ids due to their size. Provide this option to have ids returned as strings instead. Read more about Twitter IDs, JSON and Snowflake. This parameter is especially important to use in Javascript environments."
+        }
+      }
+    },
+    "GetFollowedUserIds": {
+      "httpMethod": "GET",
+      "uri": "friends/ids.json",
+      "summary": "Returns a cursored collection of user IDs for every user the specified user is following (otherwise known as their 'friends').",
+      "parameters": {
+        "user_id": {
+          "location": "query",
+          "type": "integer",
+          "description": "The ID of the user for whom to return results for."
+        },
+        "screen_name": {
+          "location": "query",
+          "type": "string",
+          "description": "The screen name of the user for whom to return results for."
+        },
+        "cursor": {
+          "location": "query",
+          "type": "integer",
+          "description": "Causes the list of connections to be broken into pages of no more than 5000 IDs at a time. The number of IDs returned is not guaranteed to be 5000 as suspended users are filtered out after connections are queried. If no cursor is provided, a value of -1 will be assumed, which is the first 'page.'"
+        },
+        "stringify_ids": {
+          "location": "query",
+          "type": "boolean",
+          "description": "Many programming environments will not consume our ids due to their size. Provide this option to have ids returned as strings instead. Read more about Twitter IDs, JSON and Snowflake. This parameter is especially important to use in Javascript environments."
+        },
+        "count": {
+          "location": "query",
+          "type": "integer",
+          "maximum": "5000",
+          "description": "The number of tweets to return per page, up to a maximum of 100. Defaults to 15. This was formerly the 'rpp' parameter in the old Search API."
+        }
+      }
+    },
+    "GetFollowers": {
+      "httpMethod": "GET",
+      "uri": "followers/ids.json",
+      "summary": "Returns a cursored collection of user IDs for every user following the specified user.",
+      "parameters": {
+        "user_id": {
+          "location": "query",
+          "type": "integer",
+          "description": "The ID of the user for whom to return results for."
+        },
+        "screen_name": {
+          "location": "query",
+          "type": "string",
+          "description": "The screen name of the user for whom to return results for."
+        },
+        "cursor": {
+          "location": "query",
+          "type": "integer",
+          "description": "Causes the list of connections to be broken into pages of no more than 5000 IDs at a time. The number of IDs returned is not guaranteed to be 5000 as suspended users are filtered out after connections are queried. If no cursor is provided, a value of -1 will be assumed, which is the first 'page.'"
+        },
+        "stringify_ids": {
+          "location": "query",
+          "type": "boolean",
+          "description": "Many programming environments will not consume our ids due to their size. Provide this option to have ids returned as strings instead. Read more about Twitter IDs, JSON and Snowflake. This parameter is especially important to use in Javascript environments."
+        },
+        "count": {
+          "location": "query",
+          "type": "integer",
+          "maximum": "5000",
+          "description": "The number of tweets to return per page, up to a maximum of 100. Defaults to 15. This was formerly the 'rpp' parameter in the old Search API."
+        }
+      }
+    },
+    "GetRelationships": {
+      "httpMethod": "GET",
+      "uri": "friendships/lookup.json",
+      "summary": "Returns the relationships of the authenticating user to the array of up to 100 screen_names or user_ids provided.",
+      "parameters": {
+        "screen_name": {
+          "location": "query",
+          "type": "array",
+          "maxItems": "100",
+          "filters": [{
+            "method": "implode",
+            "args": [",", "@value"]
+          }],
+          "description": "An array of screen names, up to 100 are allowed in a single request."
+        },
+        "user_id": {
+          "location": "query",
+          "type": "array",
+          "maxItems": "100",
+          "filters": [{
+            "method": "implode",
+            "args": [",", "@value"]
+          }],
+          "description": "An array of user IDs, up to 100 are allowed in a single request."
+        }
+      }
+    },
+    "GetIncomingFollowerRequests": {
+      "httpMethod": "GET",
+      "uri": "friendships/incomig.json",
+      "summary": "Returns a collection of numeric IDs for every user who has a pending request to follow the authenticating user.",
+      "parameters": {
+        "cursor": {
+          "location": "query",
+          "type": "integer",
+          "description": "Causes the list of connections to be broken into pages of no more than 5000 IDs at a time. The number of IDs returned is not guaranteed to be 5000 as suspended users are filtered out after connections are queried. If no cursor is provided, a value of -1 will be assumed, which is the first 'page.'"
+        },
+        "stringify_ids": {
+          "location": "query",
+          "type": "boolean",
+          "description": "Many programming environments will not consume our ids due to their size. Provide this option to have ids returned as strings instead. Read more about Twitter IDs, JSON and Snowflake. This parameter is especially important to use in Javascript environments."
+        }
+      }
+    },
+    "GetOutgoingFollowerRequests": {
+      "httpMethod": "GET",
+      "uri": "friendships/outgoing.json",
+      "summary": "Returns a collection of numeric IDs for every protected user for whom the authenticating user has a pending follow request.",
+      "parameters": {
+        "cursor": {
+          "location": "query",
+          "type": "integer",
+          "description": "Causes the list of connections to be broken into pages of no more than 5000 IDs at a time. The number of IDs returned is not guaranteed to be 5000 as suspended users are filtered out after connections are queried. If no cursor is provided, a value of -1 will be assumed, which is the first 'page.'"
+        },
+        "stringify_ids": {
+          "location": "query",
+          "type": "boolean",
+          "description": "Many programming environments will not consume our ids due to their size. Provide this option to have ids returned as strings instead. Read more about Twitter IDs, JSON and Snowflake. This parameter is especially important to use in Javascript environments."
+        }
+      }
+    },
+    "FollowUser": {
+      "httpMethod": "POST",
+      "uri": "friendships/create.json",
+      "summary": "Allows the authenticating users to follow the user specified in the ID parameter.",
+      "notes": "Returns the befriended user in the requested format when successful. Returns a string describing the failure condition when unsuccessful. If you are already friends with the user a HTTP 403 may be returned, though for performance reasons you may get a 200 OK message even if the friendship already exists. Actions taken in this method are asynchronous and changes will be eventually consistent.",
+      "parameters": {
+        "user_id": {
+          "location": "query",
+          "type": "integer",
+          "description": "The ID of the user for whom to befriend."
+        },
+        "screen_name": {
+          "location": "query",
+          "type": "string",
+          "description": "The screen name of the user for whom to befriend."
+        },
+        "follow": {
+          "location": "query",
+          "type": "boolean",
+          "description": "Enable notifications for the target user."
+        }
+      }
+    },
+    "UnfollowUser": {
+      "httpMethod": "POST",
+      "uri": "friendships/destroy.json",
+      "summary": "Allows the authenticating user to unfollow the user specified in the ID parameter.",
+      "notes": "Returns the unfollowed user in the requested format when successful. Returns a string describing the failure condition when unsuccessful. Actions taken in this method are asynchronous and changes will be eventually consistent.",
+      "parameters": {
+        "user_id": {
+          "location": "query",
+          "type": "integer",
+          "description": "The ID of the user for whom to unfollow."
+        },
+        "screen_name": {
+          "location": "query",
+          "type": "string",
+          "description": "The screen name of the user for whom to unfollow."
+        }
+      }
+    },
+    "UpdateRelationship": {
+      "httpMethod": "POST",
+      "uri": "friendships/update.json",
+      "summary": "Allows one to enable or disable retweets and device notifications from the specified user.",
+      "parameters": {
+        "screen_name": {
+          "location": "query",
+          "type": "string",
+          "description": "The screen name of the user for whom to unfollow."
+        },
+        "user_id": {
+          "location": "query",
+          "type": "integer",
+          "description": "The ID of the user for whom to unfollow."
+        },
+        "device": {
+          "location": "query",
+          "type": "boolean",
+          "description": "Enable/disable device notifications from the target user."
+        },
+        "retweets": {
+          "location": "query",
+          "type": "boolean",
+          "description": "Enable/disable retweets from the target user."
+        }
+      }
+    },
+    "GetRelationship": {
+      "httpMethod": "GET",
+      "uri": "friendships/show.json",
+      "summary": "Returns detailed information about the relationship between two arbitrary users.",
+      "notes": "At least one source and one target, whether specified by IDs or screen_names, should be provided to this method.",
+      "parameters": {
+        "source_user_id": {
+          "location": "query",
+          "type": "integer",
+          "description": "The user_id of the subject user."
+        },
+        "source_screen_name": {
+          "location": "query",
+          "type": "string",
+          "description": "The screen_name of the subject user."
+        },
+        "target_user_id": {
+          "location": "query",
+          "type": "integer",
+          "description": "The user_id of the target user."
+        },
+        "target_screen_name": {
+          "location": "query",
+          "type": "string",
+          "description": "The screen_name of the target user."
+        }
+      }
+    },
+    "ListFollowedUsers": {
+      "httpMethod": "GET",
+      "uri": "friendships/show.json",
+      "summary": "Returns a cursored collection of user objects for every user the specified user is following (otherwise known as their 'friends').",
+      "parameters": {
+        "user_id": {
+          "location": "query",
+          "type": "integer",
+          "description": "The ID of the user for whom to unfollow."
+        },
+        "screen_name": {
+          "location": "query",
+          "type": "string",
+          "description": "The screen name of the user for whom to unfollow."
+        },
+        "cursor": {
+          "location": "query",
+          "type": "integer",
+          "description": "Causes the list of connections to be broken into pages of no more than 20 records at a time. The number of IDs returned is not guaranteed to be 5000 as suspended users are filtered out after connections are queried. If no cursor is provided, a value of -1 will be assumed, which is the first 'page.'"
+        },
+        "skip_status": {
+          "location": "query",
+          "type": "boolean",
+          "description": "When set to true statuses will not be included in the returned user objects."
+        },
+        "include_user_entities": {
+          "location": "query",
+          "type": "boolean",
+          "description": "The user object entities node will be disincluded when set to false."
+        }
+      }
+    },
+    "GetUsers": {
+      "httpMethod": "POST",
+      "uri": "users/lookup.json",
+      "summary": "Returns fully-hydrated user objects for up to 100 users per request, as specified by comma-separated values passed to the user_id and/or screen_name parameters.",
+      "parameters": {
+        "screen_name": {
+          "location": "query",
+          "type": "array",
+          "maxItems": "100",
+          "filters": [{
+            "method": "implode",
+            "args": [",", "@value"]
+          }],
+          "description": "An array of screen names, up to 100 are allowed in a single request."
+        },
+        "user_id": {
+          "location": "query",
+          "type": "array",
+          "maxItems": "100",
+          "filters": [{
+            "method": "implode",
+            "args": [",", "@value"]
+          }],
+          "description": "An array of user IDs, up to 100 are allowed in a single request."
+        },
+        "include_entities": {
+          "location": "query",
+          "type": "boolean",
+          "description": "The entities node will be disincluded when set to false."
+        }
+      }
+    },
+    "ListAddMember": {
+      "httpMethod": "POST",
+      "uri": "lists/members/create.json",
+      "summary": "Add a member to a list. The authenticated user must own the list to be able to add members to it. Note that lists can't have more than 500 members.",
+      "parameters": {
+        "list_id": {
+          "location": "query",
+          "type": "integer",
+          "description": "The numerical id of the list."
+        },
+        "slug": {
+          "location": "query",
+          "type": "string",
+          "description": "You can identify a list by its slug instead of its numerical id. If you decide to do so, note that you'll also have to specify the list owner using the owner_id or owner_screen_name parameters."
+        },
+        "user_id": {
+          "location": "query",
+          "type": "integer",
+          "description": "The ID of the user for whom to return results for. Helpful for disambiguating when a valid user ID is also a valid screen name."
+        },
+        "screen_name": {
+          "location": "query",
+          "type": "string",
+          "description": "The screen name of the user for whom to return results for. Helpful for disambiguating when a valid screen name is also a user ID."
+        },
+        "owner_id": {
+          "location": "query",
+          "type": "integer",
+          "description": "The user ID of the user who owns the list being requested by a slug."
+        },
+        "owner_screen_name": {
+          "location": "query",
+          "type": "string",
+          "description": "The screen name of the user who owns the list being requested by a slug."
+        }
+      }
+    },
+    "ShowUser": {
+      "httpMethod": "GET",
+      "uri": "users/show.json",
+      "summary": "Returns a variety of information about the user specified by the required user_id or screen_name parameter. The author's most recent Tweet will be returned inline when possible.",
+      "parameters": {
+        "user_id": {
+          "location": "query",
+          "type": "integer",
+          "description": "The ID of the user for whom to return results for."
+        },
+        "screen_name": {
+          "location": "query",
+          "type": "string",
+          "description": "The screen name of the user for whom to return results for."
+        },
+        "include_entities": {
+          "location": "query",
+          "type": "boolean",
+          "description": "The entities node will be disincluded when set to false."
+        }
+      }
+    }
+  }
+}

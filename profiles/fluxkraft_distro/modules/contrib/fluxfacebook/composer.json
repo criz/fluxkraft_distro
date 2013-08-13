@@ -1,0 +1,26 @@
+{
+  "name": "drupal/fluxfacebook",
+  "type": "drupal-module",
+  "description": "Provides integration for the Facebook Graph API and query language.",
+  "homepage": "http://drupal.org/project/fluxfacebook",
+  "license": "GPL-2.0",
+  "authors": [
+    {
+      "name": "Wolfgang Ziegler",
+      "email": "nuppla@zites.net",
+      "role": "Project Lead"
+    },
+    {
+      "name": "Sebastian Siemssen",
+      "email": "fubhy@fubhy.com",
+      "role": "Developer"
+    }
+  ],
+  "support": {
+    "issues": "http://drupal.org/project/issues/fluxfacebook"
+  },
+  "require": {
+    "php": ">=5.3.2",
+    "guzzle/guzzle": "dev-master"
+  }
+}

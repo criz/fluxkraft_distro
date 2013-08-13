@@ -1,0 +1,38 @@
+<?php
+
+/**
+ * @file
+ * fluxkraft rules install file.
+ */
+
+/**
+ * Implementation of hook_schema_alter().
+ */
+function fluxkraft_rules_schema_alter(&$schema) {
+  // Add an uid column to the rules module to allow storing per user rules.
+  if (isset($schema['rules_config'])) {
+    $schema['rules_config']['fields']['uid'] = array(
+      'description' => 'The user.uid of the user who owns the config - added by fluxkraft_rules.module.',
+      'type' => 'int',
+      'not null' => FALSE,
+    );
+  }
+}
+
+/**
+ * Implementation of hook_install().
+ */
+function fluxkraft_rules_install() {
+  db_add_field('rules_config', 'uid', array(
+    'description' => 'The user.uid of the user who owns the config.',
+    'type' => 'int',
+    'not null' => FALSE,
+  ));
+}
+
+/**
+ * Implementation of hook_uninstall().
+ */
+function fluxkraft_rules_uninstall() {
+  db_drop_field('rules_config', 'uid');
+}

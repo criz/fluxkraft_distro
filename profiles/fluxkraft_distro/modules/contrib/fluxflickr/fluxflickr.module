@@ -1,0 +1,41 @@
+<?php
+
+/**
+ * @file
+ * Main module file.
+ */
+
+/**
+ * Implements hook_rules_category_info().
+ */
+function fluxflickr_rules_category_info() {
+  return array(
+    // Use the same icon as for the service plugin.
+    'fluxflickr' => array(
+      'label' => t('Flickr'),
+    ) + fluxservice_get_service_icon_info('fluxflickr'),
+  );
+}
+
+/**
+ * Implements hook_fluxservice_plugin_directory().
+ */
+function fluxflickr_fluxservice_plugin_directory() {
+  return 'lib/Drupal/fluxflickr/Plugin';
+}
+
+/**
+ * Metadata getter callback for fluxflickr_photo.
+ */
+function fluxflickr_photo_metadata_get_size($data, array $options, $name, $type, $info) {
+  $account = $data->getAccount();
+  $client = $account->client();
+  $response = $client->getSizes(array('photo_id' => $data->id, 'format' => 'json'));
+  $sizes = $response['sizes']['size'];
+  foreach ($sizes as $size) {
+    if ($size['label'] == $info['label']) {
+      return $size;
+    }
+  }
+  return array();
+}

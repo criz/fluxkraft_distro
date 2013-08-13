@@ -1,0 +1,11 @@
+header[role="banner"] {
+  .primary-links {
+    @extend %menu-base;
+    a:hover,
+    a:active,
+    a.active {
+      font-weight: normal;
+      text-decoration: underline;
+    }
+  }
+}

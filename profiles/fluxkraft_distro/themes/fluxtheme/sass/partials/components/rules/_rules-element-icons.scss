@@ -1,0 +1,115 @@
+@import "compass/css3/transform";
+
+.fluxkraft-rules-condition,
+.fluxkraft-rules-event,
+.fluxkraft-rules-action {
+  float: left;
+  display: block;
+}
+
+.fluxkraft-rules-icon {
+  color: $white;
+  font-size: 70px;
+  background: $cyan-light;
+  display: block;
+  float: left;
+  margin-right: 4px;
+  width: 80px;
+  height: 80px;
+  text-align: center;
+  vertical-align: middle;
+  @include single-transition(background-color, 0.2s, ease-in);
+  &:hover {
+    background-color: darken($cyan-light, 5%);
+  }
+  span {
+    font-size: 70px;
+    line-height: 84px;
+    display: block;
+    height: 80px;
+    width: 80px;
+  }
+  .fluxkraft-rules-icon-default {
+    line-height: 80px;
+    text-transform: uppercase;
+    font-size: 50px;
+    &:before {
+      content: attr(data-symbol);
+      speak: none;
+    }
+  }
+  .fluxkraft-rules-icon-font {
+    line-height: 84px;
+    font-size: 60px;
+  }
+  .fluxkraft-rules-icon-file {
+    background-size: 66px;
+    background-position: 50% 50%;
+    background-repeat: no-repeat;
+    img {
+      max-width: 66px;
+      max-height: 66px;
+      background: none;
+      border: 0;
+      margin-top: 7px;
+    }
+  }
+}
+
+.fluxkraft-rules-event .fluxkraft-rules-icon {
+  @include border-radius(10px);
+}
+
+.fluxkraft-rules-condition {
+  padding-top: 15px;
+  height: 80px;
+  width: 80px;
+  text-align: center;
+  .fluxkraft-rules-icon {
+    margin-left: 12px;
+    width: 50px;
+    height: 50px;
+    @include rotate(45deg);
+    span {
+      @include rotate(-45deg);
+      text-align: center;
+    }
+    .fluxkraft-rules-icon-default {
+      font-size: 30px;
+      line-height: 37px;
+      display: block;
+    }
+    .fluxkraft-rules-icon-font {
+      font-size: 40px;
+      line-height: 40px;
+    }
+    .fluxkraft-rules-icon-file {
+      background-size: 42px;
+      margin-top: 0;
+      padding-top: 0;
+      img {
+        max-width: 40px;
+        max-height: 40px;
+        margin-top: 0px;
+        position: relative;
+        top: -29px;
+      }
+    }
+  }
+}
+.fluxkraft-rules-action .fluxkraft-rules-icon {
+  @include border-radius(80px);
+}
+
+.fluxkraft-rules-actions,
+.fluxkraft-rules-events,
+.fluxkraft-rules-conditions {
+  @extend %clearfix;
+  float: left;
+  .fluxkraft-rules-element-type {
+    display: block;
+    color: $grey;
+    text-align: center;
+    margin-bottom: .5 * $rowHeight;
+  }
+}

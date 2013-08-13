@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the fluxkraft layout feature.
+ */
+
+include_once 'fluxkraft_layout.features.inc';

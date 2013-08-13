@@ -1,0 +1,11 @@
+name = "Hurricane"
+description = Extendable and CSS styleable AJAX progress indicators.
+core = "7.x"
+package = "User interface"
+
+; Information added by drupal.org packaging script on 2013-03-11
+version = "7.x-1.0-beta1"
+core = "7.x"
+project = "hurricane"
+datestamp = "1363012812"
+

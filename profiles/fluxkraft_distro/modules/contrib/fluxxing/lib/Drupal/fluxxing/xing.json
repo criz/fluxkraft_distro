@@ -1,0 +1,104 @@
+{
+  "name": "Xing",
+  "apiVersion": "1.0",
+  "description": "Xing API",
+  "operations": {
+    "GetMe": {
+      "httpMethod": "GET",
+      "uri": "users/me",
+      "summary": "Returns details about the authorised user."
+    },
+    "GetUser": {
+      "httpMethod": "GET",
+      "uri": "users/{id}",
+      "summary": "Returns details about the specified user.",
+      "parameters": {
+        "id": {
+          "location": "uri",
+          "type": "string",
+          "description": "The ID of the user for whom to return results for.",
+          "required": true
+        },
+        "fields": {
+          "location": "query",
+          "type": "array",
+          "description": "List of user attributes to return. If this parameter is not used, the full user profile will be returned.",
+          "filters": [{
+            "method": "implode",
+            "args": [",", "@value"]
+          }]
+        }
+      }
+    },
+    "GetContacts": {
+      "httpMethod": "GET",
+      "uri": "users/{user_id}/contacts",
+      "summary": "Returns the contacts of the given user.",
+      "parameters": {
+        "user_id": {
+          "location": "uri",
+          "type": "string",
+          "description": "The ID of the user for whom to return results for.",
+          "default": "me"
+        },
+        "user_fields": {
+          "location": "query",
+          "type": "array",
+          "description": "List of user attributes to return. If this parameter is not used, only the ID will be returned.",
+          "filters": [{
+            "method": "implode",
+            "args": [",", "@value"]
+          }]
+        },
+        "offset": {
+          "location": "query",
+          "type": "integer",
+          "description": "Offset. Must be zero or a positive number. Default: 0"
+        },
+        "order_by": {
+          "location": "query",
+          "type": "integer",
+          "description": "Field that determines the ascending order of the returned list. Currently only supports \"last_name\". Defaults to \"id\""
+        },
+        "limit": {
+          "location": "query",
+          "type": "integer",
+          "description": "The ID of the user for whom to return results for."
+        }
+      }
+    },
+    "SendMessage": {
+      "httpMethod": "POST",
+      "uri": "users/{user_id}/conversations",
+      "summary": "Starts a conversation by sending the passed message to the recipients.",
+      "parameters": {
+        "user_id": {
+          "location": "uri",
+          "type": "string",
+          "description": "The ID of the user for whom to send the message.",
+          "default": "me"
+        },
+        "subject": {
+          "location": "query",
+          "type": "string",
+          "description": "Subject for conversation. Max. size is 32 UTF-8 characters."
+        },
+        "content": {
+          "location": "query",
+          "type": "string",
+          "description": "Message text with max size of 16384 UTF-8 characters."
+        },
+        "recipient_ids": {
+          "location": "query",
+          "type": "array",
+          "description": "Comma-separated list of recipients. There must be between one and 10 recipients. Sender cannot be included.",
+          "filters": [{
+            "method": "implode",
+            "args": [",", "@value"]
+          }]
+        }
+      }
+    }
+  }
+}
+

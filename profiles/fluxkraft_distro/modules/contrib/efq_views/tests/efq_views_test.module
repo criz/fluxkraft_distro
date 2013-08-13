@@ -1,0 +1,103 @@
+<?php
+
+/**
+ * @file
+ * Provides info about the efq_views test entity.
+ */
+
+/**
+ * Implements hook_entity_info().
+ */
+function efq_views_test_entity_info() {
+  $info = array(
+    'efq_views_test' => array(
+      'label' => t('EFQ Views test'),
+      'base table' => 'efq_views_test',
+      'entity class' => 'EFQViewsTestEntityClass',
+      'controller class' => 'EntityAPIController',
+      'uri callback' => 'entity_class_uri',
+      'load hook' => 'example_task_load',
+      'fieldable' => TRUE,
+      'entity keys' => array(
+        'id' => 'eid',
+        'bundle' => 'ebundle',
+        'label' => 'elabel',
+      ),
+      'bundle keys' => array(
+        'bundle' => 'bundle',
+      ),
+      'bundles' => array(),
+    ),
+  );
+  $info['efq_views_test']['bundles']['bundle1']['label'] = t('Bundle 1');
+  $info['efq_views_test']['bundles']['bundle2']['label'] = t('Bundle 2');
+  return $info;
+}
+
+/**
+ * Implements hook_entity_property_info().
+ */
+function efq_views_test_entity_property_info_alter(&$info) {
+  $properties = &$info['efq_views_test']['properties'];;
+  $properties['language'] = array(
+    'type' => 'token',
+    'setter callback' => 'entity_property_verbatim_set',
+    'options list' => 'entity_metadata_language_list',
+    'schema field' => 'language',
+  ) + $properties['language'];
+  $properties['test_boolean']['type'] = 'boolean';
+  $properties['test_decimal']['type'] = 'decimal';
+  $properties['test_decimal']['getter callback'] = 'efq_views_test_decimal';
+  $properties['test_duration']['type'] = 'duration';
+  $properties['test_date']['type'] = 'date';
+}
+
+function efq_views_test_bundles() {
+  return array('test1', 'test2');
+}
+
+function efq_views_test_decimal($entity, array $options, $name) {
+  return $entity->test_decimal / 100;
+}
+
+class EFQViewsTestEntityClass extends Entity {
+  public function __construct(array $values = array(), $entityType = NULL) {
+    parent::__construct($values, 'efq_views_test');
+  }
+
+  /**
+   * Override buildContent() to add the username to the output.
+   */
+  public function buildContent($view_mode = 'full', $langcode = NULL) {
+    $content['user'] = array(
+      '#markup' => "User: ". format_username(user_load($this->uid)),
+    );
+    return entity_get_controller($this->entityType)->buildContent($this, $view_mode, $langcode, $content);
+  }
+
+  /**
+   * Specifies the default label, which is picked up by label() by default.
+   */
+  protected function defaultLabel() {
+    $type = entity_test_get_types($this->name);
+    return $type->label;
+  }
+
+  /**
+   * Specifies the default uri, which is picked up by uri() by default.
+   */
+  protected function defaultURI() {
+    return array('path' => 'custom/' . $this->identifier());
+  }
+}
+
+/**
+ * Implements hook_query_TAG_alter().
+ *
+ * @see EFQViewsQueryTagsTestCase
+ */
+function efq_views_test_query_test_query_tag_alter($query) {
+  global $efq_test_query;
+
+  $efq_test_query = $query;
+}

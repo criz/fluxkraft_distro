@@ -1,0 +1,121 @@
+{
+  "name": "LinkedIn",
+  "apiVersion": "1.0",
+  "description": "LinkedIn API",
+  "operations": {
+    "GetMe": {
+      "httpMethod": "GET",
+      "uri": "people/~:(id,first-name,last-name,headline,picture-url)?format=json",
+      "summary": "Returns details about the authorised user in json format."
+    },
+    "GetMyConnections": {
+      "httpMethod": "GET",
+      "uri": "people/~/connections:(id,first-name,last-name,headline,picture-url)?format=json",
+      "summary": "Returns connections of the authorised user in json format."
+    },
+    "GetMemberById": {
+      "httpMethod": "GET",
+      "uri": "people/id={id}:({fields})",
+      "summary": "Returns details about the specified user.",
+      "parameters": {
+        "id": {
+          "location": "uri",
+          "type": "string",
+          "description": "The ID of the user for whom to return results for.",
+          "required": true
+        },
+        "fields": {
+          "location": "uri",
+          "type": "array",
+          "description": "Fields for the query."
+        },
+        "format": {
+          "location": "query",
+          "type": "string",
+          "description": "Desired output format (json/xml)."
+        }
+      }
+    },
+    "GetConnectionsById": {
+      "httpMethod": "GET",
+      "uri": "people/id={id}/connections:({fields})",
+      "summary": "Returns the contacts of the given user.",
+      "parameters": {
+        "id": {
+          "location": "uri",
+          "type": "string",
+          "description": "The ID of the user for whom to return connections for.",
+          "required": true
+        },
+        "fields": {
+          "location": "uri",
+          "type": "array",
+          "description": "Fields for the query."
+        },
+        "format": {
+          "location": "query",
+          "type": "string",
+          "description": "Desired output format (json/xml)."
+        },
+        "start": {
+          "location": "query",
+          "type": "string",
+          "description": "Starting location of the result set. Defaults to 0."
+        },
+        "count": {
+          "location": "query",
+          "type": "string",
+          "description": "The number of results to return. Defaults to 500."
+        }
+      }
+    },
+    "SendMessage": {
+      "httpMethod": "POST",
+      "uri": "people/~/mailbox",
+      "summary": "Sends a message to a recipient.",
+      "data": {
+        "xmlRoot": {
+          "name": "mailbox-item"
+        }
+      },
+      "parameters": {
+        "recipients": {
+          "location": "xml",
+          "type": "array",
+          "name": "recipients",
+          "items": {
+            "name": "recipient",
+            "type": "array",
+            "items": {
+              "name": "person",
+              "type": "array",
+              "items": {
+                "name": "path",
+                "data": {
+                  "xmlAttribute": "path"
+                }
+              }
+            }
+
+          },
+          "description": "The recipients of the message.",
+          "required": true
+        },
+        "subject": {
+          "location": "xml",
+          "name": "subject",
+          "type": "string",
+          "description": "The subject of the message",
+          "required": true
+        },
+        "body": {
+          "location": "xml",
+          "name": "body",
+          "type": "string",
+          "description": "The body of the message.",
+          "required": true
+        }
+      }
+    }
+  }
+}

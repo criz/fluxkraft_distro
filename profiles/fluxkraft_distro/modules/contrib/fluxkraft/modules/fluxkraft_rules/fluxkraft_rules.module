@@ -1,0 +1,139 @@
+<?php
+
+/**
+ * @file
+ * Main module file.
+ */
+
+/**
+ * Implements hook_menu().
+ */
+function fluxkraft_rules_menu() {
+  // Reaction rules UI menu entries.
+  $base_path_menu = 'fluxkraft/%user/rules';
+  $base_path = 'fluxkraft/rules';
+  $items = fluxkraft_rules_ui()->config_menu($base_path);
+
+  $items[$base_path_menu] = array(
+    'title' => 'Rules',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('fluxkraft_rules_overview_page', $base_path, 1),
+    'description' => 'Manage fluxkraft rules.',
+    'access arguments' => array('configure personal rules'),
+    'file' => 'fluxkraft_rules.pages.inc',
+  );
+  $items[$base_path_menu . '/add'] = array(
+    'title' => 'Add new rule',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('fluxkraft_rules_add_reaction_rule', $base_path, 1),
+    'access arguments' => array('configure personal rules'),
+    'type' => MENU_LOCAL_ACTION,
+    'file' => 'fluxkraft_rules.pages.inc',
+    'weight' => 0,
+  );
+  $items[$base_path_menu . '/import'] = array(
+    'title' => 'Import rule',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('fluxkraft_rules_ui_import_form', $base_path, 1),
+    'access arguments' => array('configure personal rules'),
+    'file' => 'fluxkraft_rules.pages.inc',
+    'type' => MENU_LOCAL_ACTION,
+  );
+
+  // Some general rules menu items.
+  $items['fluxkraft/rules'] = array(
+    'title' => 'My rules',
+    'page callback' => 'fluxkraft_rules_overview_page_current_user',
+    'description' => 'Manage reaction rules.',
+    'access arguments' => array('configure personal rules'),
+    'file' => 'fluxkraft_rules.pages.inc',
+    'menu_name' => 'main-menu',
+  );
+
+  return $items;
+}
+
+/**
+ * Returns an instance of the rules UI controller customized for fluxkraft.
+ *
+ * See the rules_admin.module for example usage.
+ *
+ * @return FluxkraftRulesUIController
+ */
+function fluxkraft_rules_ui() {
+  $static = drupal_static(__FUNCTION__);
+  if (!isset($static)) {
+    $static = new FluxkraftRulesUIController();
+  }
+  return $static;
+}
+
+/**
+ * Implements hook_permission().
+ */
+function fluxkraft_rules_permission() {
+  return array(
+    'configure personal rules' => array(
+      'title' => t('Configure personal rules'),
+    ),
+  );
+}
+
+/**
+ * Implements hook_permission().
+ */
+function fluxkraft_rules_rules_config_access($op, $rules_config = NULL, $account = NULL) {
+  $account = isset($account) ? $account : $GLOBALS['user'];
+  // Instead of returning FALSE return nothing, so others still can grant
+  // access.
+  if (isset($rules_config) && $rules_config->owner == 'fluxkraft_rules' && $rules_config->uid == $account->uid && user_access('configure personal rules', $account)) {
+    // Rules does not support access checks for non-current users.
+    if ($op == 'view' || ($account->uid == $GLOBALS['user']->uid && $rules_config->access())) {
+      return TRUE;
+    }
+  }
+}
+
+/**
+ * Implements hook_theme().
+ */
+function fluxkraft_rules_theme() {
+  return array(
+    'rules_config__fluxkraft_rules_teaser' => array(
+      'render element' => 'elements',
+      'template' => 'rules-config--fluxkraft-teaser',
+    ),
+    'fluxkraft_rules_category_icon' => array(
+      'render element' => 'element',
+      'file' => 'fluxkraft_rules.theme.inc',
+    ),
+    'fluxkraft_rules_category_info' => array(
+      'render element' => 'element',
+      'file' => 'fluxkraft_rules.theme.inc',
+    ),
+  );
+}
+
+/**
+ * Implements hook_preprocess_entity().
+ *
+ * Process variables for rules-config--fluxkraft-teaser.tpl.php.
+ */
+function fluxkraft_rules_preprocess_entity(&$variables) {
+  if ($variables['entity_type'] == 'rules_config' && $variables['view_mode'] == 'fluxkraft_rules_teaser') {
+    fluxkraft_rules_ui()->preProcessTemplateRulesConfigTeaser($variables['elements']['#entity'], $variables);
+    $variables['theme_hook_suggestions'][] = 'rules_config__' . $variables['view_mode'];
+  }
+}
+
+/**
+ * Implements hook_process_entity().
+ *
+ * Process variables for rules-config--fluxkraft-teaser.tpl.php.
+ */
+function fluxkraft_rules_process_entity(&$variables) {
+  if ($variables['entity_type'] == 'rules_config' && $variables['view_mode'] == 'fluxkraft_rules_teaser') {
+
+    fluxkraft_rules_ui()->processTemplateRulesConfigTeaser($variables['elements']['#entity'], $variables);
+  }
+}

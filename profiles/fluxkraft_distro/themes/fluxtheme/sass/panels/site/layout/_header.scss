@@ -1,0 +1,62 @@
+// Header
+
+[role="banner"] .l-header {
+  @extend %container;
+  position: relative;
+
+  height: 100%;
+
+  .site-branding__logo {
+    display: block;
+    float: none;
+    margin: 0 auto;
+    top: .5 * $rowHeight;
+    margin-bottom: .5 * $rowHeight;
+  }
+
+  .site-branding__name,
+  .l-navigation .links {
+    display: block;
+    float: none;
+    text-align: center;
+    margin-bottom: .5 * $rowHeight;
+  }
+
+  .region-header {
+    @include breakpoint('l-panels-beside') {
+      @include span-columns(7 omega);
+    }
+  }
+ 
+  @include breakpoint($l-tablet-up) {
+    height: 75px;
+
+    .site-branding__logo {
+      display: inline-block;
+      float: left;
+      margin: 0 1em 0;
+      top: -8px;
+    }
+
+    .site-branding__name,
+    .l-navigation .links {
+      display: inline-block;
+      text-align: right;
+      margin-bottom: 0;
+    }
+
+    .site-branding__name {
+      float: left;
+    }
+
+    .l-navigation .links {
+      float: right;
+    }
+
+    .l-navigation ul {
+      float: right;
+      text-align: right;
+      margin-top: 25px;
+    }
+  }
+}

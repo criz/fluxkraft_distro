@@ -1,0 +1,25 @@
+<?php
+
+/**
+ * @file
+ * Main module file.
+ */
+
+/**
+ * Implements hook_rules_category_info().
+ */
+function fluxtwitter_rules_category_info() {
+  return array(
+    // Use the same icon as for the service plugin.
+    'fluxtwitter' => array(
+      'label' => t('Twitter'),
+    ) + fluxservice_get_service_icon_info('fluxtwitter'),
+  );
+}
+
+/**
+ * Implements hook_fluxservice_plugin_directory().
+ */
+function fluxtwitter_fluxservice_plugin_directory() {
+  return 'lib/Drupal/fluxtwitter/Plugin';
+}

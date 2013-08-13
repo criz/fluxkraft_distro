@@ -1,0 +1,15 @@
+name = "Rules Tests"
+description = "Support module for the Rules tests."
+package = Testing
+core = 7.x
+files[] = rules_test.rules.inc
+files[] = rules_test.rules_defaults.inc
+hidden = TRUE
+
+
+; Information added by drush on 2013-08-13
+version = "7.x-2.3+20-dev"
+core = "7.x"
+project = "rules"
+datestamp = "1376420231"
+

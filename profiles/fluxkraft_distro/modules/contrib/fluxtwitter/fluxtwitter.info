@@ -1,0 +1,15 @@
+name = flux Twitter
+description = Provides integration for the Twitter API
+package = fluxkraft
+core = 7.x
+php = 5.3
+dependencies[] = fluxservice
+dependencies[] = rules_scheduler
+
+
+; Information added by drush on 2013-08-13
+version = "7.x-1.0-beta1+4-dev"
+core = "7.x"
+project = "fluxtwitter"
+datestamp = "1376420227"
+

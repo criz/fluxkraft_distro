@@ -1,0 +1,65 @@
+<?php
+
+/**
+ * @file
+ * fluxkraft tests.
+ */
+
+/**
+ * Tests per-user rules.
+ */
+class fluxkraftRulesUserRules extends DrupalWebTestCase {
+
+  public static function getInfo() {
+    return array(
+      'name' => 'Per-user rules',
+      'description' => 'Tests handling per user-rules.',
+      'group' => 'fluxkraft',
+    );
+  }
+
+  function setUp() {
+    // Run tests with the install profile of the host install.
+    $this->profile = variable_get('install_profile');
+    parent::setUp('fluxkraft_rules');
+    $this->node = $this->drupalCreateNode(array('type' => 'page'));
+    $this->uid = $GLOBALS['user']->uid;
+    RulesLog::logger()->clear();
+    variable_set('rules_debug_log', 1);
+  }
+
+  /**
+   * Tests per-user rules API usage.
+   */
+  function testperUserRulesAPI() {
+    $rule = rules_reaction_rule();
+    $rule->event('node_presave')
+      ->condition('data_is', array('data:select' => 'node:status', 'value' => 0))
+      ->condition('data_is', array('data:select' => 'node:type', 'value' => 'page'))
+      ->action('data_set', array('data:select' => 'node:status', 'value' => 1));
+    $rule->integrityCheck()->save();
+
+    // Make sure loading it works as usual.
+    $rule = rules_config_load($rule->name);
+    $this->assertTrue($rule, 'Rule has been loaded.');
+    // Try loading site-wide rules.
+    $rules = rules_config_load_multiple(FALSE, array('uid' => NULL));
+    $this->assertTrue(!empty($rules[$rule->name]), 'Site-wide rule has been loaded.');
+    $rules = rules_config_load_multiple(FALSE, array('uid' => $this->uid));
+    $this->assertTrue(empty($rules), 'No per-user rules found.');
+
+    // Make the rule user-specific.
+    $rule->uid = $this->uid;
+    $rule->save();
+    $rules = rules_config_load_multiple(FALSE, array('uid' => $this->uid));
+    $this->assertTrue(!empty($rules[$rule->name]), 'Per-user rule found.');
+
+    // Make sure the per-user rule works.
+    $this->node->status = 0;
+    node_save($this->node);
+    $node = node_load($this->node->nid, NULL, TRUE);
+    // The rule has to publish the node.
+    $this->assertTrue($node->status, 'Rule successfully triggered and executed');
+    RulesLog::logger()->checkLog();
+  }
+}

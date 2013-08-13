@@ -1,0 +1,23 @@
+/**
+ * $ACTION-LINKS
+ */
+.action-links {
+  margin-bottom: $rowHeight;
+  @extend %menu-base;
+  li {
+    a {
+      @extend %btnBaseStyles;
+      @extend %btnPrimaryBase;
+      @extend %btnSmallStyles;
+      @extend %btnRadiusRound;
+      @extend %btnHoverDarken;
+      padding: .5em;
+      white-space: nowrap;
+      &:before {
+        @include icon-font('\f067');
+        margin-right: .8em;
+        color: #fff;
+      }
+    }
+  }
+}

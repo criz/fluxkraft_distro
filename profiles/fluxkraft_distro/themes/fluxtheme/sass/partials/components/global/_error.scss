@@ -1,0 +1,17 @@
+.section-404,
+.section-403 {
+  h1 {
+    @include font-size(5);
+    text-align: center;
+  }
+
+  .error {
+    text-align: center;
+    margin-top: 8em;
+
+    &:before {
+      @include icon-font('\f06d');
+      @include font-size(20);
+    }
+  }
+}

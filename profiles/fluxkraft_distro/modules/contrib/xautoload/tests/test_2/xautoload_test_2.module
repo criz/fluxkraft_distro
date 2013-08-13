@@ -1,0 +1,73 @@
+<?php
+xautoload()->registerModule(__FILE__);
+
+/**
+ * Implements hook_boot()
+ *
+ * This turns xautoload_test_2 into a boot module.
+ */
+function xautoload_test_2_boot() {
+  _xautoload_test_2_early_boot_observations('boot');
+}
+
+_xautoload_test_2_early_boot_observations('early');
+
+/**
+ * Test the current state, and remember it.
+ */
+function _xautoload_test_2_early_boot_observations($phase = NULL) {
+
+  static $all = array();
+
+  if (!isset($phase)) {
+    $return = $all;
+    foreach ($return as $phase => &$observations) {
+      // Turn callbacks into strings, so they survive json_decode().
+      foreach ($observations['spl_autoload_functions'] as &$callback) {
+        // At this point in time we can be fairly sure
+        // that xautoload_Util is available.
+        $callback = xautoload_Util::callbackToString($callback);
+      }
+    }
+    return $return;
+  }
+
+  // Test that all classes are available immediately at boot time.
+  foreach (array(
+    'Drupal\xautoload_test_2\ExampleClass',
+    'xautoload_test_2_ExampleClass',
+  ) as $class) {
+    $observations[$class] = class_exists($class);
+  }
+
+  // Check variable_get().
+  $observations['xautoload_cache_mode'] = variable_get('xautoload_cache_mode');
+
+  $observations['db_connection_info'] = Database::getConnectionInfo();
+
+  $observations['spl_autoload_functions'] = spl_autoload_functions();
+
+  $all[$phase] = $observations;
+}
+
+/**
+ * Implements hook_menu()
+ */
+function xautoload_test_2_menu() {
+  return array(
+    'xautoload_test_2.json' => array(
+      'page callback' => '_xautoload_test_2_json',
+      'access callback' => TRUE,
+      'type' => MENU_CALLBACK,
+    ),
+  );
+}
+
+/**
+ * Page callback for "xautoload-example/json"
+ */
+function _xautoload_test_2_json() {
+  $all = _xautoload_test_2_early_boot_observations();
+  drupal_json_output($all);
+  exit();
+}

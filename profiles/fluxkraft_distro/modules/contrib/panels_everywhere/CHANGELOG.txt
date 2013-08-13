@@ -1,0 +1,4 @@
+Changelog for Panels Everywhere
+
+Panels Everywhere 7.x -dev
+  Initial port to Drupal 7.

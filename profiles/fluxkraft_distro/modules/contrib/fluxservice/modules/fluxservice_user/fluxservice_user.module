@@ -1,0 +1,78 @@
+<?php
+
+/**
+ * @file
+ * Main module file.
+ */
+
+use Drupal\fluxservice_user\PersonalAccountUIController;
+
+/**
+ * Implements hook_menu().
+ */
+function fluxservice_user_menu() {
+  // Provide personal UI.
+  $items = PersonalAccountUIController::factory('user/%user/service-accounts')
+    ->setBasePathReplacements('%user', 1)
+    ->hook_menu();
+
+  $items['user/%user/service-accounts']['type'] = MENU_LOCAL_TASK;
+  $items['user/%user/service-accounts/add']['tab_root'] = 'user/%';
+  return $items;
+}
+
+/**
+ * Menu system access callback.
+ */
+function fluxservice_user_personal_accounts_access($account) {
+  if (entity_id('user', $GLOBALS['user']) == entity_id('user', $account)) {
+    return user_access('manage own fluxservice accounts');
+  }
+  return user_access('administer fluxservices');
+}
+
+/**
+ * Implements hook_admin_paths().
+ */
+function fluxservice_user_admin_paths() {
+  // The core 'user' module defines some user paths as admin paths. However, we
+  // don't want the service-accounts sub-paths (even the edit/delete ones) to be
+  // opened in the overlay.
+  $paths = array(
+    'user/*/service-accounts/*' => FALSE,
+  );
+  return $paths;
+}
+
+/**
+ * Page callback for the personal accounts overview page.
+ */
+function fluxservice_user_personal_accounts_page($user) {
+  // The "service_accoutns" view of the fluxservice module provides a personal
+  // display we can leverage.
+  return views_embed_view('service_accounts', 'personal', $user->uid);
+}
+
+/**
+ * Implements hook_permission().
+ */
+function fluxservice_user_permission() {
+
+  $permissions['manage own fluxservice accounts'] = array(
+    'title' => t('Manage personal service accounts'),
+    'description' => t('Create and manage your own service accounts.'),
+  );
+  return $permissions;
+}
+
+/**
+ * Implements hook_fluxservice_account_access().
+ */
+function fluxservice_user_fluxservice_account_access($op, $entity = NULL, $account = NULL) {
+  if ($op != 'use' && isset($entity) && $owner = $entity->getOwner()) {
+    $account = !empty($account) ? $account : $GLOBALS['user'];
+    if (user_access('manage own fluxservice accounts', $account) && $owner->uid == $account->uid) {
+      return TRUE;
+    }
+  }
+}

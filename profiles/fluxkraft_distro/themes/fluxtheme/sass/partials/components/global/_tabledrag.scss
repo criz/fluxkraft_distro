@@ -1,0 +1,21 @@
+
+.tabledrag-handle {
+  width: 15px;
+  height: 15px;
+  display: block;
+  margin: .4em 1em 0 0;
+  .handle {
+    width: 15px;
+    height: 15px;
+    background-position: 0 0;
+    margin: 0;
+    padding: 0;
+  }
+}
+
+table .drag {
+  &.odd,
+  &.even {
+    background: $white;
+  }
+}

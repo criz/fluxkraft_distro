@@ -1,0 +1,21 @@
+// Main
+
+.sites {
+  @include set-container-width;
+}
+
+.l-main-content {
+  @extend %container;
+}
+
+[role="main"] {
+  clear: both;
+}
+
+.l-drunomics-default-panel {
+  .l-sidebar-second-container {
+    .panel-pane {
+      @extend %clearfix;
+    }
+  }
+}

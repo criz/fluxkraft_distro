@@ -1,0 +1,55 @@
+// Load all dependencies.
+@import "partials/utility";
+
+.l-drunomics-default-panel {
+  .l-content-header-container,
+  .l-content-footer-container,
+  .l-content-container {
+    @extend %clearfix;
+    @extend %overflow-fix;
+  }
+
+  .l-container-inner,
+  .l-main-content {
+    @extend %container;
+    // margin-top: 2 * $rowHeight;
+  }
+  .l-content-container {
+    padding-bottom: 1em;
+  }
+}
+
+@include breakpoint($l-panels-beside) {
+  .l-drunomics-default-panel {
+    &.with-first-sidebar,
+    &.with-second-sidebar {
+      .l-main-content {
+        @include span-columns(9);
+      }
+    }
+
+    &.with-first-sidebar {
+      .l-main-content {
+        @include omega;
+      }
+    }
+
+    &.with-both-sidebars {
+      .l-main-content {
+        @include span-columns(6);
+      }
+      .l-sidebar-first-container {
+        @include span-columns(3);
+      }
+    }
+
+    .l-sidebar-first-container,
+    .l-sidebar-second-container {
+      @include span-columns(3);
+    }
+
+    .l-sidebar-second-container {
+      @include omega;
+    }
+  }
+}

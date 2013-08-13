@@ -1,0 +1,138 @@
+
+html {
+  font-size: 62.5%; /*sets base font size to 10px, as most browsers have 16px default font size*/
+}
+
+body {
+  line-height: $baseLineHeightpx;
+  line-height: $baseLineHeightrem;
+  font-family: $baseFontFamily;
+  font-size: $baseFontSizepx;
+  font-size: $baseFontSizerem;
+  color: $baseFontColor;
+}
+
+form input,
+form textarea,
+form textfield {
+  font-family: $baseFontFamily;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: $headingsFontFamily;
+  color: $headingColor;
+  font-weight: $headingsFontWeight;
+}
+
+.content-bottom h2 {
+  font-size: 1.846em;
+  margin-bottom: 0.5em;
+}
+
+.main-content h2 {
+  margin-top: 1em;
+  line-height:1.2em;
+}
+
+.node-teaser h2 {
+  margin-top: 0;
+}
+
+.small,
+small {
+  font-size: $smallFontSizepx;
+  font-size: $smallFontSizerem;
+}
+
+p {
+  margin: 0 0 1em 0;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+strong {
+  font-weight: bold;
+}
+
+em {
+  font-style: italic;
+}
+
+underline {
+  text-decoration: underline;
+}
+
+textarea {
+  @include font-size(1.6);
+}
+
+code, tt, pre {
+  padding: 0 1em 1em 1em;
+  background-color: #f6f6f2;
+  font-family: "Bitstream Vera Sans Mono", Monaco, "Lucida Console", monospace;
+  @include font-size(1.1);
+  display: block;
+  margin: 1em 0 1em 0;
+  white-space: pre-wrap;
+}
+
+a,
+a:link,
+a:visited {
+  cursor: pointer;
+  color: $linkColor;
+  text-decoration: none;
+}
+a:active,
+a.active {
+  color: $linkColorActive;
+}
+a.active {
+  font-weight: bold;
+}
+a:hover,
+a:focus {
+  color: $linkColorHover;
+  text-decoration: underline;
+
+  h1 &, h2 &, h3 &, h4 &, h5 &, h6 & {
+    text-decoration: none;
+  }
+}
+
+ul, ol {
+  list-style-image: none;
+  list-style-position: outside;
+  list-style-type: disc;
+  margin-left: .6em;
+  padding-left: .6em;
+
+  li.leaf {
+    list-style-image: none;
+    list-style-type: disc;
+  }
+}
+
+div.messages ul,
+ul.links {
+  list-style-image: none;
+  list-style-type: none;
+  margin-left: 0;
+}
+
+.create-account {
+  h2 {
+    margin-top: 1em;
+    font-size: 1.8em;
+  }
+  .login-register {
+    font-size: 1.4em;
+  }
+}
+
+.field--post-date {
+  color: $grey;
+  font-size: $dateFontSizepx;
+  font-size: $dateFontSizerem;
+}
+

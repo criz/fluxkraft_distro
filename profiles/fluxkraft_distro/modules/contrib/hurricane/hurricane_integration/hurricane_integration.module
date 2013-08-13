@@ -1,0 +1,291 @@
+<?php
+/**
+ * @file
+ * Hurricane drupal integration.
+ */
+
+/**
+ * Implements hook_library_alter().
+ *
+ * Attach hurricane integration files to
+ * drupal.ajax and drupal.autocomplete libraries.
+ */
+function hurricane_integration_library_alter(&$libraries, $module) {
+  global $theme;
+  $enabled_renderers = theme_get_setting('hurricane_renderers', $theme);
+  $enabled = FALSE;
+  if (is_array($enabled_renderers)) {
+    foreach ($enabled_renderers as $key => $value) {
+      if ($value != '0') {
+        $enabled = TRUE;
+      }
+    }
+  }
+  if (!$enabled) {
+    return;
+  }
+  $path = drupal_get_path('module', 'hurricane_integration');
+
+  $settings = hurricane_integration_get_settings($theme);
+  $css = '.ajax-progress div.throbber { ';
+  foreach ($settings as $property => $value) {
+    $css_value = _hurricane_integration_decode($property, $value);
+    if ($css_value) {
+      $css .= $property . ':' . $css_value . ';';
+    }
+  }
+  $css .= " }";
+  if (array_key_exists('drupal.ajax', $libraries)) {
+    $ajax_js = $path . '/hurricane_ajax.js';
+    $ajax_css = $path . '/hurricane_ajax.css';
+    $libraries['drupal.ajax']['js'][$ajax_js] = array(
+      'group' => $libraries['drupal.ajax']['js']['misc/ajax.js']['group'],
+      'weight' => $libraries['drupal.ajax']['js']['misc/ajax.js']['weight'] + 1,
+    );
+    $libraries['drupal.ajax']['css'][$css] = array('type' => 'inline');
+    $libraries['drupal.ajax']['css'][$ajax_css] = array();
+    $libraries['drupal.ajax']['dependencies'][] = array('hurricane', 'hurricane');
+  }
+
+  if (array_key_exists('drupal.autocomplete', $libraries)) {
+    $autocomplete_js = $path . '/hurricane_autocomplete.js';
+    $autocomplete_css = $path . '/hurricane_autocomplete.css';
+    $libraries['drupal.autocomplete']['js']['misc/autocomplete.js']['weight'] = 0;
+    $libraries['drupal.autocomplete']['js'][$autocomplete_js] = array(
+      'group' => $libraries['drupal.autocomplete']['js']['misc/autocomplete.js']['group'],
+      'weight' => $libraries['drupal.autocomplete']['js']['misc/autocomplete.js']['weight'] + 1,
+    );
+    $libraries['drupal.autocomplete']['css'][$css] = array('type' => 'inline');
+    $libraries['drupal.autocomplete']['css'][$autocomplete_css] = array();
+    $libraries['drupal.autocomplete']['dependencies'][] = array('hurricane', 'hurricane');
+  }
+}
+
+/**
+ * Decode a stored property into a css compatible value.
+ *
+ * @param string $property
+ *   the css property
+ * @param mixed $value
+ *   the according value
+ *
+ * @return string
+ *   the css property value
+ */
+function _hurricane_integration_decode($property, $value) {
+  $map = _hurricane_property_map();
+
+  // Return false for non-supported properties.
+  if (!array_key_exists($property, $map)) {
+    return FALSE;
+  }
+
+  if ($property === 'font-family') {
+    // Todo: Important is needed for IE < 9, a better solution may be found.
+    return $value . ' !important';
+  }
+  if (is_array($map[$property])) {
+    // Calculate values for keyword properties.
+    if (!array_key_exists($value, $map[$property])) {
+      return FALSE;
+    }
+    return $map[$property][$value];
+  }
+  elseif ($map[$property] && $property != 'font-weight') {
+    // Return pixel values for numeric properties.
+    return $value . 'px';
+  }
+  elseif ($map[$property] && $property == 'font-weight') {
+    // Return pixel values for numeric properties.
+    return $value;
+  }
+  else {
+    // Return plain property.
+    return $value;
+  }
+}
+
+/**
+ * Retrieve settings for Hurricane.
+ *
+ * @param mixed $theme
+ *   The theme to retrieve settings for.
+ *   Default will return the global theme settings.
+ *
+ * @return mixed
+ *   The current themes Hurricane default settings.
+ */
+function hurricane_integration_get_settings($theme = FALSE) {
+  $settings = hurricane_default_settings();
+  foreach (array_keys($settings) as $key) {
+    $value  = theme_get_setting('hurricane_' . $key, $theme);
+    if ($value) {
+      $settings[$key] = $value;
+    }
+  }
+  return $settings;
+}
+
+/**
+ * Implements hook_form_system_theme_settings_alter().
+ */
+function hurricane_integration_form_system_theme_settings_alter(&$form, &$form_state) {
+  $theme = FALSE;
+  if (preg_match('/^theme_(.+)_settings$/', $form['var']['#value'], $matches)) {
+    $theme = $matches[1];
+  }
+
+  $enabled_renderers = theme_get_setting('hurricane_renderers', $theme);
+  $show_settings = FALSE;
+  if ($enabled_renderers) {
+    foreach ($enabled_renderers as $enabled) {
+      if ($enabled) {
+        $show_settings = TRUE;
+      }
+    }
+  }
+
+  if (!$show_settings) {
+    return;
+  }
+
+  $renderers = hurricane_renderers();
+  $options = array();
+  $parameters = array();
+  if (!array_key_exists('#attached', $form)) {
+    $form['#attached'] = array(
+      'js' => array(),
+      'css' => array(),
+      'library' => array(),
+    );
+  }
+  $form['#attached']['library'][] = array('hurricane', 'hurricane');
+  foreach ($renderers as $id => $info) {
+    if (array_key_exists($id, $enabled_renderers) && $enabled_renderers[$id]) {
+      $parameters[$id] = $info['parameters'];
+      $options[$id] = $info['label'];
+      foreach (array('js', 'css', 'dependencies') as $type) {
+        if (array_key_exists($type, $info)) {
+          $key = ($type == 'dependencies') ? 'library' : $type;
+          $form['#attached'][$key] = array_merge($form['#attached'][$key], $info[$type]);
+        }
+      }
+    }
+  }
+
+  drupal_add_js(array('hurricane' => array('parameters' => $parameters)), array(
+    'type' => 'setting',
+  ));
+
+  $settings = hurricane_integration_get_settings($theme);
+  $form['hurricane_integration'] = array(
+    '#attached' => array(
+      'js' => array(
+        drupal_get_path('module', 'hurricane_integration') . '/hurricane_integration_admin.js',
+      ),
+      'css' => array(
+        drupal_get_path('module', 'hurricane_integration') . '/hurricane_ajax.css',
+        drupal_get_path('module', 'hurricane_integration') . '/hurricane_integration_admin.css',
+      ),
+      'library' => array(
+        array('system', 'farbtastic'),
+        array('system', 'ui.slider'),
+      ),
+    ),
+    '#type' => 'fieldset',
+    '#title' => t('Hurricane integration'),
+    '#description' => t('Configure Hurricane default appearance for this theme.'),
+    'base' => array(
+      '#prefix' => '<div class="hurricane-base">',
+      '#suffix' => '</div>',
+      'hurricane_font-family' => array(
+        '#type' => 'select',
+        '#title' => t('Renderer'),
+        '#default_value' => $settings['font-family'],
+        '#options' => $options,
+      ),
+    ),
+    'properties' => array(
+      '#prefix' => '<div class="hurricane-properties">',
+      '#suffix' => '</div>',
+      'hurricane_preview' => array(
+        '#markup' => '<div class="hurricane-preview"></div>',
+      ),
+      'hurricane_color' => array(
+        '#type' => 'textfield',
+        '#title' => 'color',
+        '#size' => 7,
+        '#default_value' => $settings['color'],
+        '#attributes' => array('class' => array('color')),
+      ),
+      'hurricane_background-color' => array(
+        '#type' => 'textfield',
+        '#title' => 'background-color',
+        '#size' => 7,
+        '#default_value' => $settings['background-color'],
+        '#attributes' => array('class' => array('color')),
+      ),
+    ),
+    'export' => array(
+      '#type' => 'fieldset',
+      '#title' => t('Export'),
+      '#description' => t('Export Hurricane settings.'),
+      '#collapsible' => TRUE,
+      '#collapsed' => TRUE,
+      'css' => array(
+        '#type' => 'fieldset',
+        '#title' => 'CSS',
+        '#collapsible' => TRUE,
+        '#collapsed' => TRUE,
+        'code' => array(
+          '#markup' => '<code lang="css"><pre></pre></code>',
+        ),
+        '#attributes' => array('class' => array('hurricane-css')),
+      ),
+      'info' => array(
+        '#type' => 'fieldset',
+        '#title' => 'theme.info',
+        '#collapsible' => TRUE,
+        '#collapsed' => TRUE,
+        'code' => array(
+          '#markup' => '<code lang="info"><pre></pre></code>',
+        ),
+        '#attributes' => array('class' => array('hurricane-info')),
+      ),
+    ),
+    'hurricane-reset' => array(
+      '#type' => 'submit',
+      '#value' => t('Reset'),
+      '#submit' => array('hurricane_integration_reset_callback'),
+    ),
+  );
+  foreach ($settings as $prop => $value) {
+    if (in_array($prop, array('color', 'background-color', 'font-family'))) {
+      continue;
+    }
+    $form['hurricane_integration']['properties']['hurricane_' . $prop] = array(
+      '#type' => 'textfield',
+      '#title' => $prop,
+      '#default_value' => $value,
+      '#size' => 7,
+      '#attributes' => array('class' => array('slider', 'hurricane-' . $prop)),
+    );
+  }
+}
+
+/**
+ * Reset Hurricane settings to theme default.
+ */
+function hurricane_integration_reset_callback($form, &$form_state) {
+  if ($form_state['triggering_element']['#id'] == 'edit-hurricane-reset') {
+    $vars = variable_get($form_state['values']['var']);
+    foreach ($vars as $key => $value) {
+      if (preg_match('/^hurricane_/', $key) && $key != 'hurricane_renderers') {
+        unset($vars[$key]);
+      }
+    }
+    variable_set($form_state['values']['var'], $vars);
+    drupal_theme_rebuild();
+    system_rebuild_theme_data();
+  }
+}

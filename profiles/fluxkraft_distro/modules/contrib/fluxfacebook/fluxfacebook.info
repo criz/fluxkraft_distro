@@ -1,0 +1,14 @@
+name = flux Facebook
+description = Provides integration for the Facebook Graph API and query language.
+package = fluxkraft
+core = 7.x
+php = 5.3
+dependencies[] = fluxservice
+
+
+; Information added by drush on 2013-08-13
+version = "7.x-1.0-beta1+3-dev"
+core = "7.x"
+project = "fluxfacebook"
+datestamp = "1376420227"
+

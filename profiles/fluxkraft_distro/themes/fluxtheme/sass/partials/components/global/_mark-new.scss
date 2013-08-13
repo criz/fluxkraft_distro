@@ -1,0 +1,11 @@
+mark.new,
+mark.marker {
+  float: right;
+  background: none;
+  color: $black;
+  &:after {
+    @include icon-font('\f005');
+    margin-left: .4em;
+    color: $black;
+  }
+}

@@ -1,0 +1,41 @@
+<?php
+/**
+ * @file
+ * Spin.js integration for hurricane.
+ */
+
+/**
+ * Implements hook_hurricane_renderers().
+ */
+function hurricane_spinjs_hurricane_renderers() {
+  $path = drupal_get_path('module', 'hurricane_spinjs');
+  $spinjs = libraries_get_path('spinjs');
+  if (!file_exists($path . '/spinjs.js')) {
+    $msg = t('<a href="@lib">Spin.js</a> library is not installed. Please <a href="@download">download</a> and copy it into <a href="@folder">a libraries compliant folder</a> and clear all caches.', array(
+      '@lib' => 'http://fgnass.github.com/spin.js/',
+      '@download' => 'http://fgnass.github.com/spin.js/',
+      '@folder' => 'http://drupal.org/node/1440066',
+    ));
+    drupal_set_message($msg, 'error');
+    return array();
+  }
+  return array(
+    'spinjs' => array(
+      'label' => t('Spin.js'),
+      'js' => array(
+        $spinjs . '/spin.js' => array('group' => JS_LIBRARY),
+        $path . '/spinjs.js' => array(),
+      ),
+      'parameters' => array(
+        'color' => array('label' => t('Color'), 'default' => '#3182c5'),
+        'letter-spacing' => array('label' => t('Lines'), 'default' => 15),
+        'line-height' => array('label' => t('Length'), 'default' => 60),
+        'font-size' => array('label' => t('Thickness'), 'default' => 50),
+        'text-indent' => array('label' => t('Corners'), 'default' => 100),
+        'word-spacing' => array('label' => t('Speed'), 'default' => 20),
+        'font-weight' => array('label' => t('Trail'), 'default' => 5),
+        'text-decoration' => array('label' => t('Shadow/HW Accel'), 'default' => 1),
+      ),
+    ),
+  );
+}

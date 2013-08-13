@@ -1,0 +1,18 @@
+2012-10-25: Spin.js
+-------------------------
+- Addes Spin.js (http://fgnass.github.com/spin.js/) renderer.
+- Cleanup and README.txt updates.
+
+2012-10-15: Major Rewrite
+-------------------------
+- Renderers are extendable and based on John Resig's simple javascript
+  inheritance (http://ejohn.org/blog/simple-javascript-inheritance/).
+- drop.js is based on html only, no more Raphaël.
+- Renamed hurricane_renderers to hurricane_raphael.
+- Raphaël dependency moved to hurricane_raphael module.
+- Overall refactoring to use hook_library mechanisms.
+
+
+2012-10-08: Initial Release
+---------------------------
+- Basic functionality, additional renderers and CSS injection done.

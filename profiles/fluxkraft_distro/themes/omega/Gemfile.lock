@@ -1,0 +1,72 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    addressable (2.3.5)
+    breakpoint (2.0.5)
+      compass (>= 0.12.1)
+      sass (>= 3.2.0)
+    chunky_png (1.2.8)
+    color-schemer (0.2.5)
+      compass (~> 0.12)
+      compass-blend-modes (~> 0.0.2)
+    compass (0.12.2)
+      chunky_png (~> 1.2)
+      fssm (>= 0.2.7)
+      sass (~> 3.1)
+    compass-blend-modes (0.0.2)
+      compass
+    compass-normalize (1.4.3)
+      compass (>= 0.12.0)
+    compass-rgbapng (0.2.1)
+      chunky_png (>= 0.8.0)
+      compass (>= 0.10.0)
+    compass-validator (3.0.1)
+    css_parser (1.3.4)
+      addressable
+    ffi (1.9.0)
+    fssm (0.2.10)
+    oily_png (1.1.0)
+      chunky_png (~> 1.2.7)
+    rb-fchange (0.0.6)
+      ffi
+    rb-fsevent (0.9.3)
+    rb-inotify (0.9.0)
+      ffi (>= 0.5.0)
+    sass (3.2.9)
+    sass-globbing (1.1.0)
+      sass (>= 3.1)
+    sassy-strings (0.3.1)
+      compass (>= 0.12.2)
+    singularitygs (1.0.8)
+      breakpoint (>= 2.0.1)
+      compass (>= 0.12.2)
+      sass (>= 3.2.1)
+    susy (1.0.9)
+      compass (>= 0.12.2)
+      sass (>= 3.2.0)
+    toolkit (1.3.3)
+      breakpoint (>= 2.0.2)
+      color-schemer (>= 0.2.3)
+      compass (>= 0.12.2)
+      sassy-strings (>= 0.1)
+      singularitygs (>= 1.0.7)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  breakpoint
+  compass
+  compass-normalize
+  compass-rgbapng
+  compass-validator
+  css_parser
+  oily_png
+  rb-fchange
+  rb-fsevent
+  rb-inotify (~> 0.9)
+  sass
+  sass-globbing
+  singularitygs
+  susy
+  toolkit

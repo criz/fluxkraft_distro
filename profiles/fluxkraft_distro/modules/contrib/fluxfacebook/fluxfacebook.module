@@ -1,0 +1,34 @@
+<?php
+
+/**
+ * @file
+ * Main module file.
+ */
+
+use Drupal\fluxservice\Plugin\Entity\AccountInterface;
+
+/**
+ * Implements hook_rules_category_info().
+ */
+function fluxfacebook_rules_category_info() {
+  return array(
+    // Use the same icon as for the service plugin.
+    'fluxfacebook' => array(
+      'label' => t('Facebook'),
+    ) + fluxservice_get_service_icon_info('fluxfacebook'),
+  );
+}
+
+/**
+ * Implements hook_fluxservice_plugin_directory().
+ */
+function fluxfacebook_fluxservice_plugin_directory() {
+  return 'lib/Drupal/fluxfacebook/Plugin';
+}
+
+/**
+ * Implements hook_fluxfacebook_required_permissions().
+ */
+function fluxfacebook_fluxfacebook_required_permissions(AccountInterface $account) {
+  return array('manage_pages', 'publish_stream');
+}

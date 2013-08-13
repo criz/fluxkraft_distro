@@ -1,0 +1,838 @@
+{
+  "name": "Facebook",
+  "apiVersion": "1",
+  "description": "Facebook Graph API",
+  "baseUrl": "https://graph.facebook.com",
+  "operations": {
+    "GetObject": {
+      "httpMethod": "GET",
+      "uri": "{id}",
+      "responseClass": "GetObjectOutput",
+      "parameters": {
+        "id": {
+          "type": ["string", "integer"],
+          "required": true,
+          "location": "uri"
+        },
+        "metadata": {
+          "type": "boolean",
+          "location": "query"
+        },
+        "fields": {
+          "location": "query",
+          "type": "array",
+          "filters": [{
+            "method": "implode",
+            "args": [",", "@value"]
+          }]
+        }
+      }
+    },
+    "GetMe": {
+      "httpMethod": "GET",
+      "uri": "me",
+      "responseClass": "GetMeOutput",
+      "parameters": {
+        "fields": {
+          "location": "query",
+          "type": "array",
+          "filters": [{
+            "method": "implode",
+            "args": [",", "@value"]
+          }]
+        }
+      }
+    },
+    "GetStatus": {
+      "extends": "GetObject",
+      "responseClass": "GetStatusOutput"
+    },
+    "GetAccounts": {
+      "extends": "GetObject",
+      "uri": "{id}/accounts",
+      "responseClass": "GetAccountsOutput"
+    },
+    "GetAchievements": {
+      "extends": "GetObject",
+      "uri": "{id}/achievements",
+      "responseClass": "GetAchievementsOutput"
+    },
+    "GetActivities": {
+      "extends": "GetObject",
+      "uri": "{id}/activities",
+      "responseClass": "GetActivitiesOutput"
+    },
+    "GetAlbums": {
+      "extends": "GetObject",
+      "uri": "{id}/albums",
+      "responseClass": "GetAlbumsOutput"
+    },
+    "GetAppRequests": {
+      "extends": "GetObject",
+      "uri": "{id}/apprequests",
+      "responseClass": "GetAppRequestsOutput"
+    },
+    "GetBooks": {
+      "extends": "GetObject",
+      "uri": "{id}/books",
+      "responseClass": "GetBooksOutput"
+    },
+    "GetCheckins": {
+      "extends": "GetObject",
+      "uri": "{id}/checkins",
+      "responseClass": "GetCheckinsOutput"
+    },
+    "GetEvents": {
+      "extends": "GetObject",
+      "uri": "{id}/events",
+      "responseClass": "GetEventsOutput"
+    },
+    "GetFamily": {
+      "extends": "GetObject",
+      "uri": "{id}/family",
+      "responseClass": "GetFamilyOutput"
+    },
+    "GetFeed": {
+      "extends": "GetObject",
+      "uri": "{id}/feed",
+      "responseClass": "GetFeedOutput"
+    },
+    "GetFriendLists": {
+      "extends": "GetObject",
+      "uri": "{id}/friendlists",
+      "responseClass": "GetFriendListsOutput"
+    },
+    "GetFriendRequests": {
+      "extends": "GetObject",
+      "uri": "{id}/friendrequests",
+      "responseClass": "GetFriendRequestsOutput"
+    },
+    "GetFriends": {
+      "extends": "GetObject",
+      "uri": "{id}/friends",
+      "responseClass": "GetFriendsOutput"
+    },
+    "GetGames": {
+      "extends": "GetObject",
+      "uri": "{id}/games",
+      "responseClass": "GetGamesOutput"
+    },
+    "GetHome": {
+      "extends": "GetObject",
+      "uri": "{id}/home",
+      "responseClass": "GetHomeOutput"
+    },
+    "GetInbox": {
+      "extends": "GetObject",
+      "uri": "{id}/inbox",
+      "responseClass": "GetInboxOutput"
+    },
+    "GetInterests": {
+      "extends": "GetObject",
+      "uri": "{id}/interests",
+      "responseClass": "GetInterestsOutput"
+    },
+    "GetLikes": {
+      "extends": "GetObject",
+      "uri": "{id}/likes",
+      "responseClass": "GetLikesOutput"
+    },
+    "GetLinks": {
+      "extends": "GetObject",
+      "uri": "{id}/links",
+      "responseClass": "GetLinksOutput"
+    },
+    "GetLocations": {
+      "extends": "GetObject",
+      "uri": "{id}/locations",
+      "responseClass": "GetLocationsOutput"
+    },
+    "GetMovies": {
+      "extends": "GetObject",
+      "uri": "{id}/movies",
+      "responseClass": "GetMoviesOutput"
+    },
+    "GetMusic": {
+      "extends": "GetObject",
+      "uri": "{id}/music",
+      "responseClass": "GetMusicOutput"
+    },
+    "GetMutualFriends": {
+      "extends": "GetObject",
+      "uri": "{id}/mutualfriends",
+      "responseClass": "GetMutualFriendsOutput"
+    },
+    "GetNotes": {
+      "extends": "GetObject",
+      "uri": "{id}/notes",
+      "responseClass": "GetNotesOutput"
+    },
+    "GetNotifications": {
+      "extends": "GetObject",
+      "uri": "{id}/notifications",
+      "responseClass": "GetNotificationsOutput"
+    },
+    "GetOutbox": {
+      "extends": "GetObject",
+      "uri": "{id}/outbox",
+      "responseClass": "GetOutboxOutput"
+    },
+    "GetPaymentTransactions": {
+      "extends": "GetObject",
+      "uri": "{id}/payment_transactions",
+      "responseClass": "GetPaymentTransactionsOutput"
+    },
+    "GetPermissions": {
+      "extends": "GetObject",
+      "uri": "{id}/permissions",
+      "responseClass": "GetPermissionsOutput"
+    },
+    "GetPhotos": {
+      "extends": "GetObject",
+      "uri": "{id}/photos",
+      "responseClass": "GetPhotosOutput"
+    },
+    "GetUploadedPhotos": {
+      "extends": "GetObject",
+      "uri": "{id}/photos/uploaded",
+      "responseClass": "GetUploadedPhotosOutput"
+    },
+    "GetPicture": {
+      "extends": "GetObject",
+      "uri": "{id}/picture",
+      "responseClass": "GetPictureOutput"
+    },
+    "GetPokes": {
+      "extends": "GetObject",
+      "uri": "{id}/pokes",
+      "responseClass": "GetPokesOutput"
+    },
+    "GetPosts": {
+      "extends": "GetObject",
+      "uri": "{id}/posts",
+      "responseClass": "GetPostsOutput"
+    },
+    "GetQuestions": {
+      "extends": "GetObject",
+      "uri": "{id}/questions",
+      "responseClass": "GetQuestionsOutput"
+    },
+    "GetScores": {
+      "extends": "GetObject",
+      "uri": "{id}/scores",
+      "responseClass": "GetScoresOutput"
+    },
+    "GetSharedPosts": {
+      "extends": "GetObject",
+      "uri": "{id}/sharedposts",
+      "responseClass": "GetSharedPostsOutput"
+    },
+    "GetStatuses": {
+      "extends": "GetObject",
+      "uri": "{id}/statuses",
+      "responseClass": "GetStatusesOutput"
+    },
+    "GetSubscribedTo": {
+      "extends": "GetObject",
+      "uri": "{id}/subscribedto",
+      "responseClass": "GetSubscribedToOutput"
+    },
+    "GetSubscribers": {
+      "extends": "GetObject",
+      "uri": "{id}/subscribers",
+      "responseClass": "GetSubscribersOutput"
+    },
+    "GetTagged": {
+      "extends": "GetObject",
+      "uri": "{id}/tagged",
+      "responseClass": "GetTaggedOutput"
+    },
+    "GetTelevision": {
+      "extends": "GetObject",
+      "uri": "{id}/television",
+      "responseClass": "GetTelevisionOutput"
+    },
+    "GetUpdates": {
+      "extends": "GetObject",
+      "uri": "{id}/updates",
+      "responseClass": "GetUpdatesOutput"
+    },
+    "GetVideos": {
+      "extends": "GetObject",
+      "uri": "{id}/videos",
+      "responseClass": "GetVideosOutput"
+    },
+    "PostToFeed": {
+      "httpMethod": "POST",
+      "uri": "{id}/feed",
+      "parameters": {
+        "id": {
+          "type": ["string", "integer"],
+          "required": true,
+          "location": "uri"
+        },
+        "message": {
+          "type": "string",
+          "required": true,
+          "location": "postField"
+        }
+      }
+    }
+  },
+  "models": {
+    "Object": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "location": "json",
+          "type": "integer"
+        }
+      }
+    },
+    "AchievementInstance": {
+      "extends": "Object"
+    },
+    "Album": {
+      "extends": "Object"
+    },
+    "Application": {
+      "extends": "Object"
+    },
+    "Checkin": {
+      "extends": "Object"
+    },
+    "Comment": {
+      "extends": "Object"
+    },
+    "Domain": {
+      "extends": "Object"
+    },
+    "Event": {
+      "extends": "Object"
+    },
+    "FriendList": {
+      "extends": "Object"
+    },
+    "Group": {
+      "extends": "Object"
+    },
+    "Insights": {
+      "extends": "Object"
+    },
+    "Link": {
+      "extends": "Object"
+    },
+    "Message": {
+      "extends": "Object"
+    },
+    "Note": {
+      "extends": "Object"
+    },
+    "Offer": {
+      "extends": "Object"
+    },
+    "Order": {
+      "extends": "Object"
+    },
+    "Page": {
+      "extends": "Object"
+    },
+    "Payment": {
+      "extends": "Object"
+    },
+    "Photo": {
+      "extends": "Object"
+    },
+    "Post": {
+      "extends": "Object"
+    },
+    "Question": {
+      "extends": "Object"
+    },
+    "QuestionOption": {
+      "extends": "Object"
+    },
+    "Review": {
+      "extends": "Object"
+    },
+    "Status": {
+      "extends": "Object"
+    },
+    "Thread": {
+      "extends": "Object"
+    },
+    "User": {
+      "extends": "Object",
+      "properties": {
+        "name": {
+          "location": "json",
+          "type": "string"
+        }
+      }
+    },
+    "Video": {
+      "extends": "Object"
+    },
+    "GetObjectOutput": {
+      "$ref": "Object"
+    },
+    "GetMeOutput": {
+      "$ref": "User"
+    },
+    "GetAccountsOutput": {
+      "location": "json",
+      "type": "onbject",
+      "properties": {
+        "data": {
+          "location": "json",
+          "type": "array",
+          "items": {
+            "$ref": "Application"
+          }
+        }
+      }
+    },
+    "GetAchievementsOutput": {
+      "location": "json",
+      "type": "array",
+      "items": {
+        "$ref": "AchievemtInstance"
+      }
+    },
+    "GetActivitiesOutput": {
+      "location": "json",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "location": "json",
+            "type": "integer"
+          },
+          "name": {
+            "location": "json",
+            "type": "string"
+          },
+          "create_time": {
+            "location": "json",
+            "type": "date"
+          },
+          "category": {
+            "location": "json",
+            "type": "string"
+          }
+        }
+      }
+    },
+    "GetAlbumsOutput": {
+      "location": "json",
+      "type": "array",
+      "items": {
+        "$ref": "Album"
+      }
+    },
+    "GetAppRequestsOutput": {
+
+    },
+    "GetBooksOutput": {
+      "location": "json",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "location": "json",
+            "type": "integer"
+          },
+          "name": {
+            "location": "json",
+            "type": "string"
+          },
+          "created_time": {
+            "location": "json",
+            "type": "date"
+          },
+          "category": {
+            "location": "json",
+            "type": "string"
+          }
+        }
+      }
+    },
+    "GetCheckinsOutput": {
+      "location": "json",
+      "type": "array",
+      "items": {
+        "$ref": "Checkin"
+      }
+    },
+    "GetEventsOutput": {
+      "location": "json",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "location": "json",
+            "type": "integer"
+          },
+          "name": {
+            "location": "json",
+            "type": "string"
+          },
+          "start_time": {
+            "location": "json",
+            "type": "date"
+          },
+          "end_time": {
+            "location": "json",
+            "type": "date"
+          },
+          "location": {
+            "location": "json",
+            "type": "string"
+          },
+          "rsvp_status": {
+            "location": "json",
+            "type": "string"
+          }
+        }
+      }
+    },
+    "GetFamilyOutput": {
+      "location": "json",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "location": "json",
+            "type": "integer"
+          },
+          "name": {
+            "location": "json",
+            "type": "string"
+          },
+          "relationship": {
+            "location": "json",
+            "type": "string"
+          }
+        }
+      }
+    },
+    "GetFeedOutput": {
+      "location": "json",
+      "type": "array",
+      "items": {
+        "$ref": "Post"
+      }
+    },
+    "GetFriendListsOutput": {
+      "location": "json",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "location": "json",
+            "type": "integer"
+          },
+          "name": {
+            "location": "json",
+            "type": "string"
+          }
+        }
+      }
+    },
+    "GetFriendRequestsOutput": {
+      "location": "json",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "to": {
+            "location": "json",
+            "type": "integer"
+          },
+          "from": {
+            "location": "json",
+            "type": "integer"
+          },
+          "message": {
+            "location": "json",
+            "type": "string"
+          },
+          "created_time": {
+            "location": "json",
+            "type": "date"
+          },
+          "unread": {
+            "location": "json",
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "GetFriendsOutput": {
+      "location": "json",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "location": "json",
+            "type": "integer"
+          },
+          "name": {
+            "location": "json",
+            "type": "string"
+          }
+        }
+      }
+    },
+    "GetGamesOutput": {
+      "location": "json",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "location": "json",
+            "type": "integer"
+          },
+          "name": {
+            "location": "json",
+            "type": "string"
+          },
+          "created_time": {
+            "location": "json",
+            "type": "date"
+          },
+          "category": {
+            "location": "json",
+            "type": "string"
+          }
+        }
+      }
+    },
+    "GetGroupsOutput": {
+      "location": "json",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "location": "json",
+            "type": "integer"
+          },
+          "name": {
+            "location": "json",
+            "type": "string"
+          },
+          "version": {
+            "location": "json",
+            "type": "integer"
+          },
+          "administrator": {
+            "location": "json",
+            "type": "boolean"
+          },
+          "bookmark_order": {
+            "location": "json",
+            "type": "integer"
+          }
+        }
+      }
+    },
+    "GetHomeOutput": {
+      "location": "json",
+      "type": "array",
+      "items": {
+        "$ref": "Post"
+      }
+    },
+    "GetInboxOutput": {
+      "location": "json",
+      "type": "array",
+      "items": {
+        "$ref": "Thread"
+      }
+    },
+    "GetInterestsOutput": {
+      "location": "json",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "location": "json",
+            "type": "integer"
+          },
+          "name": {
+            "location": "json",
+            "type": "string"
+          },
+          "create_time": {
+            "location": "json",
+            "type": "date"
+          },
+          "category": {
+            "location": "json",
+            "type": "string"
+          }
+        }
+      }
+    },
+    "GetLikesOutput": {
+      "location": "json",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "location": "json",
+            "type": "integer"
+          },
+          "name": {
+            "location": "json",
+            "type": "string"
+          },
+          "create_time": {
+            "location": "json",
+            "type": "date"
+          },
+          "category": {
+            "location": "json",
+            "type": "string"
+          }
+        }
+      }
+    },
+    "GetLinksOutput": {
+      "location": "json",
+      "type": "array",
+      "items": {
+        "$ref": "Link"
+      }
+    },
+    "GetLocationsOutput": {
+
+    },
+    "GetMoviesOutput": {
+
+    },
+    "GetMusicOutput": {
+
+    },
+    "GetMutualFriendsOutput": {
+
+    },
+    "GetNotesOutput": {
+      "location": "json",
+      "type": "array",
+      "items": {
+        "$ref": "Note"
+      }
+    },
+    "GetNotificationsOutput": {
+
+    },
+    "GetOutboxOutput": {
+      "location": "json",
+      "type": "array",
+      "items": {
+        "$ref": "Message"
+      }
+    },
+    "GetPaymentTransactionsOutput": {
+      "location": "json",
+      "type": "array",
+      "items": {
+        "$ref": "Payment"
+      }
+    },
+    "GetPaymentsOutput": {
+      "location": "json",
+      "type": "array",
+      "items": {
+        "$ref": "Order"
+      }
+    },
+    "GetPermissionsOutput": {
+
+    },
+    "GetPhotosOutput": {
+      "location": "json",
+      "type": "array",
+      "items": {
+        "$ref": "Photo"
+      }
+    },
+    "GetUploadedPhotosOutput": {
+      "location": "json",
+      "type": "array",
+      "items": {
+        "$ref": "Photo"
+      }
+    },
+    "GetPictureOutput": {
+
+    },
+    "GetPokesOutput": {
+
+    },
+    "GetPostsOutput": {
+      "location": "json",
+      "type": "array",
+      "items": {
+        "$ref": "Post"
+      }
+    },
+    "GetQuestionsOutput": {
+      "location": "json",
+      "type": "array",
+      "items": {
+        "$ref": "Question"
+      }
+    },
+    "GetScoresOutput": {
+
+    },
+    "GetSharedPostsOutput": {
+
+    },
+    "GetStatusOutput": {
+      "location": "json",
+      "type": "Status"
+    },
+    "GetStatusesOutput": {
+      "location": "json",
+      "type": "array",
+      "items": {
+        "$ref": "Status"
+      }
+    },
+    "GetSubscribedToOutput": {
+
+    },
+    "GetSubscribersOutput": {
+
+    },
+    "GetTaggedOutput": {
+
+    },
+    "GetTelevisionOutput": {
+
+    },
+    "GetUpdatesOutput": {
+
+    },
+    "GetVideosOutput": {
+      "location": "json",
+      "type": "array",
+      "items": {
+        "$ref": "Video"
+      }
+    }
+  }
+}

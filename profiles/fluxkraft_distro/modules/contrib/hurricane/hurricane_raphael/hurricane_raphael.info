@@ -1,0 +1,13 @@
+name = "Hurricane Raphael"
+description = Raphael renderers for Hurricane.
+core = "7.x"
+package = "User interface"
+dependencies[] = hurricane
+dependencies[] = libraries
+
+; Information added by drupal.org packaging script on 2013-03-11
+version = "7.x-1.0-beta1"
+core = "7.x"
+project = "hurricane"
+datestamp = "1363012812"
+

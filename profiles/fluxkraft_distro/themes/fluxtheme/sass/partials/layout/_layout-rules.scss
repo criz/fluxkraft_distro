@@ -1,0 +1,27 @@
+.l-fluxkraft-rules-overview--sidebar {
+  @include breakpoint($l-tablet-up) {
+    @include span-columns(3 omega);
+  }
+}
+
+.l-fluxkraft-rules-overview--main {
+  @include breakpoint($l-tablet-up) {
+    @include span-columns(9);
+    table td,
+    table th {
+      padding: .5em;
+    }
+  }
+}
+
+.l-fluxkraft-rules-overview--element--aside {
+  @include breakpoint($l-tablet-up) {
+    @include span-columns(2 omega, 9);
+  }
+}
+
+.l-fluxkraft-rules-overview--element--main {
+  @include breakpoint($l-tablet-up) {
+    @include span-columns(7, 9);
+  }
+}

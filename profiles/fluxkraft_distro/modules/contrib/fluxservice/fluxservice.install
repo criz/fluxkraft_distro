@@ -1,0 +1,411 @@
+<?php
+
+/**
+ * @file
+ * Contains (un)installation hooks and schema information.
+ */
+
+/**
+ * Implements hook_schema().
+ */
+function fluxservice_schema() {
+  // Load the uuid.install file so we can invoke the helper function to generate
+  // the uuid field schema definition.
+  module_load_install('uuid');
+
+  $schema['fluxservice_service'] = array(
+    'description' => 'A configured web service instance.',
+    'fields' => array(
+      'uuid' => uuid_schema_field_definition(),
+      'id' => array(
+        'description' => 'The primary identifier of the service instance.',
+        'type' => 'serial',
+        'not null' => TRUE,
+      ),
+      'label' => array(
+        'description' => 'The human-readable label of the service instance.',
+        'type' => 'varchar',
+        'length' => 64,
+        'not null' => TRUE,
+      ),
+      'uid' => array(
+        'description' => 'The user.uid of the user who owns the endpoint.',
+        'type' => 'int',
+        'not null' => FALSE,
+      ),
+      'plugin' => array(
+        'description' => 'The service type (e.g. twitter).',
+        'type' => 'varchar',
+        'length' => 32,
+        'not null' => TRUE,
+      ),
+      'data' => array(
+        'description' => 'Serialized service data (e.g. configuration).',
+        'type' => 'text',
+        'size' => 'big',
+        'serialize' => TRUE,
+        'not null' => TRUE,
+      ),
+      'status' => array(
+        'description' => 'The exportable status of the entity.',
+        'type' => 'int',
+        'not null' => TRUE,
+        // Set the default to ENTITY_CUSTOM without using the constant as it is
+        // not safe to use it at this point.
+        'default' => 0x01,
+        'size' => 'tiny',
+      ),
+      'module' => array(
+        'description' => 'The name of the providing module if the entity has been defined in code.',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => FALSE,
+      ),
+    ),
+    'primary key' => array('id'),
+    'unique keys' => array(
+      'uuid' => array('uuid'),
+    ),
+  );
+
+  $schema['fluxservice_account'] = array(
+    'description' => 'A personal web service account.',
+    'fields' => array(
+      'uuid' => uuid_schema_field_definition(),
+      'id' => array(
+        'description' => 'The primary identifier of the account.',
+        'type' => 'serial',
+        'not null' => TRUE,
+      ),
+      'label' => array(
+        'description' => 'The human-readable label of the account.',
+        'type' => 'varchar',
+        'length' => 64,
+        'not null' => TRUE,
+      ),
+      'uid' => array(
+        'description' => 'The user.uid of the user who owns the account.',
+        'type' => 'int',
+        'not null' => FALSE,
+      ),
+      'plugin' => array(
+        'description' => 'The account type (e.g. twitter).',
+        'type' => 'varchar',
+        'length' => 32,
+        'not null' => TRUE,
+      ),
+      'service' => array(
+        'description' => 'The service entity that the account belongs to.',
+      ) + uuid_schema_field_definition(),
+      'remote_id' => array(
+        'description' => 'The remote identifier of the account.',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => FALSE,
+      ),
+      'data' => array(
+        'description' => 'Serialized account data (e.g. settings or login information).',
+        'type' => 'text',
+        'size' => 'big',
+        'serialize' => TRUE,
+        'not null' => TRUE,
+      ),
+      'status' => array(
+        'description' => 'The exportable status of the entity.',
+        'type' => 'int',
+        'not null' => TRUE,
+        // Set the default to ENTITY_CUSTOM without using the constant as it is
+        // not safe to use it at this point.
+        'default' => 0x01,
+        'size' => 'tiny',
+      ),
+      'module' => array(
+        'description' => 'The name of the providing module if the entity has been defined in code.',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => FALSE,
+      ),
+    ),
+    'primary key' => array('id'),
+    'unique keys' => array(
+      'uuid' => array('uuid'),
+      'identifier' => array('uid', 'plugin', 'remote_id'),
+    ),
+  );
+
+  $schema['fluxservice_key_value'] = array(
+    'description' => 'Generic key-value storage table.',
+    'fields' => array(
+      'collection' => array(
+        'description' => 'A named collection of key and value pairs.',
+        'type' => 'varchar',
+        'length' => 128,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'name' => array(
+        'description' => 'The key of the key-value pair. As KEY is a SQL reserved keyword, name was chosen instead.',
+        'type' => 'varchar',
+        'length' => 128,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'value' => array(
+        'description' => 'The value.',
+        'type' => 'blob',
+        'not null' => TRUE,
+        'size' => 'big',
+      ),
+    ),
+    'primary key' => array('collection', 'name'),
+  );
+
+  $schema['fluxservice_key_value_expire'] = array(
+    'description' => 'Generic key/value storage table with an expiration.',
+    'fields' => array(
+      'collection' => array(
+        'description' => 'A named collection of key and value pairs.',
+        'type' => 'varchar',
+        'length' => 128,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'name' => array(
+        // KEY is an SQL reserved word, so use 'name' as the key's field name.
+        'description' => 'The key of the key/value pair.',
+        'type' => 'varchar',
+        'length' => 128,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'value' => array(
+        'description' => 'The value of the key/value pair.',
+        'type' => 'blob',
+        'not null' => TRUE,
+        'size' => 'big',
+      ),
+      'expire' => array(
+        'description' => 'The time since Unix epoch in seconds when this item expires. Defaults to the maximum possible time.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 2147483647,
+      ),
+    ),
+    'primary key' => array('collection', 'name'),
+    'indexes' => array(
+      'all' => array('name', 'collection', 'expire'),
+    ),
+  );
+
+  return $schema;
+}
+
+/**
+ * Adds a remote id schema field.
+ */
+function fluxservice_update_7001() {
+  db_add_field('fluxservice_account', 'remote_id', array(
+    'description' => 'The remote identifier of the account.',
+    'type' => 'varchar',
+    'length' => 255,
+    'not null' => FALSE,
+  ));
+}
+
+/**
+ * Adds a unique field based on the user id, plugin type and remote identifier.
+ */
+function fluxservice_update_7002() {
+  db_add_unique_key('fluxservice_account', 'identifier',  array('uid', 'plugin', 'remote_id'));
+}
+
+/**
+ * Adds a UUID field to the account entity.
+ */
+function fluxservice_update_7003() {
+  // Load the uuid.install file so we can invoke the helper function to generate
+  // the uuid field schema definition.
+  module_load_install('uuid');
+
+  db_add_field('fluxservice_account', 'uuid', uuid_schema_field_definition());
+}
+
+/**
+ * Create a key value store table.
+ */
+function fluxservice_update_7004() {
+  $specs = array(
+    'description' => 'Generic key-value storage table.',
+    'fields' => array(
+      'collection' => array(
+        'description' => 'A named collection of key and value pairs.',
+        'type' => 'varchar',
+        'length' => 128,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'name' => array(
+        'description' => 'The key of the key-value pair. As KEY is a SQL reserved keyword, name was chosen instead.',
+        'type' => 'varchar',
+        'length' => 128,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'value' => array(
+        'description' => 'The value.',
+        'type' => 'blob',
+        'not null' => TRUE,
+        'size' => 'big',
+      ),
+    ),
+    'primary key' => array('collection', 'name'),
+  );
+
+  db_create_table('fluxservice_key_value', $specs);
+}
+
+/**
+ * Create a service instance table.
+ */
+function fluxservice_update_7005() {
+  // Load the uuid.install file so we can invoke the helper function to generate
+  // the uuid field schema definition.
+  module_load_install('uuid');
+
+  $specs = array(
+    'description' => 'A configured web service instance.',
+    'fields' => array(
+      'uuid' => uuid_schema_field_definition(),
+      'id' => array(
+        'description' => 'The primary identifier of the service instance.',
+        'type' => 'serial',
+        'not null' => TRUE,
+      ),
+      'label' => array(
+        'description' => 'The human-readable label of the service instance.',
+        'type' => 'varchar',
+        'length' => 64,
+        'not null' => TRUE,
+      ),
+      'plugin' => array(
+        'description' => 'The service type (e.g. twitter).',
+        'type' => 'varchar',
+        'length' => 32,
+        'not null' => TRUE,
+      ),
+      'data' => array(
+        'description' => 'Serialized service data (e.g. configuration).',
+        'type' => 'text',
+        'size' => 'big',
+        'serialize' => TRUE,
+        'not null' => TRUE,
+      ),
+      'status' => array(
+        'description' => 'The exportable status of the entity.',
+        'type' => 'int',
+        'not null' => TRUE,
+        // Set the default to ENTITY_CUSTOM without using the constant as it is
+        // not safe to use it at this point.
+        'default' => 0x01,
+        'size' => 'tiny',
+      ),
+      'module' => array(
+        'description' => 'The name of the providing module if the entity has been defined in code.',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => FALSE,
+      ),
+    ),
+    'primary key' => array('id'),
+    'unique keys' => array(
+      'uuid' => array('uuid'),
+    ),
+  );
+
+  db_create_table('fluxservice_service', $specs);
+}
+
+/**
+ * Remove the 'name' field from the account table and change the unique key.
+ */
+function fluxservice_update_7006() {
+  db_drop_field('fluxservice_account', 'name');
+  db_drop_unique_key('fluxservice_account', 'name');
+  db_add_unique_key('fluxservice_account', 'uuid', array('uuid'));
+}
+
+/**
+ * Add a 'service' field for referencing a service entity.
+ */
+function fluxservice_update_7007() {
+  // Load the uuid.install file so we can invoke the helper function to generate
+  // the uuid field schema definition.
+  module_load_install('uuid');
+
+  db_add_field('fluxservice_account', 'service', array(
+    'description' => 'The service entity that the account belongs to.',
+  ) + uuid_schema_field_definition());
+}
+
+/**
+ * Create an expirable key value store table.
+ */
+function fluxservice_update_7008() {
+  $schema = array(
+    'description' => 'Generic key/value storage table with an expiration.',
+    'fields' => array(
+      'collection' => array(
+        'description' => 'A named collection of key and value pairs.',
+        'type' => 'varchar',
+        'length' => 128,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'name' => array(
+        // KEY is an SQL reserved word, so use 'name' as the key's field name.
+        'description' => 'The key of the key/value pair.',
+        'type' => 'varchar',
+        'length' => 128,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'value' => array(
+        'description' => 'The value of the key/value pair.',
+        'type' => 'blob',
+        'not null' => TRUE,
+        'size' => 'big',
+      ),
+      'expire' => array(
+        'description' => 'The time since Unix epoch in seconds when this item expires. Defaults to the maximum possible time.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 2147483647,
+      ),
+    ),
+    'primary key' => array('collection', 'name'),
+    'indexes' => array(
+      'all' => array('name', 'collection', 'expire'),
+    ),
+  );
+
+  db_create_table('fluxservice_key_value_expire', $schema);
+}
+
+/**
+ * Adds a user.uid schema field for service endpoints.
+ */
+function fluxservice_update_7009() {
+  db_add_field('fluxservice_service', 'uid', array(
+    'description' => 'The user.uid of the user who owns the endpoint.',
+    'type' => 'int',
+    'not null' => FALSE,
+  ));
+}
+
+/**
+ * Changes the 'identifier' key to use the service instead of the plugin type.
+ */
+function fluxservice_update_7010() {
+  db_drop_unique_key('fluxservice_account', 'identifier');
+  db_add_unique_key('fluxservice_account', 'identifier',  array('uid', 'service', 'remote_id'));
+}

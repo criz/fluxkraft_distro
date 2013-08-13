@@ -1,0 +1,26 @@
+{
+  "name": "drupal/fluxtwitter",
+  "type": "drupal-module",
+  "description": "Provides integration for the Twitter API.",
+  "homepage": "http://drupal.org/project/fluxtwitter",
+  "license": "GPL-2.0",
+  "authors": [
+    {
+      "name": "Wolfgang Ziegler",
+      "email": "nuppla@zites.net",
+      "role": "Project Lead"
+    },
+    {
+      "name": "Sebastian Siemssen",
+      "email": "fubhy@fubhy.com",
+      "role": "Developer"
+    }
+  ],
+  "support": {
+    "issues": "http://drupal.org/project/issues/fluxtwitter"
+  },
+  "require": {
+    "php": ">=5.3.2",
+    "guzzle/guzzle": "dev-master"
+  }
+}
