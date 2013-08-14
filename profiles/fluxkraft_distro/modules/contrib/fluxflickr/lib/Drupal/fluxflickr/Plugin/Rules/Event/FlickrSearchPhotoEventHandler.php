@@ -37,13 +37,13 @@ class FlickrSearchPhotosEventHandler extends FlickrEventHandlerBase {
         'tags_mode' => array(
           'label' => t('Tags mode'),
           'type' => 'text',
-          'description' => t("Either 'any' for an OR combination of tags, or 'all' for an AND combination. Defaults to 'any' if not specified."),
+          'description' => t("Either OR combination of tags, or AND combination."),
           'optional' => TRUE,
         ),
         'min_upload_date' => array(
           'label' => t('Minimum upload date'),
           'type' => 'date',
-          'description' => t("Photos with an upload date greater than or equal to this value will be returned. The date can be in the form of a unix timestamp or mysql datetime."),
+          'description' => t("Photos with an upload date greater than or equal to this value will be returned."),
           'optional' => TRUE,
         )
       ),

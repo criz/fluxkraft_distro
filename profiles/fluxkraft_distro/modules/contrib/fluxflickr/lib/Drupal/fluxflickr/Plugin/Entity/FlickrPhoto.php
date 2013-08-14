@@ -48,17 +48,13 @@ class FlickrPhoto extends RemoteEntity implements FlickrPhotoInterface {
     $info['owner'] = array(
       'label' => t('Owner ID'),
       'description' => t('The ID of the owner of the photo.'),
-      'type' => 'list<struct>',
-      'property_info' => array(
-        'nsid' => array(
-          'type' => 'text',
-          'label' => t('NSID'),
-        ),
-        'username' => array(
-          'type' => 'text',
-          'label' => t('Username'),
-        ),
-      ),
+      'type' => 'text',
+    );
+
+    $info['ownername'] = array(
+      'label' => t('Owner ID'),
+      'description' => t('The ID of the owner of the photo.'),
+      'type' => 'text',
     );
 
     $info['secret'] = array(
@@ -82,52 +78,16 @@ class FlickrPhoto extends RemoteEntity implements FlickrPhotoInterface {
     $info['title'] = array(
       'label' => t('Title'),
       'description' => t('The title of the photo.'),
-      'type' => 'list<struct>',
-      'property_info' => array(
-        '_content' => array(
-          'type' => 'text',
-          'label' => t('Title'),
-        ),
-      ),
-    );
-
-    $info['isfavorite'] = array(
-      'label' => t('Is favorite'),
-      'description' => t("Wether the photo is a favorite."),
-      'type' => 'integer',
-    );
-
-    $info['safety_level'] = array(
-      'label' => t('Safety level'),
-      'description' => t("The photo safety level. 1 for safe. 2 for moderate. 3 for restricted."),
-      'type' => 'string',
-    );
-
-    $info['rotation'] = array(
-      'label' => t('Rotaion'),
-      'description' => t("The photo rotation of the photo."),
-      'type' => 'integer',
-    );
-
-    $info['originalsecret'] = array(
-      'label' => t('Original secret'),
-      'description' => t("The photo original secret of the photo."),
-      'type' => 'integer',
+      'type' => 'text',
     );
 
     $info['originalformat'] = array(
       'label' => t('Original format'),
       'description' => t("The photo original format of the photo."),
-      'type' => 'integer',
+      'type' => 'text',
     );
 
-    $info['license'] = array(
-      'label' => t('License'),
-      'description' => t("The license of the photo."),
-      'type' => 'string',
-    );
-
-    $info['dateuploaded'] = array(
+    $info['dateupload'] = array(
       'label' => t('Upload date timestamp'),
       'description' => t("The unix timestamp of the date this photo was uploaded to flickr."),
       'type' => 'integer',
@@ -136,7 +96,7 @@ class FlickrPhoto extends RemoteEntity implements FlickrPhotoInterface {
     $info['media'] = array(
       'label' => t('Media'),
       'description' => t("The media type of the photo."),
-      'type' => 'integer',
+      'type' => 'text',
     );
 
     $sizes = array(
@@ -161,32 +121,32 @@ class FlickrPhoto extends RemoteEntity implements FlickrPhotoInterface {
           'url' => array(
             'label' => t('Url'),
             'description' => t("The url of the photo in $size size."),
-            'type' => 'string',
+            'type' => 'text',
           ),
           'source' => array(
             'label' => t('Source url'),
             'description' => t("The source url of the photo in $size size."),
-            'type' => 'string',
+            'type' => 'uri',
           ),
           'width' => array(
             'label' => t('Width'),
             'description' => t("The width of the photo in $size size."),
-            'type' => 'string',
+            'type' => 'text',
           ),
           'height' => array(
             'label' => t('Height'),
             'description' => t("The height of the photo  in $size size."),
-            'type' => 'string',
+            'type' => 'text',
           ),
           'label' => array(
             'label' => t('Label'),
             'description' => t("The label of the photo."),
-            'type' => 'string',
+            'type' => 'text',
           ),
           'media' => array(
             'label' => t('Media'),
             'description' => t("The media type of the photo."),
-            'type' => 'string',
+            'type' => 'text',
           ),
         ),
       );

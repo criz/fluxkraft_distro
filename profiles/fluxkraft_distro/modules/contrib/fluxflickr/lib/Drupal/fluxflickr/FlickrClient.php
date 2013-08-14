@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains LinkedInUserClient.
+ * Contains FlickrUserClient.
  */
 
 namespace Drupal\fluxflickr;

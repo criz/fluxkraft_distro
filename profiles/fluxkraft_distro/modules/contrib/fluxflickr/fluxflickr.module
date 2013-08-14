@@ -9,12 +9,15 @@
  * Implements hook_rules_category_info().
  */
 function fluxflickr_rules_category_info() {
-  return array(
-    // Use the same icon as for the service plugin.
-    'fluxflickr' => array(
-      'label' => t('Flickr'),
-    ) + fluxservice_get_service_icon_info('fluxflickr'),
-  );
+  $info =  array();
+  // Use the same icon as for the service plugin.
+  $info['fluxflickr'] = array(
+    'label' => t('Flickr'),
+  ) + fluxservice_get_service_icon_info('fluxflickr');
+  $info['flickr_photo'] = array(
+    'label' => t('Flickr: Photo'),
+  ) + fluxservice_get_service_icon_info('fluxflickr');
+  return $info;
 }
 
 /**
@@ -37,5 +40,6 @@ function fluxflickr_photo_metadata_get_size($data, array $options, $name, $type,
       return $size;
     }
   }
-  return array();
+  // If the specified size is not found return the last size.
+  return end($sizes);
 }
