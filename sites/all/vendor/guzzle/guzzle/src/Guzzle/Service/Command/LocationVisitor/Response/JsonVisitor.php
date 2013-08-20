@@ -60,12 +60,10 @@ class JsonVisitor extends AbstractResponseVisitor
                 }
             } elseif ($type == 'object' && !isset($value[0])) {
                 // On the above line, we ensure that the array is associative and not numerically indexed
-                $knownProperties = array();
                 if ($properties = $param->getProperties()) {
                     foreach ($properties as $property) {
                         $name = $property->getName();
                         $key = $property->getWireName();
-                        $knownProperties[$name] = 1;
                         if (isset($value[$key])) {
                             $this->recursiveProcess($property, $value[$key]);
                             if ($key != $name) {
@@ -74,11 +72,6 @@ class JsonVisitor extends AbstractResponseVisitor
                             }
                         }
                     }
-                }
-
-                // Remove any unknown and potentially unsafe properties
-                if ($param->getAdditionalProperties() === false) {
-                    $value = array_intersect_key($value, $knownProperties);
                 }
             }
         }
