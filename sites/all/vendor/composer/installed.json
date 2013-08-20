@@ -56,6 +56,50 @@
         "homepage": "http://symfony.com"
     },
     {
+        "name": "benthedesigner/dropbox",
+        "version": "dev-master",
+        "version_normalized": "9999999-dev",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/BenTheDesigner/Dropbox.git",
+            "reference": "94de100581fc103920786d38d4aa5433802d3842"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/BenTheDesigner/Dropbox/zipball/94de100581fc103920786d38d4aa5433802d3842",
+            "reference": "94de100581fc103920786d38d4aa5433802d3842",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.3.1"
+        },
+        "time": "2013-04-15 07:34:33",
+        "type": "library",
+        "installation-source": "source",
+        "autoload": {
+            "psr-0": {
+                "Dropbox": ""
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Ben Tadiar",
+                "email": "ben@handcraftedbyben.co.uk",
+                "role": "Developer"
+            }
+        ],
+        "description": "PHP 5.3 SDK for the Dropbox REST API",
+        "homepage": "https://github.com/BenTheDesigner/Dropbox",
+        "keywords": [
+            "api",
+            "dropbox"
+        ]
+    },
+    {
         "name": "doctrine/collections",
         "version": "dev-master",
         "version_normalized": "9999999-dev",
@@ -319,62 +363,18 @@
         }
     },
     {
-        "name": "benthedesigner/dropbox",
-        "version": "dev-master",
-        "version_normalized": "9999999-dev",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/BenTheDesigner/Dropbox.git",
-            "reference": "94de100581fc103920786d38d4aa5433802d3842"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/BenTheDesigner/Dropbox/zipball/94de100581fc103920786d38d4aa5433802d3842",
-            "reference": "94de100581fc103920786d38d4aa5433802d3842",
-            "shasum": ""
-        },
-        "require": {
-            "php": ">=5.3.1"
-        },
-        "time": "2013-04-15 07:34:33",
-        "type": "library",
-        "installation-source": "source",
-        "autoload": {
-            "psr-0": {
-                "Dropbox": ""
-            }
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "MIT"
-        ],
-        "authors": [
-            {
-                "name": "Ben Tadiar",
-                "email": "ben@handcraftedbyben.co.uk",
-                "role": "Developer"
-            }
-        ],
-        "description": "PHP 5.3 SDK for the Dropbox REST API",
-        "homepage": "https://github.com/BenTheDesigner/Dropbox",
-        "keywords": [
-            "api",
-            "dropbox"
-        ]
-    },
-    {
         "name": "guzzle/guzzle",
         "version": "dev-master",
         "version_normalized": "9999999-dev",
         "source": {
             "type": "git",
             "url": "https://github.com/guzzle/guzzle.git",
-            "reference": "69551aa38e1fc6850dd839ebb978aed1b20c6166"
+            "reference": "99a690a7444304a1e136e3d361c2f760c7df057d"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/guzzle/guzzle/zipball/69551aa38e1fc6850dd839ebb978aed1b20c6166",
-            "reference": "69551aa38e1fc6850dd839ebb978aed1b20c6166",
+            "url": "https://api.github.com/repos/guzzle/guzzle/zipball/99a690a7444304a1e136e3d361c2f760c7df057d",
+            "reference": "99a690a7444304a1e136e3d361c2f760c7df057d",
             "shasum": ""
         },
         "require": {
@@ -415,7 +415,7 @@
             "zendframework/zend-cache": "2.0.*",
             "zendframework/zend-log": "2.0.*"
         },
-        "time": "2013-08-14 17:12:40",
+        "time": "2013-08-15 20:53:03",
         "type": "library",
         "extra": {
             "branch-alias": {
