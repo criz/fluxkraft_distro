@@ -22,7 +22,11 @@ function template_preprocess_fluxkraft_rules_category_icon(&$variables) {
     $variables['attributes']['data-symbol'] = substr($variables['element']['#group'], 0 ,2);
   }
 
-  $variables['icon'] = isset($info['icon']) ? theme('image', array('path' => $info['icon'])) : NULL;
+  if (isset($info['icon'])) {
+    $base_path = isset($info['icon path']) ? $info['icon path'] : drupal_get_path('module', $info['module']);
+    $variables['icon'] = theme('image', array('path' => $base_path . '/' . $info['icon']));
+  }
+
   $variables['background_color'] = isset($info['icon background color']) ? $info['icon background color'] : NULL;
 
   if (isset($variables['icon'])) {

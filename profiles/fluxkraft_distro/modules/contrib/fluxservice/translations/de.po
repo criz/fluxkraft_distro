@@ -1,0 +1,263 @@
+# German translation of flux Services Integration (all releases)
+# Copyright (c) 2013 by the German translation team
+# Generated from files:
+#  fluxservice/fluxservice.pages.inc: n/a
+#  fluxservice/lib/Drupal/fluxservice/Plugin/Views/Handler/AccountOperations.php: n/a
+#  fluxservice/lib/Drupal/fluxservice/Plugin/Views/Handler/ServiceOperations.php: n/a
+#  fluxservice/lib/Drupal/fluxservice/AccountViewsController.php: n/a
+#  fluxservice/lib/Drupal/fluxservice/ServiceViewsController.php: n/a
+#  fluxservice/ctools/relationships/account_from_user.inc: n/a
+#  fluxservice/lib/Drupal/fluxservice/Service/OAuthServiceBase.php: n/a
+#  fluxservice/lib/Drupal/fluxservice/UI/AccountUIController.php: n/a
+#  fluxservice/lib/Drupal/fluxservice/Service/OAuthAccountBase.php: n/a
+#  fluxservice/lib/Drupal/fluxservice/Plugin/Entity/Service.php: n/a
+#  fluxservice/fluxservice.info: n/a
+#  fluxservice/modules/fluxservice_user/fluxservice_user.info: n/a
+#  fluxservice/fluxservice.callback.inc: n/a
+#  fluxservice/fluxservice.views.inc: n/a
+#  fluxservice/fluxservice.module: n/a
+#  fluxservice/lib/Drupal/fluxservice/Entity/FluxEntity.php: n/a
+#  fluxservice/lib/Drupal/fluxservice/Plugin/Entity/Account.php: n/a
+#  fluxservice/lib/Drupal/fluxservice/Query/EntityFieldQueryViewsQuery.php: n/a
+#  fluxservice/lib/Drupal/fluxservice/UI/ServiceUIController.php: n/a
+#  fluxservice/modules/fluxservice_user/fluxservice_user.module: n/a
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: flux Services Integration (all releases)\n"
+"POT-Creation-Date: 2013-08-28 15:32+0000\n"
+"PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
+"Language-Team: German\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n!=1);\n"
+
+#: fluxservice.pages.inc:27,141
+msgid "Save configuration"
+msgstr "Konfiguration speichern"
+
+#: lib/Drupal/fluxservice/Plugin/Views/Handler/AccountOperations.php:45; lib/Drupal/fluxservice/Plugin/Views/Handler/ServiceOperations.php:39
+msgid "delete"
+msgstr "Löschen"
+
+#: fluxservice.pages.inc:32,118,146,234
+msgid "Delete"
+msgstr "Löschen"
+
+#: lib/Drupal/fluxservice/AccountViewsController.php:22; lib/Drupal/fluxservice/ServiceViewsController.php:22
+msgid "Operations"
+msgstr "Operationen"
+
+#: fluxservice.pages.inc:118,234
+msgid "Cancel"
+msgstr "Abbrechen"
+
+#: fluxservice.pages.inc:61,205
+msgid "The configuration options have been saved."
+msgstr "Die Konfigurationsoptionen wurden gespeichert."
+
+#: lib/Drupal/fluxservice/Plugin/Views/Handler/AccountOperations.php:37; lib/Drupal/fluxservice/Plugin/Views/Handler/ServiceOperations.php:31
+msgid "edit"
+msgstr "Bearbeiten"
+
+#: fluxservice.pages.inc:75,166
+msgid "Label"
+msgstr "Beschriftung"
+
+#: ctools/relationships/account_from_user.inc:16
+msgid "User"
+msgstr "Benutzer"
+
+#: ctools/relationships/account_from_user.inc:46
+msgid "Account type"
+msgstr "Kontotyp"
+
+#: lib/Drupal/fluxservice/Service/OAuthServiceBase.php:37
+msgid "Consumer key"
+msgstr "Anwender-Schlüssel"
+
+#: lib/Drupal/fluxservice/Service/OAuthServiceBase.php:44
+msgid "Consumer secret"
+msgstr "Anwender-Geheimnis"
+
+#: lib/Drupal/fluxservice/UI/AccountUIController.php:174
+msgid "Add account"
+msgstr "Konto hinzufügen"
+
+#: lib/Drupal/fluxservice/Service/OAuthAccountBase.php:106
+msgid "Access Token"
+msgstr "Access Token"
+
+#: lib/Drupal/fluxservice/Plugin/Entity/Service.php:25
+msgid "Service endpoint"
+msgstr "Service endpoint"
+
+#: fluxservice.info:0; modules/fluxservice_user/fluxservice_user.info:0
+msgid "fluxkraft"
+msgstr "fluxkraft"
+
+#: fluxservice.callback.inc:26
+msgid "The account %name has already been connected."
+msgstr "Das Konto %name wurde bereits verbunden."
+
+#: fluxservice.callback.inc:38
+msgid "Successfully linked the account %name to this site."
+msgstr "Das Konto %name wurde erfolgreich mit dieser Seite verlinkt."
+
+#: fluxservice.pages.inc:76
+msgid "The label of the service."
+msgstr "Die Beschriftung des Service."
+
+#: fluxservice.pages.inc:116
+msgid "Are you sure you want to delete the service %service?"
+msgstr "Sind Sie sicher, dass Sie den Service %service löschen möchten?"
+
+#: fluxservice.pages.inc:167
+msgid "The label of the account."
+msgstr "Die Beschriftung des Kontos"
+
+#: fluxservice.pages.inc:232
+msgid "Are you sure you want to delete the account %account?"
+msgstr "Sind Sie sicher, dass Sie das Konto %account löschen möchten?"
+
+#: fluxservice.views.inc:31
+msgid "Flux Services Integration EntityFieldQuery"
+msgstr "Flux Services Integration EntityFieldQuery"
+
+#: fluxservice.views.inc:32
+msgid "Uses EntityFieldQuery for querying remote entities."
+msgstr "Benutzt EntityFieldQuery um remote entities abzurufen."
+
+#: fluxservice.module:40
+msgid ""
+"The Composer auto loader could not be registered. Have you updated "
+"dependencies via <a href=\"@url\" target=\"_blank\">composer "
+"manager</a>? To do so, run: <code>@command</code>"
+msgstr ""
+"Der Composer auto loader konnte nicht registriert werden. Wurden die "
+"Abhängigkeiten aktualisiert über <a href=\"@url\" target=\"_blank\">composer "
+"manager</a>? Um dies zu tun, führe folgendes aus: <code>@command</code>"
+
+#: fluxservice.module:172
+msgid "Administer service endpoints"
+msgstr "Administriere Service endpoints"
+
+#: fluxservice.module:173
+msgid "Create and manage service endpoints and accounts."
+msgstr "Erstelle und verwalte Service endpoints und Konten."
+
+#: fluxservice.module:179
+msgid "Use endpoint: %endpoint"
+msgstr "Benutze endpoint: %endpoint"
+
+#: fluxservice.module:180
+msgid "Create service accounts that use this endpoint."
+msgstr "Erstell Service Konten welche diesen Endpoint benutzen."
+
+#: fluxservice.module:84
+msgid "OAuth Callback"
+msgstr "OAuth Callback"
+
+#: fluxservice.info:0
+msgid "flux Services integration"
+msgstr "flux Services Integration"
+
+#: fluxservice.info:0
+msgid "Service integration API for the fluxkraft module suite."
+msgstr "Service Integration API für die fluxkraft Modul Suite."
+
+#: ctools/relationships/account_from_user.inc:13
+msgid "flux Service account from user"
+msgstr "flux Service Konto des Benutzers"
+
+#: ctools/relationships/account_from_user.inc:15
+msgid "Retrieves a random flux service account from a user."
+msgstr "Ruft ein zufälliges flux Service Konto von einem Benutzer ab."
+
+#: ctools/relationships/account_from_user.inc:47
+msgid "Select what kind of service account is to be retrieved."
+msgstr "Wähle aus welche Art von Service Konto abgerufen werden soll."
+
+#: lib/Drupal/fluxservice/AccountViewsController.php:23
+msgid "Displays a list of account entity operations."
+msgstr "Zeigt eine List von Konto entity Operationen an."
+
+#: lib/Drupal/fluxservice/ServiceViewsController.php:23
+msgid "Displays a list of service endpoint entity operations."
+msgstr "Zeigt eine Liste von Service endpoint entity Operationen an."
+
+#: lib/Drupal/fluxservice/Entity/FluxEntity.php:96
+msgid "Missing plugin property."
+msgstr "Fehlende Plugin Eigenschaft."
+
+#: lib/Drupal/fluxservice/Plugin/Entity/Account.php:25; lib/Drupal/fluxservice/Query/EntityFieldQueryViewsQuery.php:58
+msgid "Service account"
+msgstr "Service Konto"
+
+#: lib/Drupal/fluxservice/Query/EntityFieldQueryViewsQuery.php:60
+msgid "Select the account under which to perform the requests for this view."
+msgstr "Wähle aus mit welchen Konto diese Anfrage für diese Ansicht "
+"ausgeführt werden soll."
+
+#: lib/Drupal/fluxservice/Service/OAuthAccountBase.php:112
+msgid "Access Token Secret"
+msgstr "Access Token Secret"
+
+#: lib/Drupal/fluxservice/Service/OAuthServiceBase.php:38
+msgid "The consumer key for authenticating through OAuth."
+msgstr "Der consumer key für die Authentifizierung durch OAuth."
+
+#: lib/Drupal/fluxservice/Service/OAuthServiceBase.php:45
+msgid "The consumer secret for authenticating through OAuth."
+msgstr "Das consumer secret für die Authentifizierung durch OAuth."
+
+#: lib/Drupal/fluxservice/UI/AccountUIController.php:202
+msgid "Add a new %endpoint service account."
+msgstr "Füge ein neues %endpoint service Konto hinzu."
+
+#: lib/Drupal/fluxservice/UI/AccountUIController.php:214
+msgid "Configure @plugin service"
+msgstr "Konfiguriere @plugin service"
+
+#: lib/Drupal/fluxservice/UI/AccountUIController.php:215
+msgid ""
+"You have to configure a @plugin service before you can set up an "
+"account."
+msgstr ""
+"Ein @plugin service muss konfiguriert werden bevor ein Konto angelegt werden "
+"kann."
+
+#: lib/Drupal/fluxservice/UI/AccountUIController.php:235
+msgid ""
+"There are no account plugins available. Go to the <a "
+"href=\"@modules\">modules page</a> to enable a account plugin "
+"providing module."
+msgstr ""
+"Es sind keine Konto plugins verfügbar. Öffne die <a "
+"href=\"@modules\">Modul Seite</a> um ein Konto plugin zu aktivieren. "
+
+#: lib/Drupal/fluxservice/UI/ServiceUIController.php:127
+msgid ""
+"There are no service plugins available. Go to the <a "
+"href=\"@modules\">modules page</a> to enable a service plugin "
+"providing module."
+msgstr ""
+"Es sind keine Service plugins vorhanden. Öffne die <a "
+"href=\"@modules\">Modul Seite</a> um ein Service plugin zu aktivieren."
+
+#: modules/fluxservice_user/fluxservice_user.module:62
+msgid "Manage personal service accounts"
+msgstr "Verwalte individuelle Service Konten"
+
+#: modules/fluxservice_user/fluxservice_user.module:63
+msgid "Create and manage your own service accounts."
+msgstr "Erstelle und verwalte deine eigenen Service Konten."
+
+#: modules/fluxservice_user/fluxservice_user.info:0
+msgid "flux Services personal UI"
+msgstr "flux Services individuelles UI"
+
+#: modules/fluxservice_user/fluxservice_user.info:0
+msgid "Allows users to configure their own service accounts."
+msgstr "Erlaubt es Benutzern ihre eigenen Service Konten zu konfigurieren."

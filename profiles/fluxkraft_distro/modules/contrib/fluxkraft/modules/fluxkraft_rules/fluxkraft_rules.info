@@ -8,10 +8,9 @@ configure = fluxkraft/rules
 files[] = fluxkraft_rules.ui.controller.inc
 files[] = tests/fluxkraft_rules.test
 
-
-; Information added by drush on 2013-08-13
-version = "7.x-1.0-beta1+1-dev"
+; Information added by drupal.org packaging script on 2013-08-30
+version = "7.x-1.0-beta1+2-dev"
 core = "7.x"
 project = "fluxkraft"
-datestamp = "1376420229"
+datestamp = "1377825355"
 

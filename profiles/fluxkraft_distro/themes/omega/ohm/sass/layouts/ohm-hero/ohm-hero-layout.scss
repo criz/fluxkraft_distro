@@ -1,0 +1,116 @@
+/*******************************************************************************
+ * _layout.scss
+ *
+ * Styling of the "simple" layout demonstrating the Compass grid extension Susy
+ * and building mobile first layouts.
+ ******************************************************************************/
+@import "../../partials/utility";
+
+body {
+  background: transparent image-url('diagonal.png') left top repeat;
+}
+
+.l-constrained {
+  width: 95%;
+  margin: 0 auto;
+  @include grid-background;
+  @include pie-clearfix;
+}
+
+/* Header */
+.l-header {
+  background-color: $light-blue;
+}
+.l-region--header {
+  padding: $vert-spacing-unit 0;
+
+  .block {
+    float: right;
+  }
+}
+
+/* Content Area */
+.l-highlighted-wrapper {
+  padding: $vert-spacing-unit 0;
+  background: #FFF;
+}
+.l-region--help {
+  margin-bottom: $vert-spacing-unit;
+}
+.l-main {
+  margin-top: 2 * $vert-spacing-unit;
+  margin-bottom: 2 * $vert-spacing-unit;
+}
+
+/* Sidebars */
+.l-region--sidebar-first,
+.l-region--sidebar-second {
+  background-color: #FFF;
+  padding: $vert-spacing-unit $horz-spacing-unit;
+}
+
+/* Footer */
+.l-footer-wrapper {
+  padding: $vert-spacing-unit 0;
+  background: #FFF;
+}
+
+@include breakpoint($tab) {
+  .l-constrained {
+    width: 90%;
+  }
+
+  /* Header */
+  .l-branding {
+    @include grid-span(3, 1);
+  }
+  .l-region--navigation {
+    @include grid-span(6, 5);
+  }
+  .l-region--header {
+    @include grid-span(3, 10);
+  }
+
+  /* Sidebars */
+  .two-sidebars,
+  .one-sidebar {
+    .l-content {
+      @include grid-span(8, 1);
+    }
+    .l-region--sidebar-first,
+    .l-region--sidebar-second {
+      @include grid-span(4, 9);
+      clear: right;
+    }
+  }
+}
+
+@include breakpoint($desk) {
+  .l-constrained {
+    width: 80%;
+  }
+
+  /* Sidebars */
+  .one-sidebar {
+    .l-content {
+      @include grid-span(8, 1);
+    }
+    .l-region--sidebar-first {
+      @include grid-span(4, 9);
+      clear: none;
+    }
+  }
+  .two-sidebars {
+    .l-content {
+      @include grid-span(6, 1);
+    }
+    .l-region--sidebar-first,
+    .l-region--sidebar-second {
+      @include grid-span(3, 7);
+      clear: none;
+    }
+    .l-region--sidebar-second {
+      @include grid-span(3, 10);
+    }
+  }
+}

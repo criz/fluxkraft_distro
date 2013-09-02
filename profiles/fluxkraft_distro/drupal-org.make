@@ -41,7 +41,7 @@ projects[fluxxing][version] = 1.x-dev
 
 projects[fluxtheme][version] = 1.x-dev
 projects[fluxtheme][subdir] = ''
-projects[omega][version] = 4.0-beta6
+projects[omega][version] = 4.0-beta7
 projects[omega][subdir] = ''
 projects[panels][version] = 3.3
 projects[panels_everywhere][version] = 1.0-rc1

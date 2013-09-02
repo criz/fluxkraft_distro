@@ -8,6 +8,8 @@ Project homepage: http://drupal.org/project/fluxkraft_distro
 Users looking for a full release should look for full release downloads at the
 project page.
 
+###
+
 Setup instructions for developers:
 
  * Place the install profile at it's usual location,
@@ -32,3 +34,20 @@ Setup instructions for developers:
     drush composer-manager update
 
  * Afterwards, you can continue with the installation process.
+
+###
+
+Creating a a full fluxkraft build:
+
+ * Checkout the fluxkraft distribution
+
+     git clone --branch 7.x-1.x http://git.drupal.org/project/fluxkraft_distro.git
+
+ * Build a full distribution using drush make
+
+     cd fluxkraft_distro
+     drush make build-fluxkraft-distro.make installation_folder
+
+ * Run the installation process as described in the developer instructions above.
+
+ * The installation_folder now includes a full fluxkraft build.
