@@ -66,7 +66,7 @@ function drush_composer_manager($command = 'install') {
     }
 
     // Download the Drush extension.
-    if (drush_invoke('dl', array('composer-8.x-1.0')) === FALSE) {
+    if (drush_invoke('dl', array('composer-8.x-1.x')) === FALSE) {
       return drush_set_error(dt('Failed installing Drush Composer. Install manually by visiting http://drupal.org/project/composer .'));
     }
 

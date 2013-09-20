@@ -26,11 +26,12 @@ class UploadFile extends RulesPluginHandlerBase implements \RulesActionHandlerIn
         'file_url' => array(
           'type' => 'uri',
           'label' => t('File url'),
+          'description' => t('The complete url to the file. (e.g. http://www.example.com/image.jpg'),
         ),
         'filename' => array(
           'type' => 'text',
           'label' => t('Filename or filepath'),
-          'description' => t('Filename or filepath (e.g. file.jpg or directory/file.jpg). If not provided the drupal filename is used.'),
+          'description' => t('Filename or filepath (e.g. file.jpg or directory/file.jpg).'),
         ),
         'account' => static::getAccountParameterInfo(),
       ),
@@ -51,7 +52,6 @@ class UploadFile extends RulesPluginHandlerBase implements \RulesActionHandlerIn
     try {
       // Upload the file.
       $client->putStream($stream, $filename);
-      //$client->putFile($file_url, $filename);
     }
     catch (\Dropbox\Exception\BadRequestException $e) {
       // The file extension is ignored by Dropbox (e.g. thumbs.db or .ds_store)

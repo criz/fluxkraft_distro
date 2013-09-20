@@ -30,12 +30,23 @@ class TwitterUserTimelineTaskHandler extends TwitterTaskHandlerBase {
     }
 
     $account = $this->getAccount();
+    $tweets = $account->client()->getUserTimeline($arguments);
+    if (!empty($tweets) && empty($since_id)) {
+      // If there is no 'last processed Tweet' id stored yet it means that the
+      // search is being executed for the first time. In that case, we have to
+      // ensure that no old Tweets are processed. This has to happen on the
+      // client side as Twitter does not expose a request parameter for this.
+      $date = $this->task['date'];
+      $tweets = array_filter($tweets, function ($tweet) use ($date) {
+        return strtotime($tweet['created_at'], REQUEST_TIME) < $date;
+      });
+    }
 
-    if ($tweets = $account->client()->getUserTimeline($arguments)) {
+    if (!empty($tweets)) {
       // Twitter sends the tweets in the wrong order.
       $tweets = array_reverse($tweets);
-      $tweets = fluxservice_entify_bycatch_multiple($tweets, 'fluxtwitter_tweet', $account);
-      $twitter_user_entity_id = $account->identifier() . ':' . $this->task['data']['screen_name'];
+      $tweets = fluxservice_entify_multiple($tweets, 'fluxtwitter_tweet', $account);
+      $twitter_user_entity_id = "{$account->identifier()}:{$this->task['data']['screen_name']}";
 
       foreach ($tweets as $tweet) {
         rules_invoke_event($this->getEvent(), $account, $tweet, $twitter_user_entity_id);

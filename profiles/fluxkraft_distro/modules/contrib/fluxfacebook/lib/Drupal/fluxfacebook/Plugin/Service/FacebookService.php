@@ -37,6 +37,7 @@ class FacebookService extends Service implements FacebookServiceInterface {
       'service_url' => '',
       'application_id' => '',
       'application_secret' => '',
+      'polling_interval' => 900,
     );
   }
 
@@ -65,6 +66,14 @@ class FacebookService extends Service implements FacebookServiceInterface {
       '#default_value' => $this->getConsumerSecret(),
     );
 
+    $form['rules']['polling_interval'] = array(
+      '#type' => 'select',
+      '#title' => t('Polling interval'),
+      '#default_value' => $this->getPollingInterval(),
+      '#options' => array(0 => t('Every cron run')) + drupal_map_assoc(array(300, 900, 1800, 3600, 10800, 21600, 43200, 86400, 604800), 'format_interval'),
+      '#description' => t('The time to wait before checking for updates. Note that the effecitive update interval is limited by how often the cron maintenance task runs. Requires a correctly configured <a href="@cron">cron maintenance task</a>.', array('@cron' => url('admin/reports/status'))),
+    );
+
     return $form;
   }
 
@@ -80,6 +89,21 @@ class FacebookService extends Service implements FacebookServiceInterface {
    */
   public function getConsumerSecret() {
     return $this->data->get('application_secret');
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getPollingInterval() {
+    return $this->data->get('polling_interval');
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setPollingInterval($interval) {
+    $this->data->set('polling_interval', $interval);
+    return $this;
   }
 
 }

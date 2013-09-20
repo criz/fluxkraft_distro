@@ -39,4 +39,16 @@ class TwitterTweetController extends RemoteEntityController {
     return $tweet->getAccount()->client()->sendTweet(array('status' => $tweet->text));
   }
 
+  /**
+   * {@inheritdoc}
+   */
+  protected function preEntify(array &$items, FluxEntityInterface $agent) {
+    foreach ($items as &$values) {
+      if (!empty($values['user'])) {
+        // Process the attached Twitter user entity.
+        $values['user'] = fluxservice_bycatch($values['user'], 'fluxtwitter_user', $agent);
+      }
+    }
+  }
+
 }

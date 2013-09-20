@@ -197,7 +197,7 @@ function composer_manager_packages_page() {
   $build['refresh_form'] = drupal_get_form('composer_manager_rebuild_form');
 
   // Set status messages.
-  require_once __DIR__ . '/composer_manager.install';
+  module_load_install('composer_manager');
   $requirements = module_invoke('composer_manager', 'requirements', 'runtime');
 
   if (REQUIREMENT_OK != $requirements['composer_manager']['severity']) {

@@ -47,11 +47,3 @@ dependencies[] = hurricane_integration
 ;Utility
 dependencies[] = admin_menu_toolbar
 dependencies[] = module_filter
-
-
-; Information added by drush on 2013-09-02
-version = "7.x-1.0-beta1+14-dev"
-core = "7.x"
-project = "fluxkraft_distro"
-datestamp = "1378152848"
-

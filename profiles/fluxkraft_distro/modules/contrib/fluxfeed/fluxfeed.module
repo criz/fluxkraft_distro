@@ -11,3 +11,15 @@
 function fluxfeed_fluxservice_plugin_directory() {
   return 'lib/Drupal/fluxfeed/Plugin';
 }
+
+/**
+ * Implements hook_rules_category_info().
+ */
+function fluxfeed_rules_category_info() {
+  $info =  array();
+  // Use the same icon as for the service plugin.
+  $info['fluxfeed'] = array(
+    'label' => t('RSS feed'),
+  ) + fluxservice_get_service_icon_info('fluxfeed');
+  return $info;
+}

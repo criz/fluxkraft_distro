@@ -4,8 +4,8 @@ package = Core
 version = VERSION
 core = 7.x
 
-; Information added by drupal.org packaging script on 2013-08-13
-version = "7.23+6-dev"
+; Information added by drupal.org packaging script on 2013-08-08
+version = "7.23"
 project = "drupal"
-datestamp = "1376356012"
+datestamp = "1375928238"
 

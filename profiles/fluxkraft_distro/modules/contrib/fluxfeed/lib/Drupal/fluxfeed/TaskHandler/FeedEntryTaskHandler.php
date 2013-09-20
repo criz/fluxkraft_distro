@@ -35,7 +35,7 @@ class FeedEntryTaskHandler extends FeedTaskHandlerBase {
         }
 
         $values = array('entry' => $item, 'id' => $item->getId());
-        $entity = fluxservice_entify_bycatch($values, 'fluxfeed_entry', $feed);
+        $entity = fluxservice_entify($values, 'fluxfeed_entry', $feed);
 
         rules_invoke_event($this->getEvent(), $feed, $entity);
       }

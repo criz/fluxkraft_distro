@@ -41,6 +41,6 @@ class Retweet extends RulesPluginHandlerBase implements \RulesActionHandlerInter
       'id' => (int) $tweet->value()->getRemoteIdentifier(),
     ));
     // Update the variable with the entity containing data.
-    $tweet->set(fluxservice_entify_bycatch($response, 'fluxtwitter_tweet', $account));
+    $tweet->set(fluxservice_bycatch($response, 'fluxtwitter_tweet', $account));
   }
 }

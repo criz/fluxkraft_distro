@@ -92,12 +92,12 @@ abstract class RangeRemoteEntityQueryDriverBase extends RemoteEntityQueryDriverB
 
     // Entify results into the entity storage controller so it's cached.
     if ($this->byCatch) {
-      fluxservice_entify_bycatch_multiple($results, $this->entityType, $this->account);
+      fluxservice_bycatch_multiple($results, $this->entityType, $this->account);
     }
 
     $return = array();
     foreach ($results as $result) {
-      $id = $this->getAccount()->internalIdentifier() . ':' . $result[$this->entityInfo['entity keys']['remote id']];
+      $id = "account:{$this->getAccount()->internalIdentifier()}:{$result[$this->entityInfo['entity keys']['remote id']]}";
       $return[$this->entityType][$id] = entity_create_stub_entity($this->entityType, array($id));;
     }
     return $return;

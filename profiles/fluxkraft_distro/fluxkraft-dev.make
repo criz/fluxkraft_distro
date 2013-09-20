@@ -19,7 +19,7 @@ translations[] = de
 
 ; Dependencies =================================================================
 
-projects[composer_manager][version] = 1.0-beta6
+projects[composer_manager][version] = 1.0-beta7
 projects[ctools][version] = 1.3
 
 projects[entity][type] = module
@@ -27,7 +27,7 @@ projects[entity][download][type] = git
 projects[entity][download][url] = http://git.drupal.org/project/entity.git
 projects[entity][download][branch] = 7.x-1.x
 
-projects[features][version] = 2.0-rc1
+projects[features][version] = 2.0-rc3
 projects[libraries][version] = 2.1
 
 projects[rules][type] = module
@@ -113,9 +113,7 @@ projects[hurricane][version] = 1.0-beta1
 projects[admin_menu][version] = 3.0-rc4
 projects[efq_views][version] = 1.x-dev
 projects[devel][version] = 1.3
-projects[module_filter][version] = 1.7
+projects[module_filter][version] = 1.8
 
 
 ; Patches ======================================================================
-; https://drupal.org/node/2052317 - Support rule / action / event / condition categories in addition to groups
-projects[rules][patch][] = https://drupal.org/files/d7_rules_category_0.patch

@@ -6,7 +6,7 @@
  */
 
 /**
- * Implements hook_uninstall().
+ * Implements hook_install().
  */
 function composer_manager_install() {
   // @see composer_manager_beta5_compatibility()

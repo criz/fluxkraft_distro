@@ -1,10 +1,10 @@
-# German translation of Composer Manager (7.x-1.0-beta6)
+# German translation of Composer Manager (7.x-1.0-beta7)
 # Copyright (c) 2013 by the German translation team
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Composer Manager (7.x-1.0-beta6)\n"
-"POT-Creation-Date: 2013-05-23 19:12+0000\n"
+"Project-Id-Version: Composer Manager (7.x-1.0-beta7)\n"
+"POT-Creation-Date: 2013-09-06 02:51+0000\n"
 "PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
 "Language-Team: German\n"
 "MIME-Version: 1.0\n"

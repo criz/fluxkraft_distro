@@ -13,7 +13,10 @@ function template_preprocess_fluxkraft_rules_category_icon(&$variables) {
   if (!empty($variables['element']['#category'])) {
     $info = RulesUICategory::getInfo($variables['element']['#category']);
   }
-
+  //load info by module if category is not given
+  elseif (!empty($variables['element']['#module'])) {
+    $info = RulesUICategory::getInfo($variables['element']['#module']);
+  }
   // Set data attribute as fallback for browser that do not support SVG.
   if (!empty($info['label'])) {
     $variables['attributes']['data-symbol'] = substr($info['label'], 0 ,2);

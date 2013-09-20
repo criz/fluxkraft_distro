@@ -4,6 +4,7 @@ preview = preview.png
 template = ohm-hero-layout
 
 ; Regions
+regions[branding]       = Branding
 regions[navigation]     = Navigation bar
 regions[header]         = Header
 regions[hero]           = Hero
@@ -16,3 +17,4 @@ regions[footer]         = Footer
 
 ; Stylesheets
 stylesheets[all][] = css/layouts/ohm-hero/ohm-hero-layout.css
+stylesheets[all][] = css/layouts/ohm-hero/ohm-hero-layout.no-query.css

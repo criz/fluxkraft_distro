@@ -70,6 +70,11 @@ function fluxkraft_distro_install_tasks($install_state) {
     'display_name' => st('Configure services'),
     'type' => 'form',
   );
+  // Add a page for directly adding and configuring service endpoints.
+  $tasks['fluxkraft_distro_configure_cron_form'] = array(
+    'display_name' => st('Configure cron'),
+    'type' => 'form',
+  );
 
   return $tasks;
 }

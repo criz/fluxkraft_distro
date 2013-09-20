@@ -23,11 +23,3 @@ features[variable][] = panels_everywhere_site_template_per_theme
 features[variable][] = panels_page_allowed_layouts
 features[variable][] = panels_page_allowed_types
 features[variable][] = panels_page_default
-
-
-; Information added by drush on 2013-09-02
-version = "7.x-1.0-beta1+14-dev"
-core = "7.x"
-project = "fluxkraft_distro"
-datestamp = "1378152848"
-

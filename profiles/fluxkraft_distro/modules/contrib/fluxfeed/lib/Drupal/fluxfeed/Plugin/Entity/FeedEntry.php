@@ -86,6 +86,13 @@ class FeedEntry extends RemoteEntity implements FeedEntryInterface {
       'getter callback' => 'fluxservice_entity_property_getter_method',
     );
 
+    $info['link'] = array(
+      'label' => t('Link'),
+      'description' => t("The entry's link."),
+      'type' => 'uri',
+      'getter callback' => 'fluxservice_entity_property_getter_method',
+    );
+
     $info['content'] = array(
       'label' => t('Content'),
       'description' => t("The entry's content."),

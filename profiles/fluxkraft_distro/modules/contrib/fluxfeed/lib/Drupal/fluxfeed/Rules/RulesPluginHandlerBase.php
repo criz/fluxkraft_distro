@@ -19,7 +19,7 @@ abstract class RulesPluginHandlerBase extends FluxRulesPluginHandlerBase {
    */
   public static function getInfoDefaults() {
     return array(
-      'group' => t('Feed'),
+      'category' => 'fluxfeed',
       'access callback' => array(get_called_class(), 'integrationAccess'),
     );
   }

@@ -45,14 +45,14 @@ abstract class RemoteEntityQueryDriverBase implements RemoteEntityQueryDriverInt
    * {@inheritdoc}
    */
   public static function factory($entity_type, $entity_info, AccountInterface $account = NULL) {
-    $service = fluxservice_service_plugin_handler($entity_info['service']);
+    $service = $account ? $account->getService() : NULL;
     return new static($entity_type, entity_get_info($entity_type), $service, $account);
   }
 
   /**
    * Base constructor for RemoteEntityQueryDriverBase objects.
    */
-  public function __construct($entity_type, array $entity_info, ServiceInterface $service, AccountInterface $account = NULL) {
+  public function __construct($entity_type, array $entity_info, ServiceInterface $service = NULL, AccountInterface $account = NULL) {
     $this->entityType = $entity_type;
     $this->entityInfo = $entity_info;
     $this->setService($service);
@@ -83,7 +83,7 @@ abstract class RemoteEntityQueryDriverBase implements RemoteEntityQueryDriverInt
   /**
    * {@inheritdoc}
    */
-  public function setService(ServiceInterface $service) {
+  public function setService(ServiceInterface $service = NULL) {
     $this->serviceHandler = $service;
   }
 }

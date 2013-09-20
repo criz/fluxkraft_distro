@@ -91,7 +91,6 @@ class FluxkraftRulesUIController extends RulesUIController {
     foreach ($config->events() as $event_name) {
       $handler = rules_get_event_handler($event_name, $config->getEventSettings($event_name));
       $item_info = $handler->getEventInfo();
-
       $content[$event_name] = array(
         '#type' => 'container',
         '#attributes' => array(
@@ -101,6 +100,7 @@ class FluxkraftRulesUIController extends RulesUIController {
           '#theme' => 'fluxkraft_rules_category_icon',
           '#category' => isset($item_info['category']) ? $item_info['category'] : FALSE,
           '#group' => isset($item_info['group']) ? $item_info['group'] : FALSE,
+          '#module' => $item_info['module'],
         ),
         'info' => array(
           '#theme' => 'fluxkraft_rules_category_info',
@@ -187,7 +187,7 @@ class FluxkraftRulesUIController extends RulesUIController {
 
     $variables['activation_status'] = $config->active ? t('Active') : t('Inactive');
     $variables['author'] = format_username(user_load($config->uid));
-    $variables['status'] = theme('entity_status', $config->status);
+    $variables['status'] = theme('entity_status', array($config->status));
 
     $this->buildRuleContent($config, $variables['content']);
   }

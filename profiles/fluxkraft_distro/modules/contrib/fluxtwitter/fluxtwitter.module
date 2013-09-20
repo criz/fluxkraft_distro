@@ -9,12 +9,18 @@
  * Implements hook_rules_category_info().
  */
 function fluxtwitter_rules_category_info() {
-  return array(
-    // Use the same icon as for the service plugin.
-    'fluxtwitter' => array(
-      'label' => t('Twitter'),
-    ) + fluxservice_get_service_icon_info('fluxtwitter'),
-  );
+  $info =  array();
+  // Use the same icon as for the service plugin.
+  $info['fluxtwitter'] = array(
+    'label' => t('Twitter'),
+  ) + fluxservice_get_service_icon_info('fluxtwitter');
+  $info['twitter_tweet'] = array(
+    'label' => t('Twitter: Tweet'),
+  ) + fluxservice_get_service_icon_info('fluxtwitter');
+  $info['twitter_user'] = array(
+    'label' => t('Twitter: User'),
+  ) + fluxservice_get_service_icon_info('fluxtwitter');
+  return $info;
 }
 
 /**

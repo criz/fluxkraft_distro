@@ -29,6 +29,8 @@ class FeedService extends Service implements FeedServiceInterface {
       'label' => t('Feed'),
       'description' => t('Provides integration with RSS and Atomic feeds.'),
       'class' => '\Drupal\fluxfeed\Plugin\Service\FeedService',
+      'icon font class' => 'icon-rss',
+      'icon background color' => '#ff9400',
     );
   }
 

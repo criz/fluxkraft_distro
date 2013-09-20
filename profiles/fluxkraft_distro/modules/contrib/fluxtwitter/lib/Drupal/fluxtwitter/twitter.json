@@ -895,6 +895,28 @@
         }
       }
     },
+    "GetLists": {
+      "httpMethod": "GET",
+      "uri": "lists/list.json",
+      "summary": "Returns all lists the authenticating or specified user subscribes to, including their own. The user is specified using the user_id or screen_name parameters. If no user is given, the authenticating user is used.",
+      "parameters": {
+        "user_id": {
+          "location": "query",
+          "type": "integer",
+          "description": "The ID of the user for whom to return results for. Helpful for disambiguating when a valid user ID is also a valid screen name."
+        },
+        "screen_name": {
+          "location": "query",
+          "type": "string",
+          "description": "The screen name of the user for whom to return results for. Helpful for disambiguating when a valid screen name is also a user ID."
+        },
+        "reverse": {
+          "location": "query",
+          "type": "boolean",
+          "description": "Set this to true if you would like owned lists to be returned first. See description above for information on how this parameter works."
+        }
+      }
+    },
     "ListAddMember": {
       "httpMethod": "POST",
       "uri": "lists/members/create.json",

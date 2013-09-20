@@ -7,6 +7,7 @@
 
 namespace Drupal\fluxtwitter\Plugin\Entity;
 
+use Drupal\fluxservice\Entity\FluxEntityInterface;
 use Drupal\fluxservice\Entity\RemoteEntity;
 
 /**
@@ -156,20 +157,6 @@ class TwitterTweet extends RemoteEntity implements TwitterTweetInterface {
     );
 
     return $info;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public static function factory(array $values, $entity_type, $entity_info) {
-    $entity = parent::factory($values, $entity_type, $entity_info);
-
-    if (!$entity->isNew() && !empty($values['user'])) {
-      // Process the attached Twitter user entity.
-      fluxservice_entify_bycatch($values['user'], 'fluxtwitter_user', $entity->getAccount());
-    }
-
-    return $entity;
   }
 
 }

@@ -7,6 +7,7 @@
 
 namespace Drupal\fluxflickr\Plugin\Entity;
 
+use Drupal\fluxservice\Entity\FluxEntityInterface;
 use Drupal\fluxservice\Entity\RemoteEntity;
 
 /**
@@ -38,7 +39,6 @@ class FlickrPhoto extends RemoteEntity implements FlickrPhotoInterface {
    * Gets the entity property definitions.
    */
   public static function getEntityPropertyInfo($entity_type, $entity_info) {
-
     $info['id'] = array(
       'label' => t('Remote identifier'),
       'description' => t('The unique remote identifier of the Photo.'),
@@ -111,6 +111,7 @@ class FlickrPhoto extends RemoteEntity implements FlickrPhotoInterface {
       'large_square' => 'Large Square',
       'square' => 'Square',
     );
+
     foreach ($sizes as $key => $size) {
       $info["size_$key"] = array(
         'label' => t($size),
@@ -153,20 +154,6 @@ class FlickrPhoto extends RemoteEntity implements FlickrPhotoInterface {
     }
 
     return $info;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public static function factory(array $values, $entity_type, $entity_info) {
-    $entity = parent::factory($values, $entity_type, $entity_info);
-
-    if (!$entity->isNew() && !empty($values['user'])) {
-      // Process the attached Flickr user entity.
-      fluxservice_entify_bycatch($values['user'], 'fluxflickr_user', $entity->getAccount());
-    }
-
-    return $entity;
   }
 
 }

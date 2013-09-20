@@ -16,13 +16,6 @@ use Drupal\fluxservice\Entity\RemoteEntityInterface;
 abstract class RemoteEntityController extends \EntityAPIController implements RemoteEntityControllerInterface {
 
   /**
-   * The character used for separating the different parts of the entity id.
-   *
-   * @var string
-   */
-  protected $separator = ':';
-
-  /**
    * The key of the remote identifier property.
    *
    * @var string
@@ -43,6 +36,8 @@ abstract class RemoteEntityController extends \EntityAPIController implements Re
    * {@inheritdoc}
    */
   public function load($ids = array(), $conditions = array()) {
+    // We do not support loading by conditions for now, use EFQ instead or
+    // integrate it here.
     if (!empty($conditions)) {
       return array();
     }
@@ -84,7 +79,8 @@ abstract class RemoteEntityController extends \EntityAPIController implements Re
       }
     }
 
-    // Ensure that the returned array is ordered the same as the original.
+    // Ensure that the returned array is ordered the same as the original and
+    // remove any entities which have been bycatched during load.
     if (!empty($passed) && $passed = array_intersect_key($passed, $entities)) {
       foreach ($passed as $id => $value) {
         $passed[$id] = $entities[$id];
@@ -97,12 +93,19 @@ abstract class RemoteEntityController extends \EntityAPIController implements Re
 
   /**
    * {@inheritdoc}
+   *
+   * Note that we do not support loading by conditions, so $conditions can be
+   * safely ignored - just as revisions.
+   *
+   * @return
+   *   The results may contain more entities as requested, as bycatched entities
+   *   can be included.
    */
   public function query($ids, $conditions, $revision_id = FALSE) {
     // Decode the ids and group them by agents.
     $agents = $groups = array();
     foreach ($ids as $id) {
-      list($type, $agent, $identifier) = explode($this->separator, $id, 3);
+      list($type, $agent, $identifier) = explode(':', $id, 3);
       if (!in_array($type, array('account', 'service'), TRUE)) {
         throw new \InvalidArgumentException('The agent has to be an account or a service entity.');
       }
@@ -116,10 +119,8 @@ abstract class RemoteEntityController extends \EntityAPIController implements Re
     // Load each group separately.
     $entities = array();
     foreach ($groups as $group => $identifiers) {
-      foreach ($this->loadFromService($identifiers, $agents[$group]) as $item) {
-        $entity = $this->entifyItem($item, $agents[$group]);
-        $entities[$entity->identifier()] = $entity;
-      }
+      $items = $this->loadFromService($identifiers, $agents[$group]);
+      $entities += $this->entify($items, $agents[$group]);
     }
 
     return $entities;
@@ -166,63 +167,69 @@ abstract class RemoteEntityController extends \EntityAPIController implements Re
   /**
    * {@inheritdoc}
    */
-  public function entifyBycatch(array $items, FluxEntityInterface $agent) {
-    // First, entify the items.
-    $entities = array();
-    foreach ($items as $item) {
-      $entity = $this->entifyItem($item, $agent);
-      $entities[$entity->identifier()] = $entity;
-    }
+  public function bycatch(array $items, FluxEntityInterface $agent) {
+    // Turn bycatched items into cached entities.
+    $entities = $this->entify($items, $agent);
 
     // Skip adding already present entities.
-    if ($cached = $this->cacheGet(array_keys($entities))) {
-      $entities = array_diff_key($entities, $cached);
+    $cached = $this->cacheGet(array_keys($entities));
+    if ($loaded = array_diff_key($entities, $cached)) {
+      // Invoke the load hooks.
+      $this->attachLoad($loaded);
+      $this->cacheSet($loaded);
     }
-
-    // Invoke the load hooks.
-    $this->attachLoad($entities);
-    $this->cacheSet($entities);
 
     return $entities + $cached;
   }
 
   /**
-   * Converts a remote entity array into a proper entity object.
-   *
-   * @param array $item
-   *   The entity values as an array.
-   * @param FluxEntityInterface $agent
-   *   The agent associated with the item.
-   *
-   * @throws \InvalidArgumentException
-   *   If the given agent is not a service or account entity.
-   *
-   * @return RemoteEntityInterface
-   *   A remote entity object.
+   * {@inheritdoc}
    */
-  protected function entifyItem(array $item, FluxEntityInterface $agent) {
-    // The output array has to be keyed by the id of the contained entity.
-    $class = $this->entityInfo['entity class'];
-    $entity = $class::factory($item, $this->entityType, $this->entityInfo);
+  public function entify(array $items, FluxEntityInterface $agent) {
+    // Give subclasses a chance to easily implement custom entify logic.
+    $this->preEntify($items, $agent);
 
+    // Determine the type of the agent.
     if (is_subclass_of($agent, 'Drupal\fluxservice\Plugin\Entity\AccountInterface')) {
       $type = 'account';
-      $entity->setAccount($agent);
     }
     elseif (is_subclass_of($agent, 'Drupal\fluxservice\Plugin\Entity\ServiceInterface')) {
       $type = 'service';
-      $entity->setService($agent);
     }
     else {
       throw new \InvalidArgumentException('The agent has to be an account or a service entity.');
     }
 
-    // Response values may differ based on which account was used for the
-    // request, hence we have to concatenate the account and response object
-    // id for building a unique entity id for the remote object.
-    $entity->{$this->idKey} = "$type:{$agent->identifier()}{$this->separator}{$entity->getRemoteIdentifier()}";
+    $entities = array();
+    foreach ($items as $item) {
+      // Response values may differ based on which account was used for the
+      // request, hence we have to concatenate the account and response object
+      // id for building a unique entity id for the remote object.
+      $item[$this->idKey] = "$type:{$agent->identifier()}:{$item[$this->remoteIdKey]}";
 
-    return $entity;
+      // Create the entity object.
+      $class = $this->entityInfo['entity class'];
+      $setter = "set{$type}";
+      $entity = $class::factory($item, $this->entityType, $this->entityInfo);
+      $entity->{$setter}($agent);
+
+      $entities[$entity->identifier()] = $entity;
+    }
+
+    return $entities;
+  }
+
+  /**
+   * Gives sub-classes a chance to easily implement custom entify logic.
+   *
+   * @param array $items
+   *   The array of items about to be entified.
+   * @param \Drupal\fluxservice\Entity\FluxEntityInterface $agent
+   *   The agent used to load the items.
+   */
+  protected function preEntify(array &$items, FluxEntityInterface $agent) {
+    // Since some classes might not need this, we won't enforce this method by
+    // making it abstract.
   }
 
   /**
@@ -234,7 +241,8 @@ abstract class RemoteEntityController extends \EntityAPIController implements Re
    *   The agent for which to load the entities.
    *
    * @return array
-   *   An array of loaded items.
+   *   An array of loaded items. It's safe to include additional, i.e. not
+   *   requested items, to bycatch them for later.
    */
   abstract protected function loadFromService($ids, FluxEntityInterface $agent);
 

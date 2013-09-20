@@ -16,7 +16,8 @@
         },
         "metadata": {
           "type": "boolean",
-          "location": "query"
+          "location": "query",
+          "default": true
         },
         "fields": {
           "location": "query",
@@ -43,7 +44,7 @@
         }
       }
     },
-    "GetStatus": {
+    "s": {
       "extends": "GetObject",
       "responseClass": "GetStatusOutput"
     },
@@ -95,7 +96,13 @@
     "GetFeed": {
       "extends": "GetObject",
       "uri": "{id}/feed",
-      "responseClass": "GetFeedOutput"
+      "responseClass": "GetFeedOutput",
+      "parameters": {
+        "since": {
+          "type": ["string", "integer"],
+          "location": "uri"
+        }
+      }
     },
     "GetFriendLists": {
       "extends": "GetObject",
@@ -230,7 +237,17 @@
     "GetStatuses": {
       "extends": "GetObject",
       "uri": "{id}/statuses",
-      "responseClass": "GetStatusesOutput"
+      "responseClass": "GetStatusesOutput",
+      "parameters": {
+        "until": {
+          "type": ["string", "integer"],
+          "location": "query"
+        },
+        "since": {
+          "type": ["string", "integer"],
+          "location": "query"
+        }
+      }
     },
     "GetSubscribedTo": {
       "extends": "GetObject",
@@ -381,7 +398,7 @@
     },
     "GetAccountsOutput": {
       "location": "json",
-      "type": "onbject",
+      "type": "object",
       "properties": {
         "data": {
           "location": "json",
@@ -523,8 +540,14 @@
     "GetFeedOutput": {
       "location": "json",
       "type": "array",
-      "items": {
-        "$ref": "Post"
+      "properties": {
+        "data": {
+          "location": "json",
+          "type": "array",
+          "items": {
+            "$ref": "Post"
+          }
+        }
       }
     },
     "GetFriendListsOutput": {
@@ -808,8 +831,14 @@
     "GetStatusesOutput": {
       "location": "json",
       "type": "array",
-      "items": {
-        "$ref": "Status"
+      "properties": {
+        "data": {
+          "location": "json",
+          "type": "array",
+          "items": {
+            "$ref": "Status"
+          }
+        }
       }
     },
     "GetSubscribedToOutput": {

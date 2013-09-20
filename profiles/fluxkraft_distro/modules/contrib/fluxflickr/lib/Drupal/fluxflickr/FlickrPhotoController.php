@@ -39,4 +39,16 @@ class FlickrPhotoController extends RemoteEntityController {
     return array();
   }
 
+  /**
+   * {@inheritdoc}
+   */
+  protected function preEntify(array &$items, FluxEntityInterface $agent) {
+    foreach ($items as &$values) {
+      if (!empty($values['user'])) {
+        // Process the attached Flickr user entity.
+        $values['user'] = fluxservice_bycatch($values['user'], 'fluxflickr_user', $agent);
+      }
+    }
+  }
+
 }

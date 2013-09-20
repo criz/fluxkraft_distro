@@ -6,9 +6,9 @@ php = 5.3
 dependencies[] = fluxservice
 
 
-; Information added by drupal.org packaging script on 2013-08-15
-version = "7.x-1.0-beta1+11-dev"
+; Information added by drupal.org packaging script on 2013-09-20
+version = "7.x-1.0-beta1+14-dev"
 core = "7.x"
 project = "fluxflickr"
-datestamp = "1376528923"
+datestamp = "1379674401"
 

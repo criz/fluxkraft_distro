@@ -23,6 +23,7 @@ class PostPageStatusMessage extends RulesPluginHandlerBase implements \RulesActi
       'name' => 'fluxfacebook_create_page_status_message',
       'label' => t('Post a status message on a page'),
       'parameter' => array(
+        'account' => static::getAccountParameterInfo(),
         'message' => array(
           'type' => 'text',
           'label' => t('Status message'),
@@ -31,7 +32,6 @@ class PostPageStatusMessage extends RulesPluginHandlerBase implements \RulesActi
           'type' => 'text',
           'label' => t('Facebook page identifier'),
         ),
-        'account' => static::getAccountParameterInfo(),
       ),
     );
   }

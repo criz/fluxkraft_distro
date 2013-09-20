@@ -21,10 +21,22 @@ class LinkedInUserController extends RemoteEntityController {
    */
   protected function loadFromService($ids, FluxEntityInterface $agent) {
     $output = array();
-    $client = $agent->getClient();
+    $client = $agent->client();
     foreach ($ids as $id) {
-      $response = $client->getMemberById(array('id' => $id));
-      $output[$id] = $response['values'][0];
+      $response = $client->getMemberById(array(
+        'id' => $id,
+        'format' => 'json',
+        'fields' => array(
+          'id',
+          'first-name',
+          'last-name',
+          'headline',
+          'picture-url',
+        )
+      ));
+      if (isset($response['id'])) {
+        $output[$id] = $response;
+      }
     }
     return $output;
   }

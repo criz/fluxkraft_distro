@@ -8,52 +8,10 @@
 require_once dirname(__FILE__) . '/includes/omega.inc';
 require_once dirname(__FILE__) . '/includes/scripts.inc';
 
-if (drupal_get_bootstrap_phase() >= DRUPAL_BOOTSTRAP_DATABASE && $GLOBALS['theme'] === $GLOBALS['theme_key'] && ($GLOBALS['theme'] == 'omega' || (!empty($GLOBALS['base_theme_info']) && $GLOBALS['base_theme_info'][0]->name == 'omega'))) {
-  // Managing debugging (flood) messages and a few development tasks. This also
-  // lives outside of any function declaration to make sure that the code is
-  // executed before any theme hooks.
-  if (omega_extension_enabled('development') && user_access('administer site configuration')) {
-    if (variable_get('theme_' . $GLOBALS['theme'] . '_settings') && flood_is_allowed('omega_' . $GLOBALS['theme'] . '_theme_settings_warning', 3)) {
-      // Alert the user that the theme settings are served from a variable.
-      flood_register_event('omega_' . $GLOBALS['theme'] . '_theme_settings_warning');
-      drupal_set_message(t('The settings for this theme are currently served from a variable. You might want to export them to your .info file.'), 'warning');
-    }
-
-    // Rebuild the theme registry / aggregates on every page load if the
-    // development extension is enabled and configured to do so.
-    if (omega_theme_get_setting('omega_rebuild_theme_registry', FALSE)) {
-      // Rebuild the theme data.
-      system_rebuild_theme_data();
-      // Rebuild the theme registry.
-      drupal_theme_rebuild();
-
-      if (flood_is_allowed('omega_' . $GLOBALS['theme'] . '_rebuild_registry_warning', 3)) {
-        // Alert the user that the theme registry is being rebuilt on every
-        // request.
-        flood_register_event('omega_' . $GLOBALS['theme'] . '_rebuild_registry_warning');
-        drupal_set_message(t('The theme registry is being rebuilt on every request. Remember to <a href="!url">turn off</a> this feature on production websites.', array("!url" => url('admin/appearance/settings/' . $GLOBALS['theme']))), 'warning');
-      }
-    }
-
-    if (omega_theme_get_setting('omega_rebuild_aggregates', FALSE) && variable_get('preprocess_css', FALSE) && (!defined('MAINTENANCE_MODE') || MAINTENANCE_MODE != 'update')) {
-      foreach (array('css', 'js') as $type) {
-        variable_del('drupal_' . $type . '_cache_files');
-
-        foreach (file_scan_directory('public://' . $type . '', '/.*/') as $file) {
-          // Delete files that are older than 20 seconds.
-          if (REQUEST_TIME - filemtime($file->uri) > 20) {
-            file_unmanaged_delete($file->uri);
-          }
-        };
-      }
-
-      if (flood_is_allowed('omega_' . $GLOBALS['theme'] . '_rebuild_aggregates_warning', 3)) {
-        // Alert the user that the theme registry is being rebuilt on every
-        // request.
-        flood_register_event('omega_' . $GLOBALS['theme'] . '_rebuild_aggregates_warning');
-        drupal_set_message(t('The CSS and JS aggregates are being rebuilt on every request. Remember to <a href="!url">turn off</a> this feature on production websites.', array("!url" => url('admin/appearance/settings/' . $GLOBALS['theme']))), 'warning');
-      }
-    }
+// Include the main extension file for every enabled extension.
+foreach (omega_extensions() as $extension => $info) {
+  if (omega_extension_enabled($extension) && ($file = $info['path'] . '/' . $extension . '.inc') && is_file($file)) {
+    require_once $file;
   }
 }
 
@@ -309,6 +267,21 @@ function omega_css_alter(&$css) {
     $regex = preg_replace('/\\\.css$/', '(\.css|-rtl\.css)', $regex);
     omega_exclude_assets($css, $regex);
   }
+
+  // Allow themes to specify no-query fallback CSS files.
+  $mapping = omega_generate_asset_mapping($css);
+  foreach (preg_grep('/\.no-query(-rtl)?\.css$/', $mapping) as $key => $fallback) {
+    // Don't modify browser settings if they have already been modified.
+    if ($css[$key]['browsers']['IE'] === TRUE && $css[$key]['browsers']['!IE'] === TRUE) {
+      $css[$key]['browsers'] = array(
+        '!IE' => FALSE,
+        'IE' => 'lte IE 8',
+      );
+
+      // Make sure that we don't break any CSS aggregation groups.
+      $css[$key]['weight'] += 100;
+    }
+  }
 }
 
 /**
@@ -316,7 +289,7 @@ function omega_css_alter(&$css) {
  */
 function omega_js_alter(&$js) {
   // If the AJAX.js isn't included... we don't need the ajaxPageState settings!
-  if ( ! isset($js['misc/ajax.js']) && isset($js['settings']['data'])) {
+  if (!isset($js['misc/ajax.js']) && isset($js['settings']['data'])) {
     foreach ($js['settings']['data'] as $delta => $setting) {
       if (array_key_exists('ajaxPageState', $setting)) {
         if (count($setting) == 1) {
@@ -376,8 +349,20 @@ function omega_theme() {
     'base hook' => 'page',
   );
 
+  $info = array_merge($info, _omega_theme_layouts());
+
+  return $info;
+}
+
+/**
+ * Helper function for registering theme hooks for Omega layouts.
+ */
+function _omega_theme_layouts() {
+  $info = array();
+
   foreach (omega_layouts_info() as $layout) {
-    $info[$layout['template']] = array(
+    $hook = str_replace('-', '_', $layout['template']);
+    $info[$hook] = array(
       'template' => $layout['template'],
       'path' => $layout['path'],
     );
@@ -390,18 +375,31 @@ function omega_theme() {
  * Implements hook_theme_registry_alter().
  */
 function omega_theme_registry_alter(&$registry) {
+  require_once dirname(__FILE__) . '/includes/registry.inc';
+
   // Fix for integration with the theme developer module.
   if (module_exists('devel_themer')) {
     foreach ($registry as $hook => $data) {
-      $registry[$hook] = $data['original'];
+      if (isset($data['original'])) {
+        $registry[$hook] = $data['original'];
+      }
     }
   }
 
-  $mapping = array(
-    'preprocess' => 'preprocess functions',
-    'process' => 'process functions',
-    'theme' => 'function',
-  );
+  // For maintainability reasons, some of this code lives in a class.
+  $handler = new OmegaThemeRegistryHandler($registry, $GLOBALS['theme']);
+
+  // Allows themers to split preprocess / process / theme code across separate
+  // files to keep the main template.php file clean. This is really fast because
+  // it uses the theme registry to cache the paths to the files that it finds.
+  $trail = omega_theme_trail($GLOBALS['theme']);
+  foreach ($trail as $theme => $name) {
+    $handler->registerHooks($theme);
+    $handler->registerThemeFunctions($theme, $trail);
+  }
+
+  // Override the default 'template_process_html' hook implementation.
+  $handler->overrideHook('html', 'template_process_html', 'omega_template_process_html_override');
 
   // We prefer the attributes array instead of the plain classes array used by
   // many core and contrib modules. In Drupal 8, we are going to convert all
@@ -409,135 +407,20 @@ function omega_theme_registry_alter(&$registry) {
   // synchronize our attributes array with the classes array to encourage
   // themers to use it.
   foreach ($registry as $hook => $item) {
-    if (empty($item['base hook']) && empty($item[$mapping['theme']])) {
-      if (($index = array_search('template_preprocess', $registry[$hook][$mapping['preprocess']], TRUE)) !== FALSE) {
+    if (empty($item['base hook']) && empty($item['function'])) {
+      if (($index = array_search('template_preprocess', $registry[$hook]['preprocess functions'], TRUE)) !== FALSE) {
         // Make sure that omega_initialize_attributes() is invoked first.
-        array_unshift($registry[$hook][$mapping['process']], 'omega_cleanup_attributes');
+        array_unshift($registry[$hook]['process functions'], 'omega_cleanup_attributes');
         // Add omega_cleanup_attributes() right after template_preprocess().
-        array_splice($registry[$hook][$mapping['preprocess']], $index + 1, 0, 'omega_initialize_attributes');
+        array_splice($registry[$hook]['preprocess functions'], $index + 1, 0, 'omega_initialize_attributes');
       }
     }
   }
 
-  // Allow themers to split preprocess / process / theme code across separate
-  // files to keep the main template.php file clean. This is really fast because
-  // it uses the theme registry to cache the paths to the files that it finds.
-  $trail = omega_theme_trail();
-
-  // Keep track of theme function include files that are not directly loaded
-  // into the theme registry. This is the case for previously unknown theme
-  // hook suggestion implementations.
-  foreach ($trail as $theme => $name) {
-    // Remove the current element from the trail so we only iterate over
-    // higher level themes during subsequent checks.
-    unset($trail[$theme]);
-
-    foreach ($mapping as $type => $map) {
-      $path = drupal_get_path('theme', $theme);
-      // Only look for files that match the 'something.preprocess.inc' pattern.
-      $mask = '/.' . $type . '.inc$/';
-      // This is the length of the suffix (e.g. '.preprocess') of the basename
-      // of a file.
-      $strlen = -(strlen($type) + 1);
-
-      // Recursively scan the folder for the current step for (pre-)process
-      // files and write them to the registry.
-      foreach (file_scan_directory($path . '/' . $type, $mask) as $item) {
-        $hook = strtr(substr($item->name, 0, $strlen), '-', '_');
-
-        // If there is no hook with that name, continue. This does not apply to
-        // theme functions because if we want to support theme hook suggestions
-        // in .theme.inc files that have not previously been declared we need to
-        // run the full discovery for theme functions.
-        if (!array_key_exists($hook, $registry) && ($type !== 'theme' || strpos($hook, '__') === FALSE)) {
-          continue;
-        }
-
-        // Skip theme function overrides if they are already declared 'final'.
-        if ($type === 'theme' && !empty($registry[$hook]['final'])) {
-          continue;
-        }
-
-        // Name of the function (theme hook or theme function).
-        $callback = $type == 'theme' ? $theme . '_' . $hook : $theme . '_' . $type . '_' . $hook;
-
-        // Furthermore, we don't want to re-override sub-theme template file or
-        // theme function overrides with theme functions from include files
-        // defined in a lower-level base theme. Without this check this would
-        // happen because our alter hook runs after the template file and theme
-        // function discovery logic from Drupal core (theme engine).
-        if ($type == 'theme' && $theme != $GLOBALS['theme'] && in_array($registry[$hook]['type'], array('base_theme_engine', 'theme_engine'))) {
-          // Now we know that there is a template file or theme function
-          // override that has been defined somewhere in the theme trail. Now
-          // we need to check if the declaration of that function or template
-          // file lives further down the theme trail than the function we are
-          // currently looking it.
-          foreach ($trail as $subkey => $subtheme) {
-            if ($registry[$hook]['theme path'] == drupal_get_path('theme', $subkey)) {
-              continue(2);
-            }
-          }
-        }
-
-        // Load the file once so we can check if the function exists.
-        require_once $item->uri;
-
-        // Proceed if the callback doesn't exist.
-        if (!function_exists($callback)) {
-          continue;
-        }
-
-        // If we got this far and the following if() statement evaluates to true
-        // then that means that the theme function override that is currently
-        // being processed is a previously unknown theme hook suggestion.
-        if ($type == 'theme' && !array_key_exists($hook, $registry) && $separator = strpos($hook, '__')) {
-          $suggestion = $hook;
-          $hook = substr($hook, 0, $separator);
-
-          if (!isset($registry[$hook])) {
-            // Bail out here if the base hook does not exist.
-            continue;
-          }
-
-          // Register the theme hook suggestion.
-          $arg_name = isset($registry[$hook]['variables']) ? 'variables' : 'render element';
-          $registry[$suggestion] = array(
-            $map => $callback,
-            $arg_name => $registry[$hook][$arg_name],
-            'base hook' => $hook,
-          );
-        }
-        elseif ($type == 'theme') {
-          // Inject our theme function. We will leave any potential 'template'
-          // declarations in the registry as they don't hurt us anyways
-          // because drupal gives precedence to theme functions.
-          $registry[$hook][$map] = $callback;
-        }
-        else {
-          // Append the included preprocess hook to the array of functions.
-          $registry[$hook][$map][] = $callback;
-        }
-
-        // By adding this file to the 'includes' array we make sure that it is
-        // available when the hook is executed.
-        $registry[$hook]['includes'][] = $item->uri;
-      }
-    }
-  }
-
-  // Include the main extension file for every enabled extension. This is
-  // required for the next step (allowing extensions to register hooks in the
-  // theme registry).
+  // Allow extensions to register hooks in the theme registry.
   foreach (omega_extensions() as $extension => $info) {
-    // Load all the implementations for this extensions and invoke the according
-    // hooks.
+    // Invoke the according hooks for every enabled extension.
     if (omega_extension_enabled($extension)) {
-      $file = $info['path'] . '/' . $extension . '.inc';
-
-      if (is_file($file)) {
-        require_once $file;
-      }
-
       // Give every enabled extension a chance to alter the theme registry.
       $hook = $info['theme'] . '_extension_' . $extension . '_theme_registry_alter';
 
@@ -547,30 +430,8 @@ function omega_theme_registry_alter(&$registry) {
     }
   }
 
-  // Override pre-process and process functions for cases where we want to take
-  // a completely different approach than what core does by default. In some
-  // cases this is much more practical than altering or undoing things that were
-  // added or changed in a previous hook.
-  $overrides = array(
-    'html' => array(
-      'process' => array(
-        'template_process_html' => 'omega_template_process_html_override',
-      ),
-    ),
-  );
-
-  foreach ($overrides as $hook => $types) {
-    foreach ($types as $type => $overrides) {
-      foreach ($overrides as $original => $override) {
-        if (($index = array_search($original, $registry[$hook][$mapping[$type]], TRUE)) !== FALSE) {
-          array_splice($registry[$hook][$mapping[$type]], $index, 1, $override);
-        }
-      }
-    }
-  }
-
   // Fix for integration with the theme developer module.
-  if (module_exists('devel_themer')) {
+  if (module_exists('devel_themer') && function_exists('devel_themer_theme_registry_alter')) {
     devel_themer_theme_registry_alter($registry);
   }
 }
@@ -922,7 +783,8 @@ function omega_omega_layout($variables) {
 
   // Clean up the theme hook suggestion so we don't end up in an infinite loop.
   unset($variables['theme_hook_suggestion'], $variables['theme_hook_suggestions']);
-  return theme($variables['omega_layout']['template'], $variables);
+  $hook = str_replace('-', '_', $variables['omega_layout']['template']);
+  return theme($hook, $variables);
 }
 
 /**

@@ -1,8 +1,8 @@
 {
-  "name": "drupal/fluxfacebook",
+  "name": "drupal/fluxfeed",
   "type": "drupal-module",
-  "description": "Provides integration for the Facebook Graph API and query language.",
-  "homepage": "http://drupal.org/project/fluxfacebook",
+  "description": "Provides integration for Atom & RSS Feeds.",
+  "homepage": "http://drupal.org/project/fluxfeed",
   "license": "GPL-2.0",
   "authors": [
     {

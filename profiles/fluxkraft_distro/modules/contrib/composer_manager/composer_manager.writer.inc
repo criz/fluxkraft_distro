@@ -303,5 +303,9 @@ function composer_manager_relative_dir($dir_to, $dir_from) {
     unset($dirs_to[$pos], $dirs_from[$pos]);
   }
 
-  return str_repeat('../', count($dirs_from)) . join('/', $dirs_to);
+  $path = str_repeat('../', count($dirs_from)) . join('/', $dirs_to);
+  if (PHP_OS == 'WINNT'){
+    $path = preg_replace('%..\\/([a-zA-Z])%i', '${1}', $path, 1);
+  }
+  return $path;
 }

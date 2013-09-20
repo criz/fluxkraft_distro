@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains StatusMessage.
+ * Contains StatusMessageInterface.
  */
 
 namespace Drupal\fluxfacebook\Objects;
@@ -10,12 +10,15 @@ namespace Drupal\fluxfacebook\Objects;
 use Drupal\fluxfacebook\Plugin\Entity\FacebookObjectInterface;
 
 /**
- * Entity bundle class for status messages.
+ * Entity bundle interface for status messages.
  */
 interface StatusMessageInterface extends FacebookObjectInterface {
 
   /**
    * Gets the message text.
+   *
+   * @return string|null
+   *   The message text or NULL if it is not set.
    */
   public function getMessage();
 
@@ -29,5 +32,14 @@ interface StatusMessageInterface extends FacebookObjectInterface {
    *   The called object for chaining.
    */
   public function setMessage($message);
+
+  /**
+   * Gets the created timestamp.
+   *
+   * @return int
+   *   The timestamp for when the message was last updated or NULL if it hasn't
+   *   been published yet.
+   */
+  public function getUpdatedTime();
 
 }

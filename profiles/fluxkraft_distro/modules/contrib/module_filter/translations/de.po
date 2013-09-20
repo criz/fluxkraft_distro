@@ -1,10 +1,10 @@
-# German translation of Module Filter (7.x-1.7)
-# Copyright (c) 2012 by the German translation team
+# German translation of Module Filter (7.x-1.8)
+# Copyright (c) 2013 by the German translation team
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Module Filter (7.x-1.7)\n"
-"POT-Creation-Date: 2012-11-23 23:11+0000\n"
+"Project-Id-Version: Module Filter (7.x-1.8)\n"
+"POT-Creation-Date: 2013-08-10 01:48+0000\n"
 "PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
 "Language-Team: German\n"
 "MIME-Version: 1.0\n"

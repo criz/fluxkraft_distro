@@ -78,6 +78,37 @@ function fluxkraft_distro_configure_endpoints_form($form, &$form_state) {
 }
 
 /**
+ * Installation step form callback.
+ */
+function fluxkraft_distro_configure_cron_form($form, &$form_state) {
+  drupal_set_title(st('Configure cron'));
+  $cron_key = variable_get('cron_key', 'drupal');
+  $cron_url = url('cron.php', array('absolute' => TRUE, 'query' => array('cron_key' => $cron_key)));
+
+  $form['help'] = array(
+    '#markup' => t('<p>You need to configure cron to allow fluxkraft to work properly.</p>
+    <p>If you have not configured it already, you can find detailed instructions
+    at !url or at step 8 of the Drupal INSTALL.txt file that is included with fluxkraft.</p>
+    <p>Summarized for Unix/Linux based systems, the following crontab line configures
+     cron as required and runs it every 5 minutes:</p>
+    <code>!code</code><p>We recommened running cron every 5 minutes!</p>', array(
+      '!code' => '*/5 * * * * wget -O - -q -t 1 ' . $cron_url,
+      '!url' => l('https://drupal.org/cron', 'https://drupal.org/cron', array(
+        'external' => TRUE,
+        'attributes' => array('target' => '_blank'),
+      )),
+    )),
+  );
+
+  $form['actions'] = array('#type' => 'actions');
+  $form['actions']['submit'] = array(
+    '#type' => 'submit',
+    '#value' => st('Continue'),
+  );
+  return $form;
+}
+
+/**
  * Form builder for the overview form.
  */
 function fluxkraft_distro_add_endpoint_overview_form($form, &$form_state) {
@@ -88,7 +119,7 @@ function fluxkraft_distro_add_endpoint_overview_form($form, &$form_state) {
     if ($plugin == 'fluxfeed') {
       continue;
     }
-    $form['#prefix'] = '<div class="description">' . st('Here you can already configure some of your services. Note that you can add your service apps also later!') . '</div><br />';
+    $form['#prefix'] = '<div class="description">' . st('Here you can already configure some of your services. Note that you can configure your services later also!') . '</div><br />';
     $form[$plugin] = array(
       '#theme_wrappers' => array('fluxservice_icon'),
     );
@@ -104,7 +135,8 @@ function fluxkraft_distro_add_endpoint_overview_form($form, &$form_state) {
     else {
       $form[$plugin]['button'] = array(
         '#type' => 'submit',
-        '#value' => st('Add'),
+        '#value' => $info['label'],
+        '#name' => $plugin,
         '#plugin' => $plugin,
       );
     }

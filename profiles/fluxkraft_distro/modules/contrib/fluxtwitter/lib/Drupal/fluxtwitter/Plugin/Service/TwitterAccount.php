@@ -9,9 +9,6 @@ namespace Drupal\fluxtwitter\Plugin\Service;
 
 use Drupal\fluxservice\Service\OAuthAccountBase;
 use Drupal\fluxtwitter\TwitterClient;
-use Guzzle\Http\Client;
-use Guzzle\Plugin\Oauth\OauthPlugin;
-use Guzzle\Service\Builder\ServiceBuilder;
 
 /**
  * Account plugin implementation for Twitter.

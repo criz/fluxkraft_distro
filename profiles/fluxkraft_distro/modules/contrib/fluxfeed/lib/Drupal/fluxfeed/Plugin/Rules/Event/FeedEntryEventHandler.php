@@ -51,7 +51,7 @@ class FeedEntryEventHandler extends CronEventHandlerBase {
   public function summary() {
     $settings = $this->getSettings();
     if (!empty($settings['feed_url'])) {
-      return $this->eventInfo['label'] . ' ' . t('on %url', array('%url' => $settings['feed_url']));
+      return t('@label on %url', array('%url' => $settings['feed_url'], '@label' => $this->eventInfo['label']));
     }
     return $this->eventInfo['label'];
   }

@@ -26,6 +26,7 @@ class FlickrSearchPhotosTaskHandler extends FlickrTaskHandlerBase {
       'format' => "json",
       'extras' => 'date_upload, original_format, owner_name, media',
     );
+
     // We store the upload date of the last Photo that was processed so
     // that we can benefit from the 'min_upload_date' query argument.
     $store = fluxservice_key_value('fluxflickr.search');
@@ -39,10 +40,8 @@ class FlickrSearchPhotosTaskHandler extends FlickrTaskHandlerBase {
     }
 
     $account = $this->getAccount();
-
     if (($response = $account->client()->searchPhotos($arguments)) && $photos = $response['photos']['photo']) {
-
-      $photos = fluxservice_entify_bycatch_multiple($photos, 'fluxflickr_photo', $account);
+      $photos = fluxservice_entify_multiple($photos, 'fluxflickr_photo', $account);
       foreach ($photos as $photo) {
         $event = $this->getEvent();
         rules_invoke_event($event, $account, $photo, $this->task['data']['search'], $this->task['data']['tags'], $this->task['data']['tags_mode'], $this->task['date']);

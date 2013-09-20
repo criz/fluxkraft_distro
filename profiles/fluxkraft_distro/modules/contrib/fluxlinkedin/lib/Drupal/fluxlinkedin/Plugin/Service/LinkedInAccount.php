@@ -33,7 +33,7 @@ class LinkedInAccount extends OAuthAccountBase implements LinkedInAccountInterfa
    *
    * @var string
    */
-  protected $serviceUrl = 'http://api.linkedin.com';
+  protected $serviceUrl = 'https://api.linkedin.com';
 
   /**
    * {@inheritdoc}

@@ -44,7 +44,7 @@ class SendTweet extends RulesPluginHandlerBase implements \RulesActionHandlerInt
     ));
 
     return array(
-      'tweet_sent' => fluxservice_entify_bycatch((array) $response, 'fluxtwitter_tweet', $account),
+      'tweet_sent' => fluxservice_bycatch((array) $response, 'fluxtwitter_tweet', $account),
     );
   }
 }

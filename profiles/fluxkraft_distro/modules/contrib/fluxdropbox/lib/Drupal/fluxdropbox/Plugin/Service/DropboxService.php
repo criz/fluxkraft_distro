@@ -33,7 +33,16 @@ class DropboxService extends OAuthServiceBase implements DropboxServiceInterface
    */
   public function settingsForm(array &$form_state) {
     $form = parent::settingsForm($form_state);
-
+    $form['help'] = array(
+      '#type' => 'markup',
+      '#markup' => t('In the following, you need to provide authentication details
+      for communicating with Dropbox.<br/>For that, you need to create an application
+      in the <a href="https://www.dropbox.com/developers/apps/create">Dropbox developer home</a>,
+      and provide its consumer key and secret below.'),
+      '#prefix' => '<p class="fluxservice-help">',
+      '#suffix' => '</p>',
+      '#weight' => -1,
+    );
     return $form;
   }
 

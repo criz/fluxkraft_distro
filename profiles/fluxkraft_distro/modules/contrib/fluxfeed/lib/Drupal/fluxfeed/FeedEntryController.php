@@ -20,14 +20,22 @@ class FeedEntryController extends RemoteEntityController {
    * {@inheritdoc}
    */
   protected function loadFromService($ids, FluxEntityInterface $agent) {
-    // @todo Implement.
+    return $agent->read();
   }
 
   /**
    * {@inheritdoc}
    */
   protected function sendToService(RemoteEntityInterface $entity) {
-    // @todo Implement.
+    // Unsupported.
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function query($ids, $conditions, $revision_id = FALSE) {
+    $entities = parent::query($ids,$conditions,$revision_id);
+    return array_diff_key($entities, array_flip($ids));
   }
 
 }

@@ -11,12 +11,15 @@ use Drupal\fluxservice\Plugin\Entity\AccountInterface;
  * Implements hook_rules_category_info().
  */
 function fluxfacebook_rules_category_info() {
-  return array(
-    // Use the same icon as for the service plugin.
-    'fluxfacebook' => array(
-      'label' => t('Facebook'),
-    ) + fluxservice_get_service_icon_info('fluxfacebook'),
-  );
+  $info =  array();
+  // Use the same icon as for the service plugin.
+  $info['fluxfacebook'] = array(
+    'label' => t('Facebook'),
+  ) + fluxservice_get_service_icon_info('fluxfacebook');
+  $info['facebook_object'] = array(
+    'label' => t('Facebook: Object'),
+  ) + fluxservice_get_service_icon_info('fluxfacebook');
+  return $info;
 }
 
 /**
@@ -30,5 +33,5 @@ function fluxfacebook_fluxservice_plugin_directory() {
  * Implements hook_fluxfacebook_required_permissions().
  */
 function fluxfacebook_fluxfacebook_required_permissions(AccountInterface $account) {
-  return array('manage_pages', 'publish_stream');
+  return array('manage_pages', 'publish_stream', 'user_status', 'friends_status', 'read_stream');
 }

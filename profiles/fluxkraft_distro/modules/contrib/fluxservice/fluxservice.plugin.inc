@@ -64,17 +64,19 @@ function fluxservice_discover_plugins($type) {
   // Make sure all files possibly holding plugins are included.
   $files = array();
   foreach (fluxservice_get_plugin_directories() as $module => $directory) {
-    foreach (glob(drupal_get_path('module', $module) . "/$directory/{$type_info['directory']}/*.{inc,php}", GLOB_BRACE) as $filename) {
+    $path = drupal_get_path('module', $module) . "/$directory/{$type_info['directory']}/*.{inc,php}";
+    $path = DIRECTORY_SEPARATOR != '/' ? str_replace(DIRECTORY_SEPARATOR, '/', $path) : $path;
+    foreach (glob($path, GLOB_BRACE) as $filename) {
       $files[$filename] = $filename;
       include_once $filename;
     };
   }
-
   $items = array();
   foreach (get_declared_classes() as $plugin_class) {
     if (is_subclass_of($plugin_class, $interface) && method_exists($plugin_class, 'getInfo')) {
       $reflection = new ReflectionClass($plugin_class);
       $file_path = str_replace(DRUPAL_ROOT . '/', '', $reflection->getFileName());
+      $file_path = DIRECTORY_SEPARATOR != '/' ? str_replace(DIRECTORY_SEPARATOR, '/', $file_path) : $file_path;
       if (array_key_exists($file_path, $files)) {
         $info = call_user_func(array($plugin_class, 'getInfo'));
         $info['class'] = $plugin_class;
@@ -91,9 +93,10 @@ function fluxservice_discover_plugins($type) {
 }
 
 /**
- * Determines the module providing the given class.
+ * Determines the module providing the given file path.
  */
 function _fluxservice_discover_module($file_path) {
+
   $paths = &drupal_static(__FUNCTION__);
 
   if (!isset($paths)) {
@@ -102,11 +105,16 @@ function _fluxservice_discover_module($file_path) {
       $paths[dirname($module_info->filename)] = $name;
     }
   }
+
+  $path = str_replace(realpath(DRUPAL_ROOT) . DIRECTORY_SEPARATOR, '', realpath(dirname($file_path)));
+  $path = DIRECTORY_SEPARATOR != '/' ? str_replace(DIRECTORY_SEPARATOR, '/', $path) : $path;
+
   // Go up the path until we match a module up.
-  while (!isset($paths[$file_path]) && strpos($file_path, DIRECTORY_SEPARATOR) !== FALSE) {
-    $file_path = dirname($file_path);
+  $parts = explode('/', $path);
+  while (!isset($paths[$path]) && array_pop($parts)) {
+    $path = dirname($path);
   }
-  return isset($paths[$file_path]) ? $paths[$file_path] : FALSE;
+  return isset($paths[$path]) ? $paths[$path] : FALSE;
 }
 
 /**

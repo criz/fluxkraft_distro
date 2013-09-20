@@ -30,18 +30,31 @@ class TwitterSearchTweetsTaskHandler extends TwitterTaskHandlerBase {
     }
 
     $account = $this->getAccount();
-
     if (($response = $account->client()->searchTweets($arguments)) && $tweets = $response['statuses']) {
-      // Twitter sends the tweets in the wrong order.
-      $tweets = array_reverse($tweets);
-      $tweets = fluxservice_entify_bycatch_multiple($tweets, 'fluxtwitter_tweet', $account);
-      foreach ($tweets as $tweet) {
-        rules_invoke_event($this->getEvent(), $account, $tweet, $this->task['data']['search']);
+      if (empty($since_id)) {
+        // If there is no 'last processed Tweet' id stored yet it means that the
+        // search is being executed for the first time. In that case, we have to
+        // ensure that no old Tweets are processed. This has to happen on the
+        // client side as Twitter does not expose a request parameter for this.
+        $date = $this->task['date'];
+        array_filter($tweets, function ($tweet) use ($date) {
+          return strtotime($tweet['created_at'], REQUEST_TIME) < $date;
+        });
       }
 
-      // Store the remote identifier of the last Tweet that was processed.
-      $last = end($tweets);
-      $store->set($this->task['identifier'], $last->getRemoteIdentifier());
+      if (!empty($tweets)) {
+        // Twitter sends the tweets in the wrong order.
+        $tweets = array_reverse($tweets);
+        $tweets = fluxservice_entify_multiple($tweets, 'fluxtwitter_tweet', $account);
+
+        foreach ($tweets as $tweet) {
+          rules_invoke_event($this->getEvent(), $account, $tweet, $this->task['data']['search']);
+        }
+
+        // Store the remote identifier of the last Tweet that was processed.
+        $last = end($tweets);
+        $store->set($this->task['identifier'], $last->getRemoteIdentifier());
+      }
     }
   }
 

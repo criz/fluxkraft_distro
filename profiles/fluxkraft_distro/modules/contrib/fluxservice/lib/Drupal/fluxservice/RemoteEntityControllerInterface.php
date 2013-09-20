@@ -15,20 +15,34 @@ use Drupal\fluxservice\Entity\FluxEntityInterface;
 interface RemoteEntityControllerInterface extends \EntityAPIControllerInterface {
 
   /**
-   * Allows entities to be bycatched while querying a different resource.
-   *
-   * Bycatching entities during a request puts them into entity cache, such that
-   * they are available for future calls without requiring another service
-   * request.
+   * Converts a web service response into fully fledged entities.
    *
    * @param array $items
-   *   The array of items to entify and bycatch.
+   *   The array of items to entify.
    * @param \Drupal\fluxservice\Entity\FluxEntityInterface $agent
-   *   The agent used to load the item.
+   *   The agent used to load the items.
    *
-   * @return array
-   *   The array of bycatched entities.
+   * @return \Drupal\fluxservice\Entity\RemoteEntityInterface[]
+   *   The entified entities.
    */
-  public function entifyBycatch(array $items, FluxEntityInterface $agent);
+  public function entify(array $items, FluxEntityInterface $agent);
+
+  /**
+   * Processes values that were by-catched while querying a different resource.
+   *
+   * Sometimes web service responses contain related objects as "by-catch". This
+   * method ensures that they are processed and written to the static entity
+   * cache, such that they are available for future calls without having to
+   * query the web service again.
+   *
+   * @param array $items
+   *   The array of items to by-catch.
+   * @param \Drupal\fluxservice\Entity\FluxEntityInterface $agent
+   *   The agent used to load the items.
+   *
+   * @return \Drupal\fluxservice\Entity\RemoteEntityInterface[]
+   *   The by-catched entities.
+   */
+  public function bycatch(array $items, FluxEntityInterface $agent);
 
 }

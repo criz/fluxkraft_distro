@@ -368,44 +368,83 @@ function fluxservice_load_remote_entity_single($entity_type, $id, FluxEntityInte
 }
 
 /**
- * Turns a single bycatched data object into an entity.
+ * Converts a web service response into a fully fledged entity.
  *
- * @param array $item
- *   The item to entify and bycatch.
+ * @param array $values
+ *   The entity values to entify.
  * @param string $entity_type
  *   The entity type to use.
  * @param \Drupal\fluxservice\Entity\FluxEntityInterface $agent
- *   The agent used to load the item.
+ *   The agent used to load the values.
  *
  * @return \Drupal\fluxservice\Entity\RemoteEntityInterface
- *   The bycatched entity.
+ *   The entified entity.
  *
- * @see fluxservice_entify_bycatch_multiple()
+ * @see \Drupal\fluxservice\RemoteEntityControllerInterface::entify()
  */
-function fluxservice_entify_bycatch($item, $entity_type, FluxEntityInterface $agent) {
-  $entities = fluxservice_entify_bycatch_multiple(array($item), $entity_type, $agent);
+function fluxservice_entify(array $values, $entity_type, FluxEntityInterface $agent) {
+  $entities = fluxservice_entify_multiple(array($values), $entity_type, $agent);
   return reset($entities);
 }
 
 /**
- * Turns bycatched data objects into entities.
- *
- * Bycatching entified items puts them into entity cache, such that are
- * available for future calls without requiring another service request.
+ * Converts a web service response set into fully fledged entities.
  *
  * @param array $items
- *   The array of items to entify and bycatch.
+ *   An array of items to entify.
  * @param string $entity_type
  *   The entity type to use.
  * @param \Drupal\fluxservice\Entity\FluxEntityInterface $agent
- *   The agent used to load the item.
+ *   The agent used to load the items.
  *
- * @return array
- *   The array of bycatched entities.
+ * @return \Drupal\fluxservice\Entity\RemoteEntityInterface[]
+ *   The entified entities.
+ *
+ * @see \Drupal\fluxservice\RemoteEntityControllerInterface::entify()
  */
-function fluxservice_entify_bycatch_multiple($items, $entity_type, FluxEntityInterface $agent) {
+function fluxservice_entify_multiple(array $items, $entity_type, FluxEntityInterface $agent) {
   $controller = entity_get_controller($entity_type);
-  return $controller->entifyBycatch($items, $agent);
+  return $controller->entify($items, $agent);
+}
+
+/**
+ * Processes by-catched values from a different resource.
+ *
+ * @param array $values
+ *   The entity values to by-catch.
+ * @param string $entity_type
+ *   The entity type to use.
+ * @param \Drupal\fluxservice\Entity\FluxEntityInterface $agent
+ *   The agent used to load the items.
+ *
+ * @return \Drupal\fluxservice\Entity\RemoteEntityInterface
+ *   The by-catched entity.
+ *
+ * @see \Drupal\fluxservice\RemoteEntityControllerInterface::bycatch()
+ */
+function fluxservice_bycatch(array $values, $entity_type, FluxEntityInterface $agent) {
+  $entities = fluxservice_bycatch_multiple(array($values), $entity_type, $agent);
+  return reset($entities);
+}
+
+/**
+ * Processes a set of by-catched values from a different resource.
+ *
+ * @param array $items
+ *   The array of items to by-catch.
+ * @param string $entity_type
+ *   The entity type to use.
+ * @param \Drupal\fluxservice\Entity\FluxEntityInterface $agent
+ *   The agent used to load the items.
+ *
+ * @return \Drupal\fluxservice\Entity\RemoteEntityInterface[]
+ *   The by-catched entities.
+ *
+ * @see \Drupal\fluxservice\RemoteEntityControllerInterface::bycatch()
+ */
+function fluxservice_bycatch_multiple(array $items, $entity_type, FluxEntityInterface $agent) {
+  $controller = entity_get_controller($entity_type);
+  return $controller->bycatch($items, $agent);
 }
 
 /**
