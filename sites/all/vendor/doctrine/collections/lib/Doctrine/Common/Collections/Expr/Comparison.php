@@ -33,7 +33,7 @@ class Comparison implements Expression
     const LTE       = '<=';
     const GT        = '>';
     const GTE       = '>=';
-    const IS        = '='; // no difference with EQ
+    const IS        = 'IS';
     const IN        = 'IN';
     const NIN       = 'NIN';
     const CONTAINS  = 'CONTAINS';

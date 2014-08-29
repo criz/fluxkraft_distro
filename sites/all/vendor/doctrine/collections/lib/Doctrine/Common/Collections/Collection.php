@@ -203,8 +203,9 @@ interface Collection extends Countable, IteratorAggregate, ArrayAccess
     function filter(Closure $p);
 
     /**
-     * Tests whether the given predicate p holds for all elements of this collection.
-     * 
+     * Applies the given predicate p to all elements of this collection,
+     * returning true, if the predicate yields true for all elements.
+     *
      * @param Closure $p The predicate.
      *
      * @return boolean TRUE, if the predicate yields TRUE for all elements, FALSE otherwise.
