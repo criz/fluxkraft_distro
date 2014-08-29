@@ -7,16 +7,20 @@
 
 namespace Drupal\fluxservice\Plugin\Entity;
 
-use Drupal\fluxservice\Entity\FluxEntityInterface;
+use Drupal\fluxservice\Entity\PluginConfigEntityInterface;
 
 /**
- * Interface for web service accounts.
+ * Interface for remote service accounts.
  *
- * This interface must be implemented by service endpoint plugins. In order to
- * be discovered plugin implementation classes must reside in the "Service"
- * directory below a directory declared via hook_fluxservice_plugin_directory()
- * and implement a static getInfo() method returning an array including the
- * following information:
+ * This interface can be implemented in addition to the ServiceInterface to
+ * handle service authentication based on multiple user accounts. If the service
+ * requires just one set of account credentials, then this information can be
+ * stored and configured with the service endpoint instead.
+ *
+ * In order to be discovered plugin implementation classes must reside in the
+ * "Service" directory below a directory declared via
+ * hook_fluxservice_plugin_directory() and implement a static getInfo() method
+ * returning an array including the following information:
  *   - name: The machine name of the plugin.
  *   - label: The label of the plugin.
  *   - service: The machine name of the service plugin the accounts are for.
@@ -25,7 +29,7 @@ use Drupal\fluxservice\Entity\FluxEntityInterface;
  * See \Drupal\fluxtwitter\Plugin\Service\TwitterAccount of the fluxtwitter
  * module for an example.
  */
-interface AccountInterface extends FluxEntityInterface {
+interface AccountInterface extends PluginConfigEntityInterface {
 
   /**
    * Gets the service entity that the account is linked.

@@ -11,6 +11,9 @@
  * drupal.ajax and drupal.autocomplete libraries.
  */
 function hurricane_integration_library_alter(&$libraries, $module) {
+  if ($module != 'system') {
+    return;
+  }
   global $theme;
   $enabled_renderers = theme_get_setting('hurricane_renderers', $theme);
   $enabled = FALSE;

@@ -23,8 +23,8 @@
         hwaccel: options['text-decoration'] > 2,
         className: 'spinner',
         zIndex: 0,
-        top: 'auto',
-        left: 'auto'
+        top: '50%',
+        left: '50%'
       };
       this.spinner = new Spinner(this.opts).spin(this.$el[0]);
     },

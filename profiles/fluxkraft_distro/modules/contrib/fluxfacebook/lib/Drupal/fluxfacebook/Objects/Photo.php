@@ -15,21 +15,21 @@ use Drupal\fluxfacebook\Plugin\Entity\FacebookObject;
 class Photo extends FacebookObject implements PhotoInterface {
 
   /**
-   * Gets the bundle property definitions.
+   * {@inheritdoc}
    */
   public static function getBundlePropertyInfo($entity_type, $entity_info, $bundle) {
     $properties['created_time'] = array(
       'label' => t('Created timestamp'),
       'description' => t('The time the photo was initially published.'),
       'type' => 'date',
-      'getter callback' => 'entity_property_getter_method',
+      'getter callback' => 'fluxservice_entity_property_getter_method',
     );
 
     $properties['updated_time'] = array(
       'label' => t('Updated timestamp'),
       'description' => t('The last time the photo or its caption was updated'),
       'type' => 'date',
-      'getter callback' => 'entity_property_getter_method',
+      'getter callback' => 'fluxservice_entity_property_getter_method',
     );
 
     return $properties;

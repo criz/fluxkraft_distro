@@ -39,6 +39,20 @@ function efq_views_views_data() {
         'field' => $info['entity keys']['id'],
       );
       $data['efq_' . $entity_type] += _efq_views_get_entity_data($entity_type, $info);
+
+      // Add optional support for Views Bulk Operations.
+      if (module_exists('views_bulk_operations')) {
+        $data['efq_' . $entity_type]['views_bulk_operations'] = array(
+          'title' => $data['efq_' . $entity_type]['table']['base']['title'],
+          'group' => t('Bulk operations'),
+          'help' => t('Provide a checkbox to select the row for bulk operations.'),
+          'real field' => $entity_info[$entity_type]['entity keys']['id'],
+          'field' => array(
+            'handler' => 'efq_views_handler_field_operations',
+            'click sortable' => FALSE,
+          ),
+        );
+      }
     }
   }
   return $data;
@@ -338,6 +352,51 @@ function _efq_views_get_property_handlers(&$views_data, $property, $metadata, $e
   // Assume a queryable property is sortable also.
   $views_data['field']['click sortable'] = TRUE;
   $views_data['sort']['handler'] = 'efq_views_handler_sort_property';
+
+  // To add support for custom handlers, we need to know if the property is
+  // local or remote.  In the latter case, the property info is stored elsewhere.
+  if (isset($property_info['remote_property'])) {
+    $property_info = $metadata['properties']['entity_data']['property info'][$property];
+  }
+
+  // Add additional or different custom handlers which are specified by the
+  // entity metadata.
+  if (isset($property_info['views'])) {
+    $views_data = array(
+      'group' => $entity_info['label'],
+      'title' => $property_info['label'],
+      'help' =>  $property_info['description'],
+    );
+
+    // Add the field handler if it's set.
+    if (isset($property_info['views']['field'])) {
+      $views_data['field'] = array(
+        'click sortable' => FALSE,
+        'handler' => $property_info['views']['field'],
+      );
+    }
+
+    // Add the filter handler if it's set.
+    if (isset($property_info['views']['filter'])) {
+      $views_data['filter'] = array(
+        'handler' => $property_info['views']['filter'],
+      );
+    }
+
+    // Add the contextual filter (argument) handler if it's set.
+    if (isset($property_info['views']['argument'])) {
+      $views_data['argument'] = array(
+        'handler' => $property_info['views']['argument'],
+      );
+    }
+
+    // Add the sort handler if it's set.
+    if (isset($property_info['views']['sort'])) {
+      $views_data['sort'] = array(
+        'handler' => $property_info['views']['sort'],
+      );
+    }
+  }
 
   return $move;
 }

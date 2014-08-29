@@ -9,7 +9,7 @@ use Drupal\fluxservice\Plugin\Entity\AccountInterface;
 use Drupal\fluxservice\Plugin\Entity\ServiceInterface;
 use Drupal\fluxservice\UI\ServiceUIController;
 use Drupal\fluxservice\UI\AccountUIController;
-use Drupal\fluxservice\Entity\FluxEntity;
+use Drupal\fluxservice\Entity\PluginConfigEntityBase;
 
 /**
  * ServiceInterface configuration entity form callback.

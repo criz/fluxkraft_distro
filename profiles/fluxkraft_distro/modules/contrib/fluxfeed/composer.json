@@ -27,7 +27,6 @@
   ],
   "require": {
     "php": ">=5.3.2",
-    "guzzle/guzzle": "dev-master",
     "zendframework/zend-feed": "2.*",
     "zendframework/zend-servicemanager": "2.*"
   }

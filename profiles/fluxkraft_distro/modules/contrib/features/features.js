@@ -100,33 +100,6 @@ jQuery.fn.sortElements = (function(){
         }).trigger('change');
       });
 
-      // Export form machine-readable JS
-      $('.feature-name:not(.processed)', context).each(function() {
-        $('.feature-name')
-          .addClass('processed')
-          .after(' <small class="feature-module-name-suffix">&nbsp;</small>');
-        if ($('.feature-module-name').val() === $('.feature-name').val().toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/_+/g, '_') || $('.feature-module-name').val() === '') {
-          $('.feature-module-name').parents('.form-item').hide();
-          $('.feature-name').bind('keyup change', function() {
-            var machine = $(this).val().toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/_+/g, '_');
-            if (machine !== '_' && machine !== '') {
-              $('.feature-module-name').val(machine);
-              $('.feature-module-name-suffix').empty().append(' Machine name: ' + machine + ' [').append($('<a href="#">'+ Drupal.t('Edit') +'</a>').click(function() {
-                $('.feature-module-name').parents('.form-item').show();
-                $('.feature-module-name-suffix').hide();
-                $('.feature-name').unbind('keyup');
-                return false;
-              })).append(']');
-            }
-            else {
-              $('.feature-module-name').val(machine);
-              $('.feature-module-name-suffix').text('');
-            }
-          });
-          $('.feature-name').keyup();
-        }
-      });
-
       //View info dialog
       var infoDialog = $('#features-info-file');
       if (infoDialog.length != 0) {
@@ -183,7 +156,26 @@ jQuery.fn.sortElements = (function(){
         }
       }
 
+      function updateComponentCountInfo(item, section) {
+        switch (section) {
+          case 'select':
+            var parent = $(item).closest('.features-export-list').siblings('.features-export-component');
+            $('.component-count', parent).text(function (index, text) {
+                return +text + 1;
+              }
+            );
+            break;
+          case 'added':
+          case 'detected':
+            var parent = $(item).closest('.features-export-component');
+            $('.component-count', parent).text(function (index, text) {
+              return text - 1;
+            });
+        }
+      }
+
       function moveCheckbox(item, section, value) {
+        updateComponentCountInfo(item, section);
         var curParent = item;
         if ($(item).hasClass('form-type-checkbox')) {
           item = $(item).children('input[type=checkbox]');

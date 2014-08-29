@@ -7,21 +7,22 @@
 
 namespace Drupal\fluxfacebook;
 
-use Drupal\fluxservice\Entity\FluxEntityInterface;
-use Drupal\fluxservice\RemoteEntityController;
+use Drupal\fluxservice\Plugin\Entity\AccountInterface;
+use Drupal\fluxservice\Plugin\Entity\ServiceInterface;
+use Drupal\fluxservice\Entity\RemoteEntityControllerByAccount;
 use Drupal\fluxservice\Entity\RemoteEntityInterface;
 
 /**
  * Entity controller class for posts.
  */
-class FacebookPostController extends RemoteEntityController {
+class FacebookPostController extends RemoteEntityControllerByAccount {
 
   /**
    * {@inheritdoc}
    */
-  protected function loadFromService($ids, FluxEntityInterface $agent) {
+  protected function loadFromService($ids, ServiceInterface $service, AccountInterface $account) {
     $output = array();
-    $client = $agent->client();
+    $client = $account->client();
     foreach ($ids as $id) {
       if ($response = $client->getObject(array('id' => (int) $id))) {
         $output[$id] = $response->toArray();
@@ -34,14 +35,7 @@ class FacebookPostController extends RemoteEntityController {
    * {@inheritdoc}
    */
   protected function sendToService(RemoteEntityInterface $entity) {
-    // @todo Implement.
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  protected function preEntify(array &$items, FluxEntityInterface $agent) {
-    // @todo Implement.
+    throw new \Exception("The entity type {$this->entityType} does not support writing.");
   }
 
 }

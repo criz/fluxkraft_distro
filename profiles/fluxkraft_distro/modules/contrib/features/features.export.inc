@@ -45,11 +45,11 @@ function features_populate($info, $module_name) {
  * @return fully populated $export array.
  */
 function _features_populate($pipe, &$export, $module_name = '', $reset = FALSE) {
-  static $processed = array();
-  features_include();
   if ($reset) {
-    $processed = array();
+    drupal_static_reset(__FUNCTION__);
   }
+  $processed = &drupal_static(__FUNCTION__, array());
+  features_include();
   foreach ($pipe as $component => $data) {
     // Convert already defined items to dependencies.
 //    _features_resolve_dependencies($data, $export, $module_name, $component);
@@ -385,10 +385,7 @@ function features_export_render($export, $module_name, $reset = FALSE) {
  * Detect differences between DB and code components of a feature.
  */
 function features_detect_overrides($module) {
-  static $cache;
-  if (!isset($cache)) {
-    $cache = array();
-  }
+  $cache = &drupal_static(__FUNCTION__, array());
   if (!isset($cache[$module->name])) {
     // Rebuild feature from .info file description and prepare an export from current DB state.
     $export = features_populate($module->info, $module->name);
@@ -583,7 +580,16 @@ function features_var_export($var, $prefix = '', $init = TRUE, $count = 0) {
     $output = intval($var);
   }
   else if (is_numeric($var)) {
-    $output = floatval($var);
+    $floatval = floatval($var);
+    if (is_string($var) && ((string) $floatval !== $var)) {
+      // Do not convert a string to a number if the string
+      // representation of that number is not identical to the
+      // original value.
+      $output = var_export($var, TRUE);
+    }
+    else {
+      $output = $floatval;
+    }
   }
   else if (is_string($var) && strpos($var, "\n") !== FALSE) {
     // Replace line breaks in strings with a token for replacement
@@ -704,10 +710,10 @@ function features_semaphore($op, $component) {
  * Get normal objects for a given module/component pair.
  */
 function features_get_normal($component, $module_name, $reset = FALSE) {
-  static $cache;
-  if (!isset($cache) || $reset) {
-    $cache = array();
+  if ($reset) {
+    drupal_static_reset(__FUNCTION__);
   }
+  $cache = &drupal_static(__FUNCTION__, array());
   if (!isset($cache[$module_name][$component])) {
     features_include();
     $code = NULL;
@@ -737,7 +743,7 @@ function features_get_normal($component, $module_name, $reset = FALSE) {
  * Get defaults for a given module/component pair.
  */
 function features_get_default($component, $module_name = NULL, $alter = TRUE, $reset = FALSE) {
-  static $cache = array();
+  $cache = &drupal_static(__FUNCTION__, array());
   $alter = !empty($alter); // ensure $alter is a true/false boolean
   features_include();
   features_include_defaults($component);
@@ -811,7 +817,7 @@ function features_get_default($component, $module_name = NULL, $alter = TRUE, $r
  * Get a map of components to their providing modules.
  */
 function features_get_default_map($component, $attribute = NULL, $callback = NULL, $reset = FALSE) {
-  static $map = array();
+  $map = &drupal_static(__FUNCTION__, array());
 
   global $features_ignore_conflicts;
   if ($features_ignore_conflicts) {
@@ -857,12 +863,13 @@ function features_get_default_map($component, $attribute = NULL, $callback = NUL
  * Retrieve an array of features/components and their current states.
  */
 function features_get_component_states($features = array(), $rebuild_only = TRUE, $reset = FALSE) {
-  static $cache;
-  if (!isset($cache) || $reset) {
-    $cache = array();
+  if ($reset) {
+    drupal_static_reset(__FUNCTION__);
   }
+  $cache = &drupal_static(__FUNCTION__, array());
 
-  $features = !empty($features) ? $features : array_keys(features_get_features());
+  $all_features = features_get_features();
+  $features = !empty($features) ? $features : array_keys($all_features);
 
   // Retrieve only rebuildable components if requested.
   features_include();
@@ -877,8 +884,8 @@ function features_get_component_states($features = array(), $rebuild_only = TRUE
 
   foreach ($features as $feature) {
     $cache[$feature] = isset($cache[$feature]) ? $cache[$feature] : array();
-    if (module_exists($feature)) {
-      foreach ($components as $component) {
+    if (module_exists($feature) && !empty($all_features[$feature]->components)) {
+      foreach (array_intersect($all_features[$feature]->components, $components) as $component) {
         if (!isset($cache[$feature][$component])) {
           $normal = features_get_signature('normal', $feature, $component, $reset);
           $default = features_get_signature('default', $feature, $component, $reset);

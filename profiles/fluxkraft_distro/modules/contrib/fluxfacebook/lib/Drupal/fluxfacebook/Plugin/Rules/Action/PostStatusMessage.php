@@ -11,7 +11,7 @@ use Drupal\fluxfacebook\Plugin\Service\FacebookAccountInterface;
 use Drupal\fluxfacebook\Rules\RulesPluginHandlerBase;
 
 /**
- * Action for posting a status message on a user's timeline.
+ * Action for posting a status message on a the user's timeline.
  */
 class PostStatusMessage extends RulesPluginHandlerBase implements \RulesActionHandlerInterface {
 
@@ -21,16 +21,12 @@ class PostStatusMessage extends RulesPluginHandlerBase implements \RulesActionHa
   public static function getInfo() {
     return static::getInfoDefaults() + array(
       'name' => 'fluxfacebook_create_status_message',
-      'label' => t("Post a status message on a user's timeline."),
+      'label' => t("Post a status message on my timeline."),
       'parameter' => array(
         'account' => static::getAccountParameterInfo(),
         'message' => array(
           'type' => 'text',
           'label' => t('Status message'),
-        ),
-        'user' => array(
-          'type' => 'text',
-          'label' => t('User'),
         ),
       ),
     );
@@ -39,11 +35,11 @@ class PostStatusMessage extends RulesPluginHandlerBase implements \RulesActionHa
   /**
    * Executes the action.
    */
-  public function execute($message, $user, FacebookAccountInterface $account) {
+  public function execute(FacebookAccountInterface $account, $message) {
     $client = $account->client();
     $command = $client->getCommand('postToFeed', array(
       'message' => $message,
-      'id' => $user,
+      'id' => 'me',
     ));
     $client->execute($command);
   }

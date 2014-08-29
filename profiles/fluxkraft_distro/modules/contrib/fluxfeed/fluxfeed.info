@@ -5,9 +5,9 @@ core = 7.x
 php = 5.3
 dependencies[] = fluxservice
 
-; Information added by drupal.org packaging script on 2013-09-20
-version = "7.x-1.0-beta1+7-dev"
+; Information added by drupal.org packaging script on 2013-10-28
+version = "7.x-1.0-beta2+2-dev"
 core = "7.x"
 project = "fluxfeed"
-datestamp = "1379674398"
+datestamp = "1382986361"
 

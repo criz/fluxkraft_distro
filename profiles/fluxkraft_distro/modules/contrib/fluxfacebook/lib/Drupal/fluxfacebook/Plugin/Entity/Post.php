@@ -7,7 +7,7 @@
 
 namespace Drupal\fluxfacebook\Plugin\Entity;
 
-use Drupal\fluxservice\Entity\FluxEntityInterface;
+use Drupal\fluxservice\Entity\PluginConfigEntityInterface;
 use Drupal\fluxservice\Entity\RemoteEntity;
 
 /**
@@ -38,7 +38,7 @@ abstract class Post extends RemoteEntity implements PostInterface {
   }
 
   /**
-   * Gets the entity property definitions.
+   * {@inheritdoc}
    */
   public static function getEntityPropertyInfo($entity_type, $entity_info) {
     $properties['id'] = array(
@@ -57,14 +57,14 @@ abstract class Post extends RemoteEntity implements PostInterface {
       'label' => t('Created timestamp'),
       'description' => t('The time the post was initially published.'),
       'type' => 'date',
-      'getter callback' => 'entity_property_getter_method',
+      'getter callback' => 'fluxservice_entity_property_getter_method',
     );
 
     $properties['updated_time'] = array(
       'label' => t('Updated timestamp'),
       'description' => t('The last time the post was updated'),
       'type' => 'date',
-      'getter callback' => 'entity_property_getter_method',
+      'getter callback' => 'fluxservice_entity_property_getter_method',
     );
 
     return $properties;

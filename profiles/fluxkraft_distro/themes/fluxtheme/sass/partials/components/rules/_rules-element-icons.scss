@@ -14,8 +14,8 @@
   display: block;
   float: left;
   margin-right: 4px;
-  width: 80px;
-  height: 80px;
+  width: 60px;
+  height: 60px;
   text-align: center;
   vertical-align: middle;
   @include single-transition(background-color, 0.2s, ease-in);
@@ -26,21 +26,21 @@
     font-size: 70px;
     line-height: 84px;
     display: block;
-    height: 80px;
-    width: 80px;
+    height: 60px;
+    width: 60px;
   }
   .fluxkraft-rules-icon-default {
-    line-height: 80px;
+    line-height: 60px;
     text-transform: uppercase;
-    font-size: 50px;
+    font-size: 30px;
     &:before {
       content: attr(data-symbol);
       speak: none;
     }
   }
   .fluxkraft-rules-icon-font {
-    line-height: 84px;
-    font-size: 60px;
+    line-height: 64px;
+    font-size: 50px;
   }
   .fluxkraft-rules-icon-file {
     background-size: 66px;
@@ -111,5 +111,27 @@
     color: $grey;
     text-align: center;
     margin-bottom: .5 * $rowHeight;
+  }
+}
+
+@include breakpoint($l-tablet-up) {
+  .fluxkraft-rules-icon {
+    width: 80px;
+    height: 80px;
+
+    span {
+      height: 80px;
+      width: 80px;
+    }
+
+    .fluxkraft-rules-icon-font {
+      line-height: 84px;
+      font-size: 60px;
+    }
+
+    .fluxkraft-rules-icon-default {
+      line-height: 80px;
+      font-size: 50px;
+    }
   }
 }

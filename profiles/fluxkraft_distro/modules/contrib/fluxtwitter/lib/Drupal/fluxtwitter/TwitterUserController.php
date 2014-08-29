@@ -7,21 +7,22 @@
 
 namespace Drupal\fluxtwitter;
 
-use Drupal\fluxservice\Entity\FluxEntityInterface;
-use Drupal\fluxservice\RemoteEntityController;
+use Drupal\fluxservice\Plugin\Entity\AccountInterface;
+use Drupal\fluxservice\Plugin\Entity\ServiceInterface;
+use Drupal\fluxservice\Entity\RemoteEntityControllerByAccount;
 use Drupal\fluxservice\Entity\RemoteEntityInterface;
 
 /**
- * Class RemoteEntityController
+ * Entity controller for Twitter users.
  */
-class TwitterUserController extends RemoteEntityController {
+class TwitterUserController extends RemoteEntityControllerByAccount {
 
   /**
    * {@inheritdoc}
    */
-  protected function loadFromService($ids, FluxEntityInterface $agent) {
+  protected function loadFromService($ids, ServiceInterface $service, AccountInterface $account = NULL) {
     $output = array();
-    $client = $agent->client();
+    $client = $account->client();
     // While regularly the user_id is used as remote id, support using the
     // screen name for easy referencing of twitter-users by screen name also.
     $property = is_numeric(current($ids)) ? 'user_id' : 'screen_name';
@@ -40,7 +41,7 @@ class TwitterUserController extends RemoteEntityController {
    * {@inheritdoc}
    */
   protected function sendToService(RemoteEntityInterface $entity) {
-    // @todo Throw exception.
+    throw new \Exception("The entity type {$this->entityType} does not support writing.");
   }
 
 }

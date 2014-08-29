@@ -15,7 +15,7 @@ use Drupal\fluxfacebook\Plugin\Entity\FacebookObject;
 class Event extends FacebookObject implements EventInterface {
 
   /**
-   * Gets the bundle property definitions.
+   * {@inheritdoc}
    */
   public static function getBundlePropertyInfo($entity_type, $entity_info, $bundle) {
     // @todo Implement.

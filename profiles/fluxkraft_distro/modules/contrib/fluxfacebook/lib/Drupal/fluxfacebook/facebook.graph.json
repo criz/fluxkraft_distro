@@ -44,7 +44,7 @@
         }
       }
     },
-    "s": {
+    "GetStatus": {
       "extends": "GetObject",
       "responseClass": "GetStatusOutput"
     },
@@ -249,6 +249,11 @@
         }
       }
     },
+    "GetGroups": {
+      "extends": "GetObject",
+      "uri": "{id}/groups",
+      "responseClass": "GetGroupsOutput"
+    },
     "GetSubscribedTo": {
       "extends": "GetObject",
       "uri": "{id}/subscribedto",
@@ -325,13 +330,61 @@
       "extends": "Object"
     },
     "Event": {
-      "extends": "Object"
+      "extends": "Object",
+      "properties": {
+        "id": {
+          "location": "json",
+          "type": "integer"
+        },
+        "name": {
+          "location": "json",
+          "type": "string"
+        },
+        "start_time": {
+          "location": "json",
+          "type": "date"
+        },
+        "end_time": {
+          "location": "json",
+          "type": "date"
+        },
+        "location": {
+          "location": "json",
+          "type": "string"
+        },
+        "rsvp_status": {
+          "location": "json",
+          "type": "string"
+        }
+      }
     },
     "FriendList": {
       "extends": "Object"
     },
     "Group": {
-      "extends": "Object"
+      "extends": "Object",
+      "properties": {
+        "id": {
+          "location": "json",
+          "type": "integer"
+        },
+        "name": {
+          "location": "json",
+          "type": "string"
+        },
+        "version": {
+          "location": "json",
+          "type": "integer"
+        },
+        "administrator": {
+          "location": "json",
+          "type": "boolean"
+        },
+        "bookmark_order": {
+          "location": "json",
+          "type": "integer"
+        }
+      }
     },
     "Insights": {
       "extends": "Object"
@@ -341,6 +394,27 @@
     },
     "Message": {
       "extends": "Object"
+    },
+    "Like": {
+      "extends": "Object",
+      "properties": {
+        "id": {
+          "location": "json",
+          "type": "integer"
+        },
+        "name": {
+          "location": "json",
+          "type": "string"
+        },
+        "create_time": {
+          "location": "json",
+          "type": "date"
+        },
+        "category": {
+          "location": "json",
+          "type": "string"
+        }
+      }
     },
     "Note": {
       "extends": "Object"
@@ -376,6 +450,9 @@
       "extends": "Object"
     },
     "Thread": {
+      "extends": "Object"
+    },
+    "Friend": {
       "extends": "Object"
     },
     "User": {
@@ -486,32 +563,12 @@
     "GetEventsOutput": {
       "location": "json",
       "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "location": "json",
-            "type": "integer"
-          },
-          "name": {
-            "location": "json",
-            "type": "string"
-          },
-          "start_time": {
-            "location": "json",
-            "type": "date"
-          },
-          "end_time": {
-            "location": "json",
-            "type": "date"
-          },
-          "location": {
-            "location": "json",
-            "type": "string"
-          },
-          "rsvp_status": {
-            "location": "json",
-            "type": "string"
+      "properties": {
+        "data": {
+          "location": "json",
+          "type": "array",
+          "items": {
+            "$ref": "Event"
           }
         }
       }
@@ -599,16 +656,12 @@
     "GetFriendsOutput": {
       "location": "json",
       "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "location": "json",
-            "type": "integer"
-          },
-          "name": {
-            "location": "json",
-            "type": "string"
+      "properties": {
+        "data": {
+          "location": "json",
+          "type": "array",
+          "items": {
+            "$ref": "Friend"
           }
         }
       }
@@ -641,28 +694,12 @@
     "GetGroupsOutput": {
       "location": "json",
       "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "location": "json",
-            "type": "integer"
-          },
-          "name": {
-            "location": "json",
-            "type": "string"
-          },
-          "version": {
-            "location": "json",
-            "type": "integer"
-          },
-          "administrator": {
-            "location": "json",
-            "type": "boolean"
-          },
-          "bookmark_order": {
-            "location": "json",
-            "type": "integer"
+      "properties": {
+        "data": {
+          "location": "json",
+          "type": "array",
+          "items": {
+            "$ref": "Group"
           }
         }
       }
@@ -709,24 +746,12 @@
     "GetLikesOutput": {
       "location": "json",
       "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "location": "json",
-            "type": "integer"
-          },
-          "name": {
-            "location": "json",
-            "type": "string"
-          },
-          "create_time": {
-            "location": "json",
-            "type": "date"
-          },
-          "category": {
-            "location": "json",
-            "type": "string"
+      "properties": {
+        "data": {
+          "location": "json",
+          "type": "array",
+          "items": {
+            "$ref": "Like"
           }
         }
       }

@@ -76,6 +76,7 @@ abstract class FacebookEventHandlerBase extends CronEventHandlerBase {
       '#options' => AccountEntity::getOptions('fluxfacebook', $form_state['rules_config']),
       '#default_value' => $settings['account'],
       '#required' => TRUE,
+      '#empty_value' => '',
     );
 
     return $form;

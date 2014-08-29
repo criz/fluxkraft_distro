@@ -8,7 +8,6 @@
 namespace Drupal\fluxfacebook\Objects;
 
 use Drupal\fluxfacebook\Plugin\Entity\FacebookObject;
-use Drupal\fluxservice\Entity\FluxEntityInterface;
 
 /**
  * Entity bundle class for status messages.
@@ -16,14 +15,14 @@ use Drupal\fluxservice\Entity\FluxEntityInterface;
 class StatusMessage extends FacebookObject implements StatusMessageInterface {
 
   /**
-   * Gets the bundle property definitions.
+   * {@inheritdoc}
    */
   public static function getBundlePropertyInfo($entity_type, $entity_info, $bundle) {
     $properties['updated_time'] = array(
       'label' => t('Updated timestamp'),
       'description' => t('The timestamp the status message was updated.'),
       'type' => 'date',
-      'getter callback' => 'entity_property_getter_method',
+      'getter callback' => 'fluxservice_entity_property_getter_method',
     );
 
     $properties['message'] = array(
@@ -32,7 +31,7 @@ class StatusMessage extends FacebookObject implements StatusMessageInterface {
       'type' => 'text',
       'required' => TRUE,
       'setter callback' => 'entity_property_setter_method',
-      'getter callback' => 'entity_property_getter_method',
+      'getter callback' => 'fluxservice_entity_property_getter_method',
     );
 
     return $properties;

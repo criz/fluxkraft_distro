@@ -16,24 +16,9 @@ use Drupal\fluxservice\Plugin\Entity\ServiceInterface;
 interface RemoteEntityInterface extends EntityInterface {
 
   /**
-   * Instantiates a new entity object based on a service response.
-   *
-   * @param array $values
-   *   The property values of the entity (e.g. the response of the service).
-   * @param string $entity_type
-   *   The entity type to create.
-   * @param $entity_info
-   *   The info of the entity type.
-   *
-   * @return RemoteEntityInterface
-   *   An instantiated entity object.
-   */
-  public static function factory(array $values, $entity_type, $entity_info);
-
-  /**
    * Gets the service account associated with the entity.
    *
-   * @return \Drupal\fluxservice\Plugin\Entity\Account|null
+   * @return \Drupal\fluxservice\Plugin\Entity\AccountInterface|null
    *   The account entity, or NULL if none is set.
    */
   public function getAccount();
@@ -49,7 +34,7 @@ interface RemoteEntityInterface extends EntityInterface {
   /**
    * Gets the service associated with the entity.
    *
-   * @return \Drupal\fluxservice\Plugin\Entity\Account|null
+   * @return \Drupal\fluxservice\Plugin\Entity\ServiceInterface|null
    *   The account entity, or NULL if none is set.
    */
   public function getService();
@@ -65,9 +50,17 @@ interface RemoteEntityInterface extends EntityInterface {
   /**
    * Gets the remote identifier of the entity.
    *
-   * @return string
+   * @return mixed
    *   The remote identifier.
    */
   public function getRemoteIdentifier();
+
+  /**
+   * Gets an array of property values for all defined properties.
+   *
+   * @return array
+   *   An array of property values, keyed by property names.
+   */
+  public function getPropertyValues();
 
 }

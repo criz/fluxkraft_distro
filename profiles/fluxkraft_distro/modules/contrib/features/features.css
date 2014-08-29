@@ -559,3 +559,21 @@ input.form-submit.features-refresh-button {
   background: #EEE;
   border-width: 0;
 }
+
+fieldset.features-export-component .fieldset-title .component-count {
+font-size: 12px;
+font-weight: bold;
+}
+
+.features-lock-icon {
+  display: inline-block;
+}
+
+.features-components h3 {
+  display: inline-block;
+}
+
+.features-lock-empty {
+  display: inline-block;
+  width: 16px;
+}

@@ -19,27 +19,27 @@ translations[] = de
 
 ; Dependencies =================================================================
 
-projects[composer_manager][version] = 1.0-beta7
-projects[ctools][version] = 1.3
+projects[composer_manager][version] = 1.6
+projects[ctools][version] = 1.4
 
 projects[entity][type] = module
 projects[entity][download][type] = git
 projects[entity][download][url] = http://git.drupal.org/project/entity.git
-projects[entity][download][branch] = 7.x-1.x
+projects[entity][download][branch] = 7.x-1.5
 
-projects[features][version] = 2.0-rc3
-projects[libraries][version] = 2.1
+projects[features][version] = 2.2
+projects[libraries][version] = 2.2
 
 projects[rules][type] = module
-projects[rules][version] = 2.x-dev
+projects[rules][version] = 2.7
 projects[rules][download][type] = git
 projects[rules][download][url] = http://git.drupal.org/project/rules.git
-projects[rules][download][branch] = 7.x-2.x
+projects[rules][download][branch] = 7.x-2.7
 
 projects[uuid][version] = 1.0-alpha5
 projects[strongarm][version] = 2.0
 projects[xautoload][version] = 3.2
-projects[views][version] = 3.7
+projects[views][version] = 3.8
 
 ; Core fluxkraft ===============================================================
 
@@ -106,7 +106,7 @@ projects[fluxtheme][subdir] = ''
 
 projects[panels][version] = 3.3
 projects[panels_everywhere][version] = 1.0-rc1
-projects[hurricane][version] = 1.0-beta1
+projects[hurricane][version] = 1.0-1.x-dev
 
 ; Utility ======================================================================
 

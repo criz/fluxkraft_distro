@@ -8,7 +8,7 @@
 namespace Drupal\fluxservice;
 
 /**
- * Metadata controller class for personal service accounts.
+ * Metadata controller class for service account entities.
  */
 class AccountMetadataController extends \EntityDefaultMetadataController {
 
@@ -29,7 +29,7 @@ class AccountMetadataController extends \EntityDefaultMetadataController {
 
     // Append bundle (plugin) specific properties.
     foreach (fluxservice_get_account_plugin_info() as $plugin => $plugin_info) {
-      if ($definitions = $plugin_info['class']::getBundlePropertyInfo()) {
+      if ($definitions = $plugin_info['class']::getBundlePropertyInfo($this->type, $this->info, $plugin)) {
         $info[$this->type]['bundles'][$plugin]['properties'] = $definitions;
       }
     }

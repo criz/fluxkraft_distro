@@ -8,7 +8,9 @@
 namespace Drupal\fluxservice;
 
 /**
- * Metadata controller base class for remote entities.
+ * Metadata controller base class for (flux) entities.
+ *
+ * @see \Drupal\fluxservice\Entity\EntityInterface
  */
 class FluxEntityMetadataController {
 
@@ -50,7 +52,7 @@ class FluxEntityMetadataController {
     }
 
     foreach ($this->entityInfo['bundles'] as $bundle => $bundle_info) {
-      if (isset($info['bundle class']) && $class = $bundle_info['bundle class']) {
+      if (isset($bundle_info['bundle class']) && $class = $bundle_info['bundle class']) {
         if (method_exists($class, 'getBundlePropertyInfo')) {
           $info[$this->entityType]['bundles'][$bundle]['properties'] = $class::getBundlePropertyInfo($this->entityType, $this->entityInfo, $bundle);
         }

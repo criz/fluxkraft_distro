@@ -7,10 +7,10 @@
 
 namespace Drupal\fluxservice\Plugin\Entity;
 
-use Drupal\fluxservice\Entity\FluxEntityInterface;
+use Drupal\fluxservice\Entity\PluginConfigEntityInterface;
 
 /**
- * Interface for web service endpoints.
+ * Interface for remote service endpoints.
  *
  * This interface must be implemented by service endpoint plugins. In order to
  * be discovered plugin implementation classes must reside in the "Service"
@@ -38,6 +38,6 @@ use Drupal\fluxservice\Entity\FluxEntityInterface;
  * See \Drupal\fluxtwitter\Plugin\Service\TwitterService of the fluxtwitter
  * module for an example.
  */
-interface ServiceInterface extends FluxEntityInterface {
+interface ServiceInterface extends PluginConfigEntityInterface {
 
 }

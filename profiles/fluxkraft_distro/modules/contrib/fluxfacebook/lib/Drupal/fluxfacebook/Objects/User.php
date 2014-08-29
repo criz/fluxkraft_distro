@@ -15,21 +15,21 @@ use Drupal\fluxfacebook\Plugin\Entity\FacebookObject;
 class User extends FacebookObject implements UserInterface {
 
   /**
-   * Gets the bundle property definitions.
+   * {@inheritdoc}
    */
   public static function getBundlePropertyInfo($entity_type, $entity_info, $bundle) {
     $properties['name'] = array(
       'label' => t("Full name"),
       'description' => t("The user's full name."),
       'type' => 'text',
-      'getter callback' => 'entity_property_getter_method',
+      'getter callback' => 'fluxservice_entity_property_getter_method',
     );
 
     $properties['updated_time'] = array(
       'label' => t('Updated timestamp'),
       'description' => t("The last time the user's profile was updated."),
       'type' => 'date',
-      'getter callback' => 'entity_property_getter_method',
+      'getter callback' => 'fluxservice_entity_property_getter_method',
     );
 
     return $properties;

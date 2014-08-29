@@ -7,21 +7,22 @@
 
 namespace Drupal\fluxtwitter;
 
-use Drupal\fluxservice\Entity\FluxEntityInterface;
-use Drupal\fluxservice\RemoteEntityController;
+use Drupal\fluxservice\Plugin\Entity\AccountInterface;
+use Drupal\fluxservice\Plugin\Entity\ServiceInterface;
+use Drupal\fluxservice\Entity\RemoteEntityControllerByAccount;
 use Drupal\fluxservice\Entity\RemoteEntityInterface;
 
 /**
- * Entity controller class for Lists.
+ * Entity controller for Twitter lists.
  */
-class TwitterListController extends RemoteEntityController {
+class TwitterListController extends RemoteEntityControllerByAccount {
 
   /**
    * {@inheritdoc}
    */
-  protected function loadFromService($ids, FluxEntityInterface $agent) {
+  protected function loadFromService($ids, ServiceInterface $service, AccountInterface $account) {
     $output = array();
-    $client = $agent->client();
+    $client = $account->client();
     foreach ($ids as $id) {
       // We need to cast to (int) because of the strict type validation
       // implemented by Guzzle.
@@ -36,17 +37,17 @@ class TwitterListController extends RemoteEntityController {
    * {@inheritdoc}
    */
   protected function sendToService(RemoteEntityInterface $list) {
-    // @todo Implement.
+    throw new \Exception("The entity type {$this->entityType} does not support writing.");
   }
 
   /**
    * {@inheritdoc}
    */
-  protected function preEntify(array &$items, FluxEntityInterface $agent) {
+  protected function preEntify(array &$items, ServiceInterface $service, AccountInterface $account = NULL) {
     foreach ($items as &$values) {
       if (!empty($values['user'])) {
         // Process the attached Twitter user entity.
-        $values['user'] = fluxservice_bycatch($values['user'], 'fluxtwitter_user', $agent);
+        $values['user'] = fluxservice_bycatch($values['user'], 'fluxtwitter_user', $account);
       }
     }
   }

@@ -7,6 +7,20 @@
  */
 
 /**
+ * Implements hook_init().
+ */
+function composer_manager_init() {
+  try {
+    composer_manager_register_autoloader();
+  }
+  catch (\RuntimeException $e) {
+    if (!drupal_is_cli()) {
+      watchdog_exception('composer_manager', $e);
+    }
+  }
+}
+
+/**
  * Implements hook_menu().
  */
 function composer_manager_menu() {
@@ -72,12 +86,42 @@ function composer_manager_modules_disabled($modules) {
 function composer_manager_write_if_changed(array $modules) {
   $changed = &drupal_static(__FUNCTION__, FALSE);
   if (variable_get('composer_manager_autobuild_file', 1) || drupal_is_cli()) {
-    if (composer_manager_has_composer_file($modules)) {
+    if (composer_manager_packages_have_changed($modules)) {
       $changed = TRUE;
       composer_manager_write_file();
     }
   }
 }
+
+/**
+ * Returns TRUE if at least one passed modules has a composer.json file or
+ * implements hook_composer_json_alter(). These conditions indicate that the
+ * consolidated composer.json file has likely changed.
+ *
+ * @param array $modules
+ *   The list of modules being scanned for composer.json files, usually a list
+ *   of modules that were installed or uninstalled.
+ *
+ * @return bool
+ */
+function composer_manager_packages_have_changed(array $modules) {
+  foreach ($modules as $module) {
+
+    // Check if the module has a composer.json file.
+    $module_path = drupal_get_path('module', $module);
+    if (file_exists($module_path . '/composer.json')) {
+      return TRUE;
+    }
+
+    // Check if the module implements hook_composer_json_alter().
+    if (module_hook($module, 'composer_json_alter')) {
+      return TRUE;
+    }
+
+  }
+  return FALSE;
+}
+
 
 /**
  * Returns TRUE if at least one module has a composer.json file.
@@ -86,6 +130,10 @@ function composer_manager_write_if_changed(array $modules) {
  *   An array of modules being checked.
  *
  * @return boolean
+ *
+ * @deprecated since 7.x-1.6 https://www.drupal.org/node/2297413
+ *
+ * @see composer_manager_packages_have_changed()
  */
 function composer_manager_has_composer_file(array $modules) {
   foreach ($modules as $module) {

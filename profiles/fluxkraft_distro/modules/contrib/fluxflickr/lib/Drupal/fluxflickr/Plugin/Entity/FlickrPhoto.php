@@ -7,7 +7,6 @@
 
 namespace Drupal\fluxflickr\Plugin\Entity;
 
-use Drupal\fluxservice\Entity\FluxEntityInterface;
 use Drupal\fluxservice\Entity\RemoteEntity;
 
 /**

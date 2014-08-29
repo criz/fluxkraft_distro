@@ -54,11 +54,11 @@ function composer_manager_settings_form($form, &$form_state) {
  * Form validation handler for composer_manager_settings_form().
  */
 function composer_manager_settings_form_validate($form, &$form_state) {
-  require_once __DIR__ . '/composer_manager.writer.inc';
+  module_load_include('inc', 'composer_manager', 'composer_manager.writer');
   $autobuild_file = $form_state['values']['composer_manager_autobuild_file'];
   $file_dir = $form_state['values']['composer_manager_file_dir'];
   if ($autobuild_file && !composer_manager_prepare_directory($file_dir)) {
-    form_set_error('composer_manager_file_dir', t('Conposer file directory must be writable'));
+    form_set_error('composer_manager_file_dir', t('Composer file directory must be writable'));
   }
 }
 
@@ -243,6 +243,34 @@ function composer_manager_rebuild_form_submit($form, &$form_state) {
 }
 
 /**
+ * Parses a JSON file into a PHP array.
+ *
+ * @param string $file_uri
+ *   The URI of the JSON sile being parsed.
+ *
+ * @return array
+ *   The parsed JSON, and empty array if the file doesn't exist.
+ *
+ * @throws \RuntimeException
+ */
+function composer_manager_read_composer_file($file_uri) {
+  $json = array();
+  if (file_exists($file_uri)) {
+    if (!$filedata = @file_get_contents($file_uri)) {
+      throw new \RuntimeException(t('Error reading file: @file', array('@file' => $file_uri)));
+    }
+    $json = @drupal_json_decode($filedata);
+    if ($json === NULL) {
+      throw new \RuntimeException(t('Error parsing file: @file', array('@file' => $file_uri)));
+    }
+    elseif ($json === FALSE) {
+      $json = array();
+    }
+  }
+  return $json;
+}
+
+/**
  * Loads the composer.lock file if it exists.
  *
  * @return array
@@ -254,19 +282,24 @@ function composer_manager_lockfile_load() {
   $json = &drupal_static(__FUNCTION__);
   if ($json === NULL) {
     $dir_uri = variable_get('composer_manager_file_dir', file_default_scheme() . '://composer');
-    $file_uri = $dir_uri . '/composer.lock';
+    $json = composer_manager_read_composer_file($dir_uri . '/composer.lock');
+  }
+  return $json;
+}
 
-    if (file_exists($file_uri)) {
-      if (!$filedata = @file_get_contents($file_uri)) {
-        throw new \RuntimeException(t('Error reading file: @file', array('@file' => $file_uri)));
-      }
-      if (!$json = drupal_json_decode($filedata)) {
-        throw new \RuntimeException(t('Error parsing file: @file', array('@file' => $file_uri)));
-      }
-    }
-    else {
-      $json =  array();
-    }
+/**
+ * Loads the composer.lock file if it exists.
+ *
+ * @return array
+ *   The parsed JSON, and empty array if the file doesn't exist.
+ *
+ * @throws \RuntimeException
+ */
+function composer_manager_installed_packages_load() {
+  $json = &drupal_static(__FUNCTION__);
+  if ($json === NULL) {
+    $file_uri = composer_manager_vendor_dir() . '/composer/installed.json';
+    $json = composer_manager_read_composer_file($file_uri);
   }
   return $json;
 }
@@ -287,15 +320,13 @@ function composer_manager_installed_packages() {
   if (NULL === $installed) {
     $installed = array();
 
-    $json = composer_manager_lockfile_load();
-    if (isset($json['packages'])) {
-      foreach ($json['packages'] as $package) {
-        $installed[$package['name']] = array(
-          'version' => $package['version'],
-          'description' => !empty($package['description']) ? $package['description'] : '',
-          'homepage' => !empty($package['homepage']) ? $package['homepage'] : '',
-        );
-      }
+    $json = composer_manager_installed_packages_load();
+    foreach ($json as $package) {
+      $installed[$package['name']] = array(
+        'version' => $package['version'],
+        'description' => !empty($package['description']) ? $package['description'] : '',
+        'homepage' => !empty($package['homepage']) ? $package['homepage'] : '',
+      );
     }
 
     ksort($installed);
@@ -315,13 +346,11 @@ function composer_manager_installed_packages() {
 function composer_manager_package_dependents() {
   $dependents = array();
 
-  $json = composer_manager_lockfile_load();
-  if (isset($json['packages'])) {
-    foreach ($json['packages'] as $package) {
-      if (!empty($package['require'])) {
-        foreach ($package['require'] as $dependent => $version) {
-          $dependents[$dependent][] = $package['name'];
-        }
+  $json = composer_manager_installed_packages_load();
+  foreach ($json as $package) {
+    if (!empty($package['require'])) {
+      foreach ($package['require'] as $dependent => $version) {
+        $dependents[$dependent][] = $package['name'];
       }
     }
   }

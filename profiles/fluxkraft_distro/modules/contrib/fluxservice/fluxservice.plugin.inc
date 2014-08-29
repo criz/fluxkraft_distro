@@ -18,32 +18,34 @@
  *   single plugin definition array if $plugin was given and a matching record
  *   could be found. Returns NULL if $plugin was given and there was no matching
  *   plugin definition.
+ *
+ * @see fluxservice_plugin_info_cache_clear()
  */
 function fluxservice_get_plugin_info($type, $plugin = NULL) {
   // Try to retrieve the plugin definitions from the static cache.
-  $info = &drupal_static("fluxservice:plugins:$type");
+  $info = &drupal_static("fluxservice:plugins");
 
   // Try to retrieve the plugin definitions from the persistent cache if they
   // could not be retrieved from the static cache.
-  if (!isset($info) && ($cache = cache_get("fluxservice:plugins:$type")) !== FALSE) {
-    $info = $cache->data;
+  if (!isset($info[$type]) && ($cache = cache_get("fluxservice:plugins:$type")) !== FALSE) {
+    $info[$type] = $cache->data;
   }
 
-  // If the plugin definitions could not be retrieved from the database cache
-  // either we need to (re-)discover them from the info hook implementations.
-  if (!isset($info)) {
-    $info = fluxservice_discover_plugins($type);
+  // If the plugin definitions could not be retrieved from the cache either we
+  // need to (re-)discover them from the info hook implementations.
+  if (!isset($info[$type])) {
+    $info[$type] = fluxservice_discover_plugins($type);
 
-    // Cache the plugin definitions in the database for future requests.
-    cache_set("fluxservice:plugins:$type", $info);
+    // Cache the plugin definitions for future requests.
+    cache_set("fluxservice:plugins:$type", $info[$type]);
   }
 
   // Either return the full array of plugin definitions or just a single record.
   if (!isset($plugin)) {
-    return $info;
+    return $info[$type];
   }
-  elseif (isset($info[$plugin])) {
-    return $info[$plugin];
+  elseif (isset($info[$type][$plugin])) {
+    return $info[$type][$plugin];
   }
 }
 
@@ -75,8 +77,9 @@ function fluxservice_discover_plugins($type) {
   foreach (get_declared_classes() as $plugin_class) {
     if (is_subclass_of($plugin_class, $interface) && method_exists($plugin_class, 'getInfo')) {
       $reflection = new ReflectionClass($plugin_class);
-      $file_path = str_replace(DRUPAL_ROOT . '/', '', $reflection->getFileName());
+      $file_path = str_replace(realpath(DRUPAL_ROOT) . DIRECTORY_SEPARATOR, '', realpath($reflection->getFileName()));
       $file_path = DIRECTORY_SEPARATOR != '/' ? str_replace(DIRECTORY_SEPARATOR, '/', $file_path) : $file_path;
+
       if (array_key_exists($file_path, $files)) {
         $info = call_user_func(array($plugin_class, 'getInfo'));
         $info['class'] = $plugin_class;

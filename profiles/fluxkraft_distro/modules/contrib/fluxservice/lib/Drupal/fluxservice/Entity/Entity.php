@@ -8,7 +8,7 @@
 namespace Drupal\fluxservice\Entity;
 
 /**
- * Class for remote entity objects.
+ * Base class for entity objects.
  */
 class Entity extends \Entity implements EntityInterface {
 
@@ -18,6 +18,13 @@ class Entity extends \Entity implements EntityInterface {
    * @var bool
    */
   public $is_new;
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function factory(array $values, $entity_type, $entity_info) {
+    return new static($values, $entity_type);
+  }
 
   /**
    * {@inheritdoc}
@@ -32,6 +39,20 @@ class Entity extends \Entity implements EntityInterface {
   public function enforceIsNew($value = TRUE) {
     $this->is_new = $value;
     return $this;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function getEntityPropertyInfo($entity_type, $entity_info) {
+    return array();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function getBundlePropertyInfo($entity_type, $entity_info, $bundle) {
+    return array();
   }
 
 }

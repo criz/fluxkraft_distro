@@ -110,7 +110,6 @@ class FeedEntry extends RemoteEntity implements FeedEntryInterface {
     if (!isset($values['entry'])) {
       throw new \EntityMalformedException('Missing feed entry.');
     }
-
     parent::__construct($values, 'fluxfeed_entry');
   }
 

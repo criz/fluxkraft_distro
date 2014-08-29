@@ -13,7 +13,7 @@ use EntityFieldQuery;
 /**
  * Controller class for personal service accounts.
  */
-class ServiceController extends FluxEntityController {
+class ServiceController extends PluginConfigEntityController {
 
   /**
    * {@inheritdoc}

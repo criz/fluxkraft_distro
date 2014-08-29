@@ -5,7 +5,7 @@
  * Main module file.
  */
 
-use Drupal\fluxservice\Entity\FluxEntityInterface;
+use Drupal\fluxservice\Entity\PluginConfigEntityInterface;
 use Drupal\fluxservice\KeyValueStore\DatabaseStorage;
 use Drupal\fluxservice\KeyValueStore\DatabaseStorageExpirable;
 use Drupal\fluxservice\Plugin\Entity\AccountInterface;
@@ -125,11 +125,35 @@ function fluxservice_module_implements_alter(&$implementations, $hook) {
       unset($implementations['fluxservice']);
       return;
     }
-
     $group = $implementations['fluxservice'];
     unset($implementations['fluxservice']);
     $implementations['fluxservice'] = $group;
   }
+  elseif ($hook == 'modules_enabled') {
+    // Make sure fluxservice can clear caches before entity imports defaults.
+    $group = $implementations['fluxservice'];
+    unset($implementations['fluxservice']);
+    $implementations = array_merge(array('fluxservice' => $group), $implementations);
+  }
+}
+
+/**
+ * Implements hook_modules_enabled().
+ */
+function fluxservice_modules_enabled($modules) {
+  // Clear caches after modules that provide fluxservice plugins are enabled.
+  if (array_intersect($modules, module_implements('fluxservice_plugin_directory'))) {
+    fluxservice_plugin_info_cache_clear();
+    entity_info_cache_clear();
+  }
+}
+
+/**
+ * Resets the cached information about fluxservice plugins.
+ */
+function fluxservice_plugin_info_cache_clear() {
+  drupal_static_reset('fluxservice:plugins');
+  cache_clear_all('fluxservice:plugins:', 'cache', TRUE);
 }
 
 /**
@@ -330,22 +354,42 @@ function fluxservice_account_load_by_remote_id($plugin, $remote_id, $user = NULL
 }
 
 /**
+ * Parses the given service configuration into service endpoint and account.
+ *
+ * @return array
+ *   A numerically indexed array of service endpoint and account entities.
+ */
+function _fluxservice_process_argument(PluginConfigEntityInterface $config) {
+  if ($config instanceof AccountInterface) {
+    return array($config->getService(), $config);
+  }
+  else {
+    return array($config, NULL);
+  }
+}
+
+/**
  * Loads remote entities from a web service.
  *
  * @param string $entity_type
  *   The entity type to load, e.g. node or user.
  * @param array|bool $ids
  *   An array of entity IDs, or FALSE to load all entities.
- * @param FluxEntityInterface $agent
- *   The agent with which to query the web service.
+ * @param \Drupal\fluxservice\Entity\PluginConfigEntityInterface $config
+ *   The configuration used to load the values. Depending on the entity type
+ *   this must be either a service endpoint or service account entity.
  *
- * @return bool|array
+ * @return \Drupal\fluxservice\Entity\RemoteEntityInterface[]
  *   An array of entity objects indexed by their ids. When no results are
  *   found, an empty array is returned.
  */
-function fluxservice_load_remote_entity($entity_type, array $ids = array(), FluxEntityInterface $agent) {
+function fluxservice_load_remote_multiple($entity_type, $ids = array(), PluginConfigEntityInterface $config) {
   $controller = entity_get_controller($entity_type);
-  return $controller->load($entity_type, $ids);
+  list($service, $account) = _fluxservice_process_argument($config);
+  foreach ($ids as &$id) {
+    $id = $controller->buildDrupalEntityId($id, $service, $account);
+  }
+  return $controller->load($ids);
 }
 
 /**
@@ -355,15 +399,15 @@ function fluxservice_load_remote_entity($entity_type, array $ids = array(), Flux
  *   The entity type to load, e.g. node or user.
  * @param string $id
  *   An array of entity IDs, or FALSE to load all entities.
- * @param FluxEntityInterface $agent
- *   The agent with which to query the web service.
+ * @param \Drupal\fluxservice\Entity\PluginConfigEntityInterface $config
+ *   The configuration used to load the values. Depending on the entity type
+ *   this must be either a service endpoint or service account entity.
  *
- * @return mixed
+ * @return \Drupal\fluxservice\Entity\RemoteEntityInterface|false
  *   The loaded entity object or FALSE if the entity could not be loaded.
  */
-function fluxservice_load_remote_entity_single($entity_type, $id, FluxEntityInterface $agent) {
-  $controller = entity_get_controller($entity_type);
-  $entities = $controller->load($entity_type, array($id));
+function fluxservice_load_remote($entity_type, $id, PluginConfigEntityInterface $config) {
+  $entities = fluxservice_load_remote_multiple($entity_type, array($id), $config);
   return !empty($entities) ? reset($entities) : FALSE;
 }
 
@@ -374,16 +418,17 @@ function fluxservice_load_remote_entity_single($entity_type, $id, FluxEntityInte
  *   The entity values to entify.
  * @param string $entity_type
  *   The entity type to use.
- * @param \Drupal\fluxservice\Entity\FluxEntityInterface $agent
- *   The agent used to load the values.
+ * @param \Drupal\fluxservice\Entity\PluginConfigEntityInterface $config
+ *   The configuration used to load the values. Depending on the entity type
+ *   this must be either a service endpoint or service account entity.
  *
  * @return \Drupal\fluxservice\Entity\RemoteEntityInterface
- *   The entified entity.
+ *   The entify-ed entity.
  *
  * @see \Drupal\fluxservice\RemoteEntityControllerInterface::entify()
  */
-function fluxservice_entify(array $values, $entity_type, FluxEntityInterface $agent) {
-  $entities = fluxservice_entify_multiple(array($values), $entity_type, $agent);
+function fluxservice_entify(array $values, $entity_type, PluginConfigEntityInterface $config) {
+  $entities = fluxservice_entify_multiple(array($values), $entity_type, $config);
   return reset($entities);
 }
 
@@ -394,17 +439,19 @@ function fluxservice_entify(array $values, $entity_type, FluxEntityInterface $ag
  *   An array of items to entify.
  * @param string $entity_type
  *   The entity type to use.
- * @param \Drupal\fluxservice\Entity\FluxEntityInterface $agent
- *   The agent used to load the items.
+ * @param \Drupal\fluxservice\Entity\PluginConfigEntityInterface $config
+ *   The configuration used to load the values. Depending on the entity type
+ *   this must be either a service endpoint or service account entity.
  *
  * @return \Drupal\fluxservice\Entity\RemoteEntityInterface[]
- *   The entified entities.
+ *   The entify-ed entities.
  *
  * @see \Drupal\fluxservice\RemoteEntityControllerInterface::entify()
  */
-function fluxservice_entify_multiple(array $items, $entity_type, FluxEntityInterface $agent) {
+function fluxservice_entify_multiple(array $items, $entity_type, PluginConfigEntityInterface $config) {
   $controller = entity_get_controller($entity_type);
-  return $controller->entify($items, $agent);
+  list($service, $account) = _fluxservice_process_argument($config);
+  return $controller->entify($items, $service, $account);
 }
 
 /**
@@ -414,16 +461,17 @@ function fluxservice_entify_multiple(array $items, $entity_type, FluxEntityInter
  *   The entity values to by-catch.
  * @param string $entity_type
  *   The entity type to use.
- * @param \Drupal\fluxservice\Entity\FluxEntityInterface $agent
- *   The agent used to load the items.
+ * @param \Drupal\fluxservice\Entity\PluginConfigEntityInterface $config
+ *   The configuration used to load the values. Depending on the entity type
+ *   this must be either a service endpoint or service account entity.
  *
  * @return \Drupal\fluxservice\Entity\RemoteEntityInterface
  *   The by-catched entity.
  *
  * @see \Drupal\fluxservice\RemoteEntityControllerInterface::bycatch()
  */
-function fluxservice_bycatch(array $values, $entity_type, FluxEntityInterface $agent) {
-  $entities = fluxservice_bycatch_multiple(array($values), $entity_type, $agent);
+function fluxservice_bycatch(array $values, $entity_type, PluginConfigEntityInterface $config) {
+  $entities = fluxservice_bycatch_multiple(array($values), $entity_type, $config);
   return reset($entities);
 }
 
@@ -434,17 +482,19 @@ function fluxservice_bycatch(array $values, $entity_type, FluxEntityInterface $a
  *   The array of items to by-catch.
  * @param string $entity_type
  *   The entity type to use.
- * @param \Drupal\fluxservice\Entity\FluxEntityInterface $agent
- *   The agent used to load the items.
+ * @param \Drupal\fluxservice\Entity\PluginConfigEntityInterface $config
+ *   The configuration used to load the values. Depending on the entity type
+ *   this must be either a service endpoint or service account entity.
  *
  * @return \Drupal\fluxservice\Entity\RemoteEntityInterface[]
  *   The by-catched entities.
  *
  * @see \Drupal\fluxservice\RemoteEntityControllerInterface::bycatch()
  */
-function fluxservice_bycatch_multiple(array $items, $entity_type, FluxEntityInterface $agent) {
+function fluxservice_bycatch_multiple(array $items, $entity_type, PluginConfigEntityInterface $config) {
   $controller = entity_get_controller($entity_type);
-  return $controller->bycatch($items, $agent);
+  list($service, $account) = _fluxservice_process_argument($config);
+  return $controller->bycatch($items, $service, $account);
 }
 
 /**

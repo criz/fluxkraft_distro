@@ -46,9 +46,11 @@ files[] = handlers/efq_views_handler_filter_string.inc
 
 files[] = handlers/efq_views_handler_filter_term_reference.inc
 
-; Information added by drupal.org packaging script on 2013-05-11
-version = "7.x-1.0-alpha3+14-dev"
+files[] = handlers/efq_views_handler_field_operations.inc
+
+; Information added by Drupal.org packaging script on 2014-07-19
+version = "7.x-1.0-alpha5+1-dev"
 core = "7.x"
 project = "efq_views"
-datestamp = "1368233616"
+datestamp = "1405808931"
 

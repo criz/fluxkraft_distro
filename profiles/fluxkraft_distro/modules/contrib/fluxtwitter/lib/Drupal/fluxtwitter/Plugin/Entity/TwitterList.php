@@ -48,7 +48,7 @@ class TwitterList extends RemoteEntity implements TwitterListInterface {
       'label' => t('Owner'),
       'description' => t('The Twitter user who owns this list.'),
       'type' => 'fluxtwitter_user',
-      'getter callback' => 'entity_property_getter_method',
+      'getter callback' => 'fluxservice_entity_property_getter_method',
     );
 
     return $info;

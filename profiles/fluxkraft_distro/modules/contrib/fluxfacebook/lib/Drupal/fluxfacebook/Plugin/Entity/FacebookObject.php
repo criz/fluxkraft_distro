@@ -7,7 +7,7 @@
 
 namespace Drupal\fluxfacebook\Plugin\Entity;
 
-use Drupal\fluxservice\Entity\FluxEntityInterface;
+use Drupal\fluxservice\Entity\PluginConfigEntityInterface;
 use Drupal\fluxservice\Entity\RemoteEntity;
 
 /**
@@ -47,6 +47,18 @@ abstract class FacebookObject extends RemoteEntity implements FacebookObjectInte
         'photo' => array(
           'label' => t('Photo'),
           'bundle class' => '\Drupal\fluxfacebook\Objects\Photo',
+        ),
+        'event' => array(
+          'label' => t('Event'),
+          'bundle class' => '\Drupal\fluxfacebook\Objects\Event',
+        ),
+        'page' => array(
+          'label' => t('Page'),
+          'bundle class' => '\Drupal\fluxfacebook\Objects\Page',
+        ),
+        'group' => array(
+          'label' => t('Group'),
+          'bundle class' => '\Drupal\fluxfacebook\Objects\Group',
         ),
       ),
     );
@@ -97,13 +109,6 @@ abstract class FacebookObject extends RemoteEntity implements FacebookObjectInte
     $bundle = $values[$entity_info['entity keys']['bundle']];
     $class = $entity_info['bundles'][$bundle]['bundle class'];
     return new $class($values, $entity_type, $entity_info, $bundle);
-  }
-
-  /**
-   * Constructs a FacebookObject instance.
-   */
-  public function __construct($values, $entity_type, $entity_info) {
-    parent::__construct($values, $entity_type);
   }
 
 }

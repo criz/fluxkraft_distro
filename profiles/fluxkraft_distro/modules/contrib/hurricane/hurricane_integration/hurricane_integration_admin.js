@@ -7,7 +7,7 @@
     attach: function(context, settings) {
       $('.hurricane-preview', context).once('hurricane-configuration', function(){
         var first_refresh = true;
-        $font = $('#edit-hurricane-font-family', context);
+        var $font = $('#edit-hurricane-font-family', context);
         $font.change(function(){
 
           var params = settings.hurricane.parameters[$(this).val()];
@@ -15,7 +15,7 @@
             if (property === 'font-family') {
               return;
             }
-            $item = $('.form-item-hurricane-' + property, context);
+            var $item = $('.form-item-hurricane-' + property, context);
             if (typeof params[property] === 'undefined') {
               $item.hide();
               return;
@@ -36,9 +36,9 @@
         /**
          * attach sliders
          */
-        $('input.slider', context).each(function(){
-          $input = $(this);
-          $slider = $('<div class="slider"></div>');
+        $('input.slider', context).once(function(){
+          var $input = $(this);
+          var $slider = $('<div class="slider"></div>');
           var map = Drupal.settings.hurricane.map[this.name.replace('hurricane_', '')];
           if (typeof map === 'undefined') {
             return;
@@ -50,14 +50,13 @@
             step: 1,
             value: $input.val(),
             slide: function(event, slider) {
-              $(this).parent().find('input').val(slider.value);
-              $(this).parent().find('input').change();
+              $input.val(slider.value);
+              $input.change();
             }
           });
           $input.change(function(){
-            var $s = $(this).parent().find('.slider');
-            if ($s.slider('value') !== $(this).val()) {
-              $s.slider('value', $(this).val());
+            if ($slider.slider('value') !== $input.val()) {
+              $slider.slider('value', $input.val());
             }
             refresh();
           });
@@ -113,9 +112,10 @@
         $(this).append('<div class="preview-spinner large ajax-progress"><div class="throbber"></div></div>');
         $(this).append('<div class="preview-spinner medium ajax-progress"><div class="throbber"></div></div>');
         $(this).append('<div class="preview-spinner small ajax-progress"><div class="throbber"></div></div>');
-        $('.preview-spinner .throbber', this).mouseenter(function(){
+
+        $('.preview-spinner .throbber', this).hover(function(){
           $(this).hurricane('start');
-        }).mouseleave(function(){
+        }, function(){
           $(this).hurricane('stop');
         });
 

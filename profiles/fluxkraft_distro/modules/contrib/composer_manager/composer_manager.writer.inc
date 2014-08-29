@@ -55,14 +55,15 @@ function composer_manager_build_json(array $data) {
   $combined = array();
   foreach ($data as $module => $json) {
 
-    // We will only merge the module's composer.json if it has some additional
-    // dependencies stated in "require".
-    if (!isset($json['require'])) {
-      continue;
-    }
-
     if (!$combined) {
-      $combined = array('require' => array());
+
+      $combined = array(
+        'require' => array(),
+        'config'  => array(
+          'autoloader-suffix' => 'ComposerManager',
+        ),
+      );
+
       $vendor_dir = composer_manager_relative_vendor_dir();
       if (0 !== strlen($vendor_dir) && 'vendor' != $vendor_dir) {
         $combined['config']['vendor-dir'] = $vendor_dir;
@@ -92,18 +93,20 @@ function composer_manager_build_json(array $data) {
       }
     }
 
-    // Merge in the "psr-0" autoload options.
-    if (isset($json['autoload']['psr-0'])) {
-      $namespaces = (array) $json['autoload']['psr-0'];
-      foreach ($json['autoload']['psr-0'] as $namesapce => $dirs) {
-        $dirs = (array) $dirs;
-        array_walk($dirs, 'composer_manager_relative_autoload_path', $module);
-        if (!isset($combined['autoload']['psr-0'][$namesapce])) {
-          $combined['autoload']['psr-0'][$namesapce] = array();
+    $autoload_options = array('psr-0', 'psr-4');
+    foreach ($autoload_options as $option) {
+      if (isset($json['autoload'][$option])) {
+        $namespaces = (array) $json['autoload'][$option];
+        foreach ($json['autoload'][$option] as $namesapce => $dirs) {
+          $dirs = (array) $dirs;
+          array_walk($dirs, 'composer_manager_relative_autoload_path', $module);
+          if (!isset($combined['autoload'][$option][$namesapce])) {
+            $combined['autoload'][$option][$namesapce] = array();
+          }
+          $combined['autoload'][$option][$namesapce] = array_merge(
+            $combined['autoload'][$option][$namesapce], $dirs
+          );
         }
-        $combined['autoload']['psr-0'][$namesapce] = array_merge(
-          $combined['autoload']['psr-0'][$namesapce], $dirs
-        );
       }
     }
 

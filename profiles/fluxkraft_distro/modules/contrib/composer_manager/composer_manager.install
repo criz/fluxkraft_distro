@@ -28,7 +28,7 @@ function composer_manager_uninstall() {
  */
 function composer_manager_requirements($phase) {
   if ('runtime' != $phase) {
-    return;
+    return array();
   }
 
   $t = get_t();

@@ -23,10 +23,10 @@ interface TwitterListInterface extends RemoteEntityInterface {
   public function getUser();
 
   /**
-   * Gets the owner of the list.
+   * Gets the name of the list.
    *
    * @return string
-   *   The owner of the list.
+   *   The name of the list.
    */
   public function getName();
 

@@ -8,7 +8,7 @@
 namespace Drupal\fluxservice\Entity;
 
 /**
- * Extended entity interface for fluxservice and integrationg modules.
+ * Extended entity interface for fluxservice and integration modules.
  *
  * This interface must be implemented by entity types provided via the
  * fluxservice plugin mechanism. In order to be discovered plugin implementation
@@ -23,6 +23,21 @@ namespace Drupal\fluxservice\Entity;
  * module for an example.
  */
 interface EntityInterface {
+
+  /**
+   * Instantiates a new entity object based on the given values.
+   *
+   * @param array $values
+   *   The property values of the entity.
+   * @param string $entity_type
+   *   The entity type to create.
+   * @param $entity_info
+   *   The info of the entity type.
+   *
+   * @return self
+   *   An instantiated entity object.
+   */
+  public static function factory(array $values, $entity_type, $entity_info);
 
   /**
    * Returns whether the entity is new.
@@ -48,16 +63,84 @@ interface EntityInterface {
   public function enforceIsNew($value = TRUE);
 
   /**
-   * @return mixed
+   * Returns the bundle of the entity.
+   *
+   * @return
+   *   The bundle of the entity. Defaults to the entity type if the entity type
+   *   does not make use of different bundles.
    */
   public function bundle();
 
+  /**
+   * Returns the entity identifier, i.e. the entities name or numeric id.
+   *
+   * @return
+   *   The identifier of the entity. If the entity type makes use of a name key,
+   *   the name is returned, else the numeric id.
+   *
+   * @see entity_id()
+   */
   public function identifier();
 
+  /**
+   * Returns the label of the entity.
+   *
+   * Modules may alter the label by specifying another 'label callback' using
+   * hook_entity_info_alter().
+   *
+   * @see entity_label()
+   */
   public function label();
 
+  /**
+   * Permanently saves the entity.
+   *
+   * @see entity_save()
+   */
   public function save();
 
+  /**
+   * Permanently deletes the entity.
+   *
+   * @see entity_delete()
+   */
   public function delete();
+
+  /**
+   * Describes entity properties.
+   *
+   * Properties that are available for all bundles of an entity type should be
+   * described here, bundle-specific properties in getBundlePropertyInfo().
+   *
+   * @param string $entity_type
+   *   The entity type.
+   * @param array $entity_info
+   *   The entity info of the given entity type.
+   *
+   * @return array
+   *   An array describing entity properties.
+   *
+   * @see hook_entity_property_info()
+   * @see FluxEntityMetadataController
+   */
+  public static function getEntityPropertyInfo($entity_type, $entity_info);
+
+  /**
+   * Describes bundle specific properties.
+   *
+   * @param string $entity_type
+   *   The entity type.
+   * @param array $entity_info
+   *   The entity info of the given entity type.
+   * @param string $bundle
+   *   The name of the bundle, for which properties should be described.
+   *
+   * @return array
+   *   An array describing entity properties of the given bundle.
+   *
+   * @see hook_entity_property_info()
+   * @see FluxEntityMetadataController
+   */
+  public static function getBundlePropertyInfo($entity_type, $entity_info, $bundle);
 
 }

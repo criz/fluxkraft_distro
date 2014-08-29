@@ -46,11 +46,17 @@
     border-right: 1px solid $grey-light;
     @extend %clearfix;
 
+    .fluxkraft-rules-overview--element--content--info {
+      @extend %clearfix;
+    }
+
     .fluxkraft-rules-overview--element--content--operations {
       text-align: center;
+      clear: both;
+      margin-top: 20px;
       .fluxkraft-rules-operation a {
         display: block;
-        width: 100px;
+        width: 100%;
         margin-bottom: 4px;
         margin-right: auto;
         margin-left: auto;
@@ -64,9 +70,30 @@
 }
 
 .fluxkraft-rules-arrow-sign {
-  font-size: 50px;
-  line-height: 80px;
+  font-size: 30px;
+  line-height: 60px;
   float: left;
-  margin: $baseLineHeightpx + 18px 20px 0 20px !important;
+  margin: $baseLineHeightpx + 18px 15px 0 15px !important;
   color: $grey;
+}
+
+@include breakpoint($l-tablet-up) {
+  .fluxkraft-rules-overview--element {
+    .fluxkraft-rules-overview--element--content {
+      .fluxkraft-rules-overview--element--content--operations {
+        clear: none;
+        margin-top: 0;
+
+        .fluxkraft-rules-operation a {
+          width: 100px;
+        }
+      }
+    }
+  }
+
+  .fluxkraft-rules-arrow-sign {
+    font-size: 50px;
+    line-height: 80px;
+    margin: $baseLineHeightpx + 18px 20px 0 20px !important;
+  }
 }

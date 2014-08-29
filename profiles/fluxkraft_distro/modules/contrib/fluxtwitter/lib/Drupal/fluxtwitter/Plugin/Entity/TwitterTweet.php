@@ -7,7 +7,6 @@
 
 namespace Drupal\fluxtwitter\Plugin\Entity;
 
-use Drupal\fluxservice\Entity\FluxEntityInterface;
 use Drupal\fluxservice\Entity\RemoteEntity;
 
 /**
@@ -27,10 +26,12 @@ class TwitterTweet extends RemoteEntity implements TwitterTweetInterface {
       'module' => 'fluxtwitter',
       'service' => 'fluxtwitter',
       'controller class' => '\Drupal\fluxtwitter\TwitterTweetController',
-      'label callback' => 'entity_class_label',
       'entity keys' => array(
         'id' => 'drupal_entity_id',
         'remote id' => 'id',
+      ),
+      'fluxservice_efq_driver' => array(
+        'default' => '\Drupal\fluxtwitter\TwitterTweetEntityQueryDriver',
       ),
     );
   }
@@ -127,7 +128,7 @@ class TwitterTweet extends RemoteEntity implements TwitterTweetInterface {
     );
 
     $info['retweet_count'] = array(
-      'label' => t('Retweet count'),
+      'label' => t('TwitterRetweetAction count'),
       'description' => t('Number of times this Tweet has been retweeted.'),
       'type' => 'integer',
     );

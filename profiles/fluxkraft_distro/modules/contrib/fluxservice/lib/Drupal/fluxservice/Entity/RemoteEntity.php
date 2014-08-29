@@ -32,13 +32,6 @@ class RemoteEntity extends Entity implements RemoteEntityInterface {
   /**
    * {@inheritdoc}
    */
-  public static function factory(array $values, $entity_type, $entity_info) {
-    return new static($values, $entity_type);
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function __construct(array $values = array(), $entity_type = NULL) {
     parent::__construct($values, $entity_type);
 
@@ -88,6 +81,15 @@ class RemoteEntity extends Entity implements RemoteEntityInterface {
       return $this->{$this->remoteIdKey};
     }
     return NULL;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getPropertyValues() {
+    // Return all properties which have metadata by default.
+    $property_info = entity_get_all_property_info($this->entityType);
+    return array_intersect_key(get_object_vars($this), $property_info);
   }
 
 }

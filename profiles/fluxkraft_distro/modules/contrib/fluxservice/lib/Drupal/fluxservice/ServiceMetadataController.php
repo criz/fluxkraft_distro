@@ -29,7 +29,7 @@ class ServiceMetadataController extends \EntityDefaultMetadataController {
 
     // Append bundle (plugin) specific properties.
     foreach (fluxservice_get_service_plugin_info() as $plugin => $plugin_info) {
-      if ($definitions = $plugin_info['class']::getBundlePropertyInfo()) {
+      if ($definitions = $plugin_info['class']::getBundlePropertyInfo($this->type, $this->info, $plugin)) {
         $info[$this->type]['bundles'][$plugin]['properties'] = $definitions;
       }
     }

@@ -8,7 +8,7 @@
 namespace Drupal\fluxfacebook\TaskHandler;
 
 /**
- * Event dispatcher for the Facebook home timeline of a given user.
+ * Event dispatcher for the Facebook status messages.
  */
 class FacebookStatusesTaskHandler extends FacebookTaskHandlerBase {
 
@@ -16,11 +16,11 @@ class FacebookStatusesTaskHandler extends FacebookTaskHandlerBase {
    * {@inheritdoc}
    */
   public function runTask() {
-    $user = $this->task['data']['user'];
+    $owner = $this->task['data']['owner'];
 
     // Assemble the request arguments.
     $arguments = array(
-      'id' => $user,
+      'id' => $owner,
       'limit' => 25,
     );
 
@@ -37,7 +37,7 @@ class FacebookStatusesTaskHandler extends FacebookTaskHandlerBase {
 
       $messages = fluxservice_entify_multiple($messages, 'fluxfacebook_object', $account);
       foreach ($messages as $message) {
-        rules_invoke_event($this->getEvent(), $account, $message, $user);
+        rules_invoke_event($this->getEvent(), $account, $message, $owner);
       }
 
       // Store the timestamp of the last status message that was processed.

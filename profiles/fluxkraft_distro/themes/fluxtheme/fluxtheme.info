@@ -104,9 +104,9 @@ settings[hurricane_white-space] = 0
 settings[hurricane_font-style] = 0
 settings[omega_css_exclude_regex] = /^sites\/all\/modules\/panels\/(.*)|profiles\/fluxkraft_distro\/modules\/views\/(.*)|flexslider\/(.*)|(.*)flexslider\.css|flexslider\.css$/
 
-; Information added by drupal.org packaging script on 2013-08-13
+; Information added by drupal.org packaging script on 2013-10-18
 version = "7.x-1.x-dev"
 core = "7.x"
 project = "fluxtheme"
-datestamp = "1376356971"
+datestamp = "1382122420"
 

@@ -7,12 +7,12 @@
 
 namespace Drupal\fluxservice\Plugin\Entity;
 
-use Drupal\fluxservice\Entity\FluxEntity;
+use Drupal\fluxservice\Entity\PluginConfigEntityBase;
 
 /**
- * Entity class for personal service accounts.
+ * Entity class for holding service account information.
  */
-abstract class Account extends FluxEntity implements AccountInterface {
+abstract class Account extends PluginConfigEntityBase implements AccountInterface {
 
   /**
    * Defines the entity type.
@@ -145,6 +145,13 @@ abstract class Account extends FluxEntity implements AccountInterface {
    */
   public function getPluginInfo() {
     return fluxservice_get_account_plugin_info($this->plugin);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getPluginType() {
+    return 'fluxservice_account';
   }
 
 }

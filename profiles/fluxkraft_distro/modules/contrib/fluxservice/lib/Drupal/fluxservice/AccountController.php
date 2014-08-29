@@ -10,7 +10,7 @@ namespace Drupal\fluxservice;
 /**
  * Controller class for personal service accounts.
  */
-class AccountController extends FluxEntityController {
+class AccountController extends PluginConfigEntityController {
 
   /**
    * Constructs a AccountController object.

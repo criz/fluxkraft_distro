@@ -21,6 +21,7 @@
   },
   "require": {
     "php": ">=5.3.2",
-    "doctrine/collections": "dev-master"
+    "doctrine/collections": "v1.1",
+    "guzzle/guzzle": "v3.7.4"
   }
 }

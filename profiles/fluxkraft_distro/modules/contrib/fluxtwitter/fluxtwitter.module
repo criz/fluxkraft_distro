@@ -14,12 +14,15 @@ function fluxtwitter_rules_category_info() {
   $info['fluxtwitter'] = array(
     'label' => t('Twitter'),
   ) + fluxservice_get_service_icon_info('fluxtwitter');
+
   $info['twitter_tweet'] = array(
     'label' => t('Twitter: Tweet'),
   ) + fluxservice_get_service_icon_info('fluxtwitter');
+
   $info['twitter_user'] = array(
     'label' => t('Twitter: User'),
   ) + fluxservice_get_service_icon_info('fluxtwitter');
+
   return $info;
 }
 
@@ -28,4 +31,36 @@ function fluxtwitter_rules_category_info() {
  */
 function fluxtwitter_fluxservice_plugin_directory() {
   return 'lib/Drupal/fluxtwitter/Plugin';
+}
+
+/**
+ * Implements hook_theme().
+ */
+function fluxtwitter_theme() {
+  return array(
+    'fluxtwitter_tweet' => array(
+      'variables' => array('fluxtwitter_tweet' => NULL),
+      'template' => 'fluxtweet',
+    ),
+  );
+}
+
+/**
+ * Processes variables for fluxtweet.tpl.php.
+ */
+function fluxtwitter_preprocess_entity(&$variables) {
+  if ($variables['elements']['#entity_type'] == 'fluxtwitter_tweet') {
+    // Parsing out links.
+    $formatted_text = preg_replace('/(\b(www\.|http\:\/\/)\S+\b)/', "<a target='_blank' href='$1'>$1</a>", $variables['fluxtwitter_tweet']->text);
+    $formatted_text = preg_replace('/\#(\w+)/', "<a target='_blank' href='http://search.twitter.com/search?q=$1'>#$1</a>", $formatted_text);
+    $formatted_text = preg_replace('/\@(\w+)/', "<a target='_blank' href='http://twitter.com/$1'>@$1</a>", $formatted_text);
+
+    $variables['fluxtwitter_tweet_text'] = $formatted_text;
+    // Setting date.
+    $date = strtotime($variables['fluxtwitter_tweet']->created_at);
+    $variables['fluxtwitter_tweet_date'] = format_date($date, 'medium');
+    // Settings username.
+    $user_name = $variables['fluxtwitter_tweet']->user->name;
+    $variables['fluxtwitter_tweet_author'] = l("@$user_name", "http://twitter.com/$user_name", array('external' => TRUE, 'attributes' => array('target' => '_blank')));
+  }
 }

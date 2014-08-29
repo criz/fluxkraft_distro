@@ -10,7 +10,7 @@ class efq_views_handler_argument_property_string extends views_handler_argument_
     unset($form['glossary']);
   }
 
-  function query() {
+  function query($group_by = false) {
     $argument = $this->argument;
     if (!empty($this->options['transform_dash'])) {
       $argument = strtr($argument, '-', ' ');

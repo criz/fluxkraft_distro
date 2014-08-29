@@ -33,5 +33,13 @@ function fluxfacebook_fluxservice_plugin_directory() {
  * Implements hook_fluxfacebook_required_permissions().
  */
 function fluxfacebook_fluxfacebook_required_permissions(AccountInterface $account) {
-  return array('manage_pages', 'publish_stream', 'user_status', 'friends_status', 'read_stream');
+  return array(
+    'manage_pages',
+    'publish_stream',
+    'user_status',
+    'user_events',
+    'user_groups',
+    'friends_status',
+    'read_stream',
+  );
 }

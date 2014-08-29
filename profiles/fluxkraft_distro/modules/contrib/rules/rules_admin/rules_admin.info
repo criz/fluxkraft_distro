@@ -6,9 +6,9 @@ files[] = rules_admin.module
 files[] = rules_admin.inc
 dependencies[] = rules
 
-; Information added by drupal.org packaging script on 2013-09-20
-version = "7.x-2.5+0-dev"
+; Information added by drupal.org packaging script on 2013-10-29
+version = "7.x-2.6"
 core = "7.x"
 project = "rules"
-datestamp = "1379677462"
+datestamp = "1383063052"
 

@@ -7,21 +7,22 @@
 
 namespace Drupal\fluxxing;
 
-use Drupal\fluxservice\Entity\FluxEntityInterface;
-use Drupal\fluxservice\RemoteEntityController;
+use Drupal\fluxservice\Plugin\Entity\AccountInterface;
+use Drupal\fluxservice\Plugin\Entity\ServiceInterface;
+use Drupal\fluxservice\Entity\RemoteEntityControllerByAccount;
 use Drupal\fluxservice\Entity\RemoteEntityInterface;
 
 /**
  * Controller for Xing users.
  */
-class XingUserController extends RemoteEntityController {
+class XingUserController extends RemoteEntityControllerByAccount {
 
   /**
    * {@inheritdoc}
    */
-  protected function loadFromService($ids, FluxEntityInterface $agent) {
+  protected function loadFromService($ids, ServiceInterface $service, AccountInterface $account) {
     $output = array();
-    $client = $agent->client();
+    $client = $account->client();
     foreach ($ids as $id) {
       $response = $client->getUser(array('id' => $id));
       $output[$id] = $response['users'][0];
@@ -33,7 +34,7 @@ class XingUserController extends RemoteEntityController {
    * {@inheritdoc}
    */
   public function sendToService(RemoteEntityInterface $entity) {
-    // @todo Throw exception.
+    throw new \Exception("The entity type {$this->entityType} does not support writing.");
   }
 
 }

@@ -154,10 +154,33 @@ class efq_views_plugin_query extends views_plugin_query {
 
     $start = microtime(true);
 
+    // Determine if the query entity type is local or remote.
+    $remote = FALSE;
+    $entity_controller = entity_get_controller($this->entity_type);
+    if (module_exists('remote_entity') &&
+        is_a($entity_controller, 'RemoteEntityAPIDefaultController')) {
+
+      // We're dealing with a remote entity so get the fully loaded list of
+      // entities from its query class instead of EntityFieldQuery.
+      $remote = TRUE;
+      $remote_query = $entity_controller->getRemoteEntityQuery();
+      $remote_query->buildFromEFQ($query);
+      $remote_entities = $entity_controller->executeRemoteEntityQuery($remote_query);
+    }
+
     // if we are using the pager, calculate the total number of results
     if ($this->pager->use_pager()) {
       try {
-        $this->pager->total_items = $count_query->execute();
+
+        //  Fetch number of pager items differently based on data locality.
+        if ($remote) {
+          // Count the number of items already received in the remote query.
+          $this->pager->total_items = count($remote_entities);
+        }
+        else /* !$remote */ {
+          // Execute the local count query.
+          $this->pager->total_items = $count_query->execute();
+        }
 
         if (!empty($this->pager->options['offset'])) {
           $this->pager->total_items -= $this->pager->options['offset'];
@@ -187,19 +210,44 @@ class efq_views_plugin_query extends views_plugin_query {
       // We can't have an offset without a limit, so provide a very large limit instead.
       $limit  = intval(!empty($this->limit) ? $this->limit : 999999);
       $offset = intval(!empty($this->offset) ? $this->offset : 0);
-      $query->range($offset, $limit);
+
+      // Set the range for the query.
+      if ($remote) {
+        // The remote query was already executed so slice the results as necessary.
+        $remote_entities = array_slice($remote_entities, $offset, $limit, TRUE);
+      }
+      else /* !$remote */ {
+        // Set the range on the local query.
+        $query->range($offset, $limit);
+      }
     }
 
     $view->result = array();
     try {
-      $results = $query->execute();
 
-      foreach ($results as $entity_type => $ids) {
-        // This is later used for field rendering
-        foreach (entity_load($entity_type, array_keys($ids)) as $entity_id => $entity) {
-          $entity->entity_id = $entity_id;
-          $entity->entity_type = $entity_type;
-          $view->result[] = $entity;
+      // Populate the result array.
+      if ($remote) {
+
+        // Give each entity its ID and add it to the result array.
+        foreach ($remote_entities as $entity_id => $entity) {
+            $entity->entity_id = $entity_id;
+            $entity->entity_type = $this->entity_type;
+            $view->result[] = $entity;
+        }
+      }
+      else /* !$remote */ {
+
+        // Execute the local query.
+        $results = $query->execute();
+
+        // Load each entity, give it its ID, and then add to the result array.
+        foreach ($results as $entity_type => $ids) {
+          // This is later used for field rendering
+          foreach (entity_load($entity_type, array_keys($ids)) as $entity_id => $entity) {
+            $entity->entity_id = $entity_id;
+            $entity->entity_type = $entity_type;
+            $view->result[] = $entity;
+          }
         }
       }
 
