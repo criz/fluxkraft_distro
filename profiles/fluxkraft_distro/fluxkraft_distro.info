@@ -48,9 +48,10 @@ dependencies[] = hurricane_integration
 dependencies[] = admin_menu_toolbar
 dependencies[] = module_filter
 
-; Information added by Drupal.org packaging script on 2014-08-29
-version = "7.x-1.3"
+
+; Information added by drush on 2014-10-18
+version = "7.x-1.4+0-dev"
 core = "7.x"
 project = "fluxkraft_distro"
-datestamp = "1409327632"
+datestamp = "1413659031"
 
