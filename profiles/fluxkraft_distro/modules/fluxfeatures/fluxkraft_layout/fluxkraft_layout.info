@@ -24,10 +24,9 @@ features[variable][] = panels_page_allowed_layouts
 features[variable][] = panels_page_allowed_types
 features[variable][] = panels_page_default
 
-
-; Information added by drush on 2014-10-18
-version = "7.x-1.4+0-dev"
+; Information added by Drupal.org packaging script on 2016-07-27
+version = "7.x-1.6"
 core = "7.x"
 project = "fluxkraft_distro"
-datestamp = "1413659031"
+datestamp = "1469627956"
 

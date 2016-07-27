@@ -29,7 +29,7 @@ function fluxservice_boot() {
   }
   catch (\RuntimeException $exception) {
     // Notify watchdog for further debugging.
-    watchdog('fluxservice', $exception->getMessage(), WATCHDOG_ERROR);
+    watchdog('fluxservice', $exception->getMessage(), NULL, WATCHDOG_ERROR);
 
     // Make sure that the user module is bootstrapped.
     drupal_load('module', 'user');

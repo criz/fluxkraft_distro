@@ -9,6 +9,6 @@ class efq_views_handler_filter_property_date extends efq_views_handler_filter_da
   }
 
   function op_simple($field) {
-    $this->query->query->propertyCondition($field, parent::op_between($field), $this->operator);
+    $this->query->query->propertyCondition($field, parent::op_simple($field), $this->operator);
   }
 }

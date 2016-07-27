@@ -317,6 +317,21 @@ function field_help($path, $arg) {
 }
 
 /**
+ * Implements hook_permission().
+ */
+function field_permission() {
+  return array(
+    'administer fields' => array(
+      'title' => t('Administer fields'),
+      'description' => t('Additional permissions are required based on what the fields are attached to (for example, <a href="@url">administer content types</a> to manage fields attached to content).', array(
+        '@url' => '#module-node',
+      )),
+      'restrict access' => TRUE,
+    ),
+  );
+}
+
+/**
  * Implements hook_theme().
  */
 function field_theme() {
@@ -894,6 +909,7 @@ function field_view_field($entity_type, $entity, $field_name, $display = array()
       'entity' => $entity,
       'view_mode' => '_custom',
       'display' => $display,
+      'language' => $langcode,
     );
     drupal_alter('field_attach_view', $result, $context);
 

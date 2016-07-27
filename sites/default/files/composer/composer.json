@@ -1,1 +1,20 @@
-{"require":{"php":">=5.3.2","guzzle\/guzzle":"v3.7.4","benthedesigner\/dropbox":"dev-master","zendframework\/zend-feed":"2.*","zendframework\/zend-servicemanager":"2.*","doctrine\/collections":"v1.1"},"config":{"autoloader-suffix":"ComposerManager","vendor-dir":"..\/..\/..\/all\/vendor"},"repositories":[{"type":"composer","url":"https:\/\/packages.zendframework.com\/"}]}
+{
+    "require": {
+        "php": ">=5.3.2",
+        "guzzle/guzzle": "v3.7.4",
+        "benthedesigner/dropbox": "dev-master",
+        "zendframework/zend-feed": "2.*",
+        "zendframework/zend-servicemanager": "2.*",
+        "doctrine/collections": "v1.1"
+    },
+    "config": {
+        "autoloader-suffix": "ComposerManager",
+        "vendor-dir": "../../../all/vendor"
+    },
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "https://packages.zendframework.com/"
+        }
+    ]
+}

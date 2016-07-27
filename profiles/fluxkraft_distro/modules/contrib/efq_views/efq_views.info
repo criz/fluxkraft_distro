@@ -48,9 +48,9 @@ files[] = handlers/efq_views_handler_filter_term_reference.inc
 
 files[] = handlers/efq_views_handler_field_operations.inc
 
-; Information added by Drupal.org packaging script on 2014-07-19
-version = "7.x-1.0-alpha5+1-dev"
+; Information added by Drupal.org packaging script on 2014-11-25
+version = "7.x-1.0-alpha5+2-dev"
 core = "7.x"
 project = "efq_views"
-datestamp = "1405808931"
+datestamp = "1416936185"
 

@@ -8,9 +8,9 @@ dependencies[] = entity
 dependencies[] = composer_manager
 dependencies[] = xautoload
 
-; Information added by Drupal.org packaging script on 2014-01-05
-version = "7.x-1.0-rc1+16-dev"
+; Information added by Drupal.org packaging script on 2015-03-28
+version = "7.x-1.0-rc1+17-dev"
 core = "7.x"
 project = "fluxservice"
-datestamp = "1388942309"
+datestamp = "1427579582"
 
