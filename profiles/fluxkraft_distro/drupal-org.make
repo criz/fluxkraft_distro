@@ -10,8 +10,8 @@ defaults[projects][subdir] = contrib
 
 ; Dependencies =================================================================
 
-projects[composer_manager][version] = 1.6
-projects[ctools][version] = 1.9
+projects[composer_manager][version] = 1.8
+projects[ctools][version] = 1.12
 projects[entity][version] = 1.7
 projects[features][version] = 2.10
 projects[libraries][version] = 2.2
@@ -20,6 +20,7 @@ projects[uuid][version] = 1.0-alpha5
 projects[strongarm][version] = 2.0
 projects[xautoload][version] = 3.2
 projects[views][version] = 3.14
+projects[webhook][version] = 1.0-alpha3
 
 ; Core fluxkraft ===============================================================
 
@@ -36,14 +37,16 @@ projects[fluxdropbox][version] = 1.x-dev
 
 projects[fluxlinkedin][version] = 1.x-dev
 projects[fluxxing][version] = 1.x-dev
+projects[webhook_opentrigger][version] = 1.x-dev
+
 
 ; Theme and Display ============================================================
 
-projects[fluxtheme][version] = 1.x-dev
+projects[fluxtheme][version] = 2.x-dev
 projects[fluxtheme][subdir] = ''
-projects[omega][version] = 4.0-rc1
+projects[omega][version] = 4.4
 projects[omega][subdir] = ''
-projects[panels][version] = 3.3
+projects[panels][version] = 3.8
 projects[panels_everywhere][version] = 1.0-rc1
 projects[hurricane][version] = 1.x-dev
 

@@ -10,7 +10,8 @@
  */
 function composer_manager_install() {
   // @see composer_manager_beta5_compatibility()
-  variable_set('composer_manager_vendor_dir', 'sites/all/vendor');
+  $vendor_dir = variable_get('composer_manager_vendor_dir', 'sites/all/vendor');
+  variable_set('composer_manager_vendor_dir', $vendor_dir);
 }
 
 /**
@@ -24,6 +25,14 @@ function composer_manager_uninstall() {
 }
 
 /**
+ * Implements hook_enable().
+ */
+function composer_manager_enable() {
+  $t = get_t();
+  drupal_set_message($t('It is recommended to enable the Composer Manager Security Advisory module to automatically check for security updates.'));
+}
+
+/**
  * Implements hook_requirements().
  */
 function composer_manager_requirements($phase) {
@@ -33,7 +42,7 @@ function composer_manager_requirements($phase) {
 
   $t = get_t();
 
-  $file_dir = variable_get('composer_manager_file_dir', file_default_scheme() . '://composer');
+  $file_dir = composer_manager_file_dir();
   $vendor_dir = composer_manager_vendor_dir();
 
   $requirements = array(

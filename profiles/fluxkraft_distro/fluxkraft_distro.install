@@ -27,11 +27,19 @@ function fluxkraft_distro_install() {
 
   _fluxkraft_add_content();
 
-  // Setting up menu items.
+  // Setting up footer menu items.
   $menu_item = array(
     'link_path' => 'about',
-    'link_title' => st('About'),
+    'link_title' => st('About fluxkraft'),
     'menu_name' => 'menu-footer-menu',
+  );
+  menu_link_save($menu_item);
+
+  // Setting up main menu items.
+  $menu_item = array(
+    'link_path' => 'user/login',
+    'link_title' => st('Login'),
+    'menu_name' => 'main-menu',
   );
   menu_link_save($menu_item);
 
@@ -109,10 +117,11 @@ function _fluxkraft_add_content() {
   $wrapper->body->set(array('format' => 'full_html', 'value' =>
 
 'fluxkraft is a free software started by <a href="http://drunomics.com/en">drunomics</a>, sponsored by <a href="http://www.netidee.at">netidee - powerful innovations</a>.
- <p>See <a href="http://www.fluxkraft.com">fluxkraft.com</a> for more information about the project.
- For support please refer and contribute to <a href="http://stackoverflow.com/questions/tagged/fluxkraft">fluxkraft on stackoverflow</a>.
+ <p>See <a href="http://www.fluxkraft.com">fluxkraft.com</a> for more information about the project.</p>
+ <p>The distribution is now minimally maintained by <a href="http://www.acolono.com">acolono GmbH</a>.</p>
+ <p>For support please refer and contribute to <a href="http://stackoverflow.com/questions/tagged/fluxkraft">fluxkraft on stackoverflow</a>.
  The latest version and issue trackers for improving the software can be found at the <a href="http://drupal.org/project/fluxkraft_distro">project page</a> on drupal.org.</p>
- <p>Copyright 2013,  <a href="http://drunomics.com/en">drunomics GmbH</a></p>
+ <p>Copyright 2016,  <a href="http://www.acolono.com">acolono GmbH</a></p>
 
  <h3>License</h3>
  <p>This program is free software: you can redistribute it and/or modify

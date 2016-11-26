@@ -7,9 +7,9 @@
  */
 
 /**
- * Implements hook_init().
+ * Implements hook_boot().
  */
-function composer_manager_init() {
+function composer_manager_boot() {
   try {
     composer_manager_register_autoloader();
   }
@@ -17,6 +17,19 @@ function composer_manager_init() {
     if (!drupal_is_cli()) {
       watchdog_exception('composer_manager', $e);
     }
+  }
+}
+
+/**
+ * Implements hook_module_implements_alter().
+ */
+function composer_manager_module_implements_alter(&$implementations, $hook) {
+  // We want to place composer_manager first for boot to ensure that the
+  // autoloader is registered before other modules.
+  if ($hook == 'boot' && isset($implementations['composer_manager'])) {
+    $impl = $implementations['composer_manager'];
+    unset($implementations['composer_manager']);
+    $implementations = array('composer_manager' => $impl) + $implementations;
   }
 }
 
@@ -75,17 +88,16 @@ function composer_manager_modules_disabled($modules) {
  * has a composer.json file.
  *
  * This is a primitive check to ensure that the composer.json file is built only
- * when it has changes. This check always passes when run via the command line,
- * as it is assumed that Drush is being used to enable or disable the the
- * modules. A static boolean is also set flagging whether one or more modules
- * being acted on contains a composer.json file, which is used in Drush hooks.
+ * when it has changes. A static boolean is also set flagging whether one or
+ * more modules being acted on contains a composer.json file, which is used in
+ * Drush hooks.
  *
  * @param array $modules
  *   The enabled / disabled modules being scanned for a composer.json file.
  */
 function composer_manager_write_if_changed(array $modules) {
   $changed = &drupal_static(__FUNCTION__, FALSE);
-  if (variable_get('composer_manager_autobuild_file', 1) || drupal_is_cli()) {
+  if (variable_get('composer_manager_autobuild_file', 1)) {
     if (composer_manager_packages_have_changed($modules)) {
       $changed = TRUE;
       composer_manager_write_file();
@@ -147,18 +159,23 @@ function composer_manager_has_composer_file(array $modules) {
 
 /**
  * Registers the autoloader for all third-party packages.
+ *
+ * @return \Composer\Autoload\ClassLoader()
+ *   The ClassLoader instance.
  */
 function composer_manager_register_autoloader() {
   static $registered = FALSE;
+  $autoloader = composer_manager_vendor_dir() . '/autoload.php';
+
   if (!$registered) {
-    $autoloader = composer_manager_vendor_dir() . '/autoload.php';
     if (!file_exists($autoloader)) {
       $message = t('Autoloader not found: @file', array('@file' => $autoloader));
       throw new \RuntimeException($message);
     }
     $registered = TRUE;
-    require $autoloader;
   }
+
+  return require $autoloader;
 }
 
 /**
@@ -181,7 +198,7 @@ function composer_manager_write_file() {
     $data = composer_manager_fetch_data();
     $json = composer_manager_build_json($data);
     if ($json) {
-      $dir_uri = variable_get('composer_manager_file_dir', file_default_scheme() . '://composer');
+      $dir_uri = composer_manager_file_dir();
       composer_manager_put_file($dir_uri, $json);
     }
     $success = TRUE;
@@ -234,3 +251,56 @@ function composer_manager_beta5_compatibility() {
     variable_set('composer_manager_vendor_dir', 'sites/all/libraries/composer');
   }
 }
+
+/**
+ * Return the URI to the composer.lock file.
+ *
+ * @return string|bool
+ *   The URI to the composer.lock file, usually in public://. Returns FALSE if
+ *   the lock file cannot be read.
+ */
+function composer_manager_lock_file() {
+  $dir_uri = composer_manager_file_dir();
+  $lock_file = $dir_uri . '/composer.lock';
+
+  // Make sure we can read composer.lock and it's valid.
+  if (file_exists($lock_file) && is_readable($lock_file)) {
+    $json = file_get_contents($lock_file);
+    $decoded = drupal_json_decode($json);
+    if (!is_array($decoded)) {
+      return FALSE;
+    }
+  }
+  else {
+    return FALSE;
+  }
+
+  return $lock_file;
+}
+
+/**
+ * Returns the realpath to the Composer file directory.
+ *
+ * @return string
+ *
+ * @throws \RuntimeException
+ */
+function composer_manager_file_dir() {
+  module_load_include('inc', 'composer_manager', 'composer_manager.writer');
+  $scheme = file_default_scheme();
+  // Composer can only be run on a locally mounted file system. If the scheme is
+  // set to something different like S3, we fall back to the public scheme.
+  if (!in_array($scheme, array('public', 'private'))) {
+    $scheme = 'public';
+  }
+
+  $dir_uri = variable_get('composer_manager_file_dir', $scheme . '://composer');
+  if (!composer_manager_prepare_directory($dir_uri)) {
+    throw new \RuntimeException(t('Error creating directory: @dir', array('@dir' => $dir_uri)));
+  }
+  if (!$realpath = drupal_realpath($dir_uri)) {
+    throw new \RuntimeException(t('Error resolving directory: @dir', array('@dir' => $dir_uri)));
+  }
+  return $realpath;
+}
+

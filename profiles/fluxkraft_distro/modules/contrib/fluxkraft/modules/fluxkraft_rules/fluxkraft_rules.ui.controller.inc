@@ -100,7 +100,7 @@ class FluxkraftRulesUIController extends RulesUIController {
           '#theme' => 'fluxkraft_rules_category_icon',
           '#category' => isset($item_info['category']) ? $item_info['category'] : FALSE,
           '#group' => isset($item_info['group']) ? $item_info['group'] : FALSE,
-          '#module' => $item_info['module'],
+          '#module' => isset($item_info['module']) ? $item_info['module'] : FALSE,
         ),
         'info' => array(
           '#theme' => 'fluxkraft_rules_category_info',

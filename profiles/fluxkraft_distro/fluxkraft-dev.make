@@ -19,8 +19,8 @@ translations[] = de
 
 ; Dependencies =================================================================
 
-projects[composer_manager][version] = 1.6
-projects[ctools][version] = 1.9
+projects[composer_manager][version] = 1.8
+projects[ctools][version] = 1.12
 
 projects[entity][type] = module
 projects[entity][download][type] = git
@@ -40,6 +40,12 @@ projects[uuid][version] = 1.0-alpha5
 projects[strongarm][version] = 2.0
 projects[xautoload][version] = 3.2
 projects[views][version] = 3.14
+projects[webhook][version] = 1.0-alpha3
+
+projects[webhook_opentrigger][type] = module
+projects[webhook_opentrigger][download][type] = git
+projects[webhook_opentrigger][download][url] = http://git.drupal.org/project/webhook_opentrigger.git
+projects[webhook_opentrigger][download][branch] = 7.x-1.x
 
 ; Core fluxkraft ===============================================================
 
@@ -101,10 +107,10 @@ projects[omega][subdir] = ''
 projects[fluxtheme][type] = theme
 projects[fluxtheme][download][type] = git
 projects[fluxtheme][download][url] = http://git.drupal.org/project/fluxtheme.git
-projects[fluxtheme][download][branch] = 7.x-1.x
+projects[fluxtheme][download][branch] = 7.x-2.x
 projects[fluxtheme][subdir] = ''
 
-projects[panels][version] = 3.3
+projects[panels][version] = 3.8
 projects[panels_everywhere][version] = 1.0-rc1
 projects[hurricane][version] = 1.0-1.x-dev
 

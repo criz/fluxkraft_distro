@@ -39,7 +39,7 @@ function composer_manager_drush_command() {
  *   Which command to execute on Composer Manager's composer.json file.
  */
 function drush_composer_manager($command = 'install') {
-  $uri = variable_get('composer_manager_file_dir', file_default_scheme() . '://composer');
+  $uri = composer_manager_file_dir();
   if (!$dir = drupal_realpath($uri)) {
     return drush_set_error(dt('Error resolving path: @uri', array('@uri' => $uri)));
   }
@@ -96,6 +96,9 @@ function drush_composer_manager($command = 'install') {
   $composer_result = drush_invoke('composer', $arguments);
   // Allow modules to perform post-composer install tasks.
   if ($command == 'install' || $command == 'update') {
+    // Before invoking other modules, make sure that any new libraries are
+    // available.
+    drush_composer_manager_update_autoloader();
     module_invoke_all('composer_dependencies_install');
   }
 
@@ -148,6 +151,88 @@ function drush_composer_manager_write_if_changed() {
     drush_print('One or more extensions have dependencies managed by Composer.');
     if (drush_confirm(dt('Update packages managed by Composer?'))) {
       drush_composer_manager('update');
+    }
+  }
+}
+
+/**
+ * Add new autoloader paths to the Class Loader.
+ */
+function drush_composer_manager_update_autoloader() {
+  $loader = composer_manager_register_autoloader();
+  $composer = composer_manager_vendor_dir() . '/composer';
+
+  drush_composer_manager_update_classmap($loader, $composer);
+  drush_composer_manager_update_psr4($loader, $composer);
+  drush_composer_manager_update_psr0($loader, $composer);
+  drush_composer_manager_update_files($composer);
+}
+
+/**
+ * Add new class maps to the class loader.
+ *
+ * @param \Composer\Autoload\ClassLoader $loader
+ *   The autoloader to attach the updated class map to.
+ * @param string $composer
+ *   Path to the Composer library.
+ */
+function drush_composer_manager_update_classmap(\Composer\Autoload\ClassLoader $loader, $composer) {
+  $autoload_classmap = $composer . '/autoload_classmap.php';
+  if (file_exists($autoload_classmap)) {
+    $class_map = $loader->getClassMap();
+    $updated_class_map = require $autoload_classmap;
+    $loader->addClassMap(array_diff($updated_class_map, $class_map));
+  }
+}
+
+/**
+ * Add new PSR-4 namespaces to the class loader.
+ *
+ * @param \Composer\Autoload\ClassLoader $loader
+ *   The autoloader to add the new namespaces to.
+ * @param string $composer
+ *   Path to the Composer library.
+ */
+function drush_composer_manager_update_psr4($loader, $composer) {
+  $autoload_psr4 = $composer . '/autoload_psr4.php';
+  if (file_exists($autoload_psr4)) {
+    $updated_psr4 = require $autoload_psr4;
+    foreach ($updated_psr4 as $prefix => $paths) {
+      $loader->addPsr4($prefix, $paths);
+    }
+  }
+}
+
+/**
+ * Add new PSR-0 namespaces to the class loader.
+ *
+ * @param \Composer\Autoload\ClassLoader $loader
+ *   The autoloader to add the new namespaces to.
+ * @param string $composer
+ *   Path to the Composer library.
+ */
+function drush_composer_manager_update_psr0($loader, $composer) {
+  $autoload_psr0 = $composer . '/autoload_namespaces.php';
+  if (file_exists($autoload_psr0)) {
+    $updated_psr0 = require $autoload_psr0;
+    foreach ($updated_psr0 as $prefix => $paths) {
+      $loader->add($prefix, $paths);
+    }
+  }
+}
+
+/**
+ * Require new files added by Composer libraries.
+ *
+ * @param string $composer
+ *   Path to the Composer library.
+ */
+function drush_composer_manager_update_files($composer) {
+  $autoload_files = $composer . '/autoload_files.php';
+  if (file_exists($autoload_files)) {
+    $updated_files = require $autoload_files;
+    foreach ($updated_files as $file) {
+      require_once $file;
     }
   }
 }

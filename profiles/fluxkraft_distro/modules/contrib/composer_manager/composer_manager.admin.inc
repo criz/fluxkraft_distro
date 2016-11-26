@@ -27,15 +27,15 @@ function composer_manager_settings_form($form, &$form_state) {
   $form['composer_manager_file_dir'] = array(
     '#title' => 'Composer File Directory',
     '#type' => 'textfield',
-    '#default_value' => variable_get('composer_manager_file_dir', file_default_scheme() . '://composer'),
+    '#default_value' => composer_manager_file_dir(),
     '#description' => t('The directory containing the composer.json file and where Composer commands are run.'),
   );
 
   $form['composer_manager_autobuild_file'] = array(
-    '#title' => 'Automatically build the composer.json file when enabling or disabling modules in the Drupal UI',
+    '#title' => 'Automatically build the composer.json file when enabling or disabling modules',
     '#type' => 'checkbox',
     '#default_value' => variable_get('composer_manager_autobuild_file', 1),
-    '#description' => t('Automatically build the consolidated composer.json for all contributed modules file in the vendor directory above when modules are enabled or disabled in the Drupal UI. Disable this setting if you want to maintain the composer.json file manually.'),
+    '#description' => t('Automatically build the consolidated composer.json for all contributed modules file in the vendor directory above when modules are enabled or disabled. Disable this setting if you want to maintain the composer.json file manually.'),
   );
 
   $form['composer_manager_autobuild_packages'] = array(
@@ -222,7 +222,7 @@ function composer_manager_packages_page() {
  * @ingroup forms
  */
 function composer_manager_rebuild_form($form, &$form_state) {
-  $file_dir = variable_get('composer_manager_file_dir', file_default_scheme() . '://composer');
+  $file_dir = composer_manager_file_dir();
 
   $form['submit'] = array(
     '#type' => 'submit',
@@ -281,7 +281,7 @@ function composer_manager_read_composer_file($file_uri) {
 function composer_manager_lockfile_load() {
   $json = &drupal_static(__FUNCTION__);
   if ($json === NULL) {
-    $dir_uri = variable_get('composer_manager_file_dir', file_default_scheme() . '://composer');
+    $dir_uri = composer_manager_file_dir();
     $json = composer_manager_read_composer_file($dir_uri . '/composer.lock');
   }
   return $json;
