@@ -5,14 +5,11 @@
 .site-branding__logo,
 .site-logo {
   display: block;
-  background: $white;;
+  background: transparent;
   padding: 0;
-  margin: 0 1em 0;
-  border: 1px solid #f3f3f3;
-  position: relative;
-  top: -8px;
+  margin: 0;
   float: left;
-  @include circle-image-wrapper(100px);
+  max-width: 100px;
   img {
     width: 100%;
   }
@@ -25,5 +22,4 @@
   color: #fff;
   margin-top: 1 * $rowHeight;
   display: block;
-  text-transform: uppercase;
 }

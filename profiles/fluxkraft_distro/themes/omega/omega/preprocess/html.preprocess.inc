@@ -1,6 +1,11 @@
 <?php
 
 /**
+ * @file
+ * Contains a pre-process hook for 'html'.
+ */
+
+/**
  * Implements hook_preprocess_html().
  */
 function omega_preprocess_html(&$variables, $hook) {
@@ -28,10 +33,12 @@ function omega_preprocess_html(&$variables, $hook) {
   // Classes for body element. Allows advanced theming based on context
   // (home page, node of certain type, etc.).
   if (!$variables['is_front']) {
-    // Add unique class for each page.
-    $path = drupal_get_path_alias($_GET['q']);
+    // Add unique class for each page. The default language is used to generate
+    // the path and class names for localized sites.
+    $path = drupal_get_path_alias($_GET['q'], language_default()->language);
+
     // Add unique class for each section of the website.
-    list($section, ) = explode('/', $path, 2);
+    list($section) = explode('/', $path, 2);
     $arg = explode('/', $_GET['q']);
 
     if ($arg[0] == 'node' && isset($arg[1])) {
@@ -46,17 +53,22 @@ function omega_preprocess_html(&$variables, $hook) {
     $variables['attributes_array']['class'][] = drupal_html_class('section-' . $section);
   }
 
-  // Add some styles in case the Omega theme is the active theme.
-  if ($GLOBALS['theme'] == 'omega') {
-    _omega_preprocess_html($variables);
-  }
-}
+  // Remove the sidebar classes (@see template_preprocess_html()).
+  $variables['classes_array'] = array_diff($variables['classes_array'], array(
+    'two-sidebars',
+    'one-sidebar sidebar-first',
+    'one-sidebar sidebar-second',
+    'no-sidebars',
+  ));
 
-/**
- * Helper function for loading theme assets in case 'Omega' is the active theme.
- *
- * @see omega_preprocess_html()
- */
-function _omega_preprocess_html(&$variables) {
-  // @todo
+  // Show a warning when the Omega theme is the active theme.
+  if ($GLOBALS['theme'] == 'omega' && omega_theme_get_setting('omega_enable_warning', TRUE)) {
+    drupal_set_message(t('Omega is a base theme and should never be used directly. Please <a href="!documentation">create a sub-theme</a> instead. You can disable this message on the <a href="!settings">theme settings page</a>.', array(
+      '!documentation' => 'https://drupal.org/node/2060747',
+      '!settings' => url('admin/appearance/settings/omega'),
+    )), 'warning');
+  }
+
+  // Add Javascript to remove the no-js class from <html>.
+  drupal_add_js(drupal_get_path('theme', 'omega') . '/js/no-js.js', array('group' => JS_LIBRARY, 'every_page' => TRUE, 'weight' => -1));
 }

@@ -102,7 +102,7 @@ class OmegaThemeRegistryHandler {
       // defined in a lower-level base theme. Without this check this would
       // happen because our alter hook runs after the template file and theme
       // function discovery logic from Drupal core (theme engine).
-      if (in_array($this->registry[$item->hook]['type'], array('base_theme_engine', 'theme_engine'))) {
+      if (array_key_exists($item->hook, $this->registry) && in_array($this->registry[$item->hook]['type'], array('base_theme_engine', 'theme_engine'))) {
         foreach (array_reverse(array_keys($this->trail)) as $key) {
           // Do not look any further once we reach the current theme.
           if ($key === $theme) {
@@ -136,7 +136,7 @@ class OmegaThemeRegistryHandler {
 
       // By adding this file to the 'includes' array we make sure that it is
       // available when the hook is executed.
-      $this->registry[$item->hook]['includes'][] = $item->uri;
+      $this->registry[$base]['includes'][] = $item->uri;
     }
   }
 
@@ -184,7 +184,7 @@ class OmegaThemeRegistryHandler {
 
     // Recursively scan the folder for the current step for (pre-)process
     // files and write them to the registry.
-    $files = file_scan_directory($path . '/' . $type, $mask);
+    $files = array_merge(file_scan_directory($path . '/' . $type, $mask), file_scan_directory($path . '/layouts', $mask));
     foreach ($files as &$file) {
       $file->hook = strtr(substr($file->name, 0, $length), '-', '_');
     };

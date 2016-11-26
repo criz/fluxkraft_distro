@@ -1,11 +1,12 @@
 <?php
 
 /**
+ * @file
+ * Contains the theme function override for 'poll_choices'.
+ */
+
+/**
  * Returns HTML for an admin poll form for choices.
- *
- * @param $variables
- *   An associative array containing:
- *   - form: A render element representing the form.
  *
  * @ingroup themeable
  */
@@ -14,7 +15,7 @@ function omega_poll_choices($variables) {
 
   drupal_add_tabledrag('poll-choice-table', 'order', 'sibling', 'poll-weight');
 
-  $is_admin= user_access('administer nodes');
+  $is_admin = user_access('administer nodes');
   $delta = 0;
   $rows = array();
   $headers = array('', t('Choice'));
@@ -49,7 +50,13 @@ function omega_poll_choices($variables) {
     $rows[] = $row;
   }
 
-  $output = theme('table', array('header' => $headers, 'rows' => $rows, 'attributes' => array('id' => 'poll-choice-table', 'class' => array('poll-choice-table'))));
+  $output = theme('table', array(
+    'header' => $headers,
+    'rows' => $rows,
+    'attributes' => array(
+      'id' => 'poll-choice-table', 'class' => array('poll-choice-table'),
+    ),
+  ));
   $output .= drupal_render_children($form);
   return $output;
 }

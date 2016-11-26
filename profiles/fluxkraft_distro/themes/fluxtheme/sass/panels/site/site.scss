@@ -1,4 +1,13 @@
-@import "layout/*";
+// Load all dependencies.
+@import "../../partials/utility";
+
+body {
+  @include layout($layout-default);
+}
+
+@import "layout/footer";
+@import "layout/header";
+@import "layout/main";
 
 
 

@@ -1,5 +1,5 @@
 // Load all dependencies.
-@import "partials/utility";
+@import "../../partials/utility";
 
 .l-drunomics-default-panel {
   .l-content-header-container,
@@ -24,7 +24,7 @@
     &.with-first-sidebar,
     &.with-second-sidebar {
       .l-main-content {
-        @include span-columns(9);
+        @include span(9);
       }
     }
 
@@ -36,16 +36,16 @@
 
     &.with-both-sidebars {
       .l-main-content {
-        @include span-columns(6);
+        @include span(6);
       }
       .l-sidebar-first-container {
-        @include span-columns(3);
+        @include span(3);
       }
     }
 
     .l-sidebar-first-container,
     .l-sidebar-second-container {
-      @include span-columns(3);
+      @include span(3);
     }
 
     .l-sidebar-second-container {

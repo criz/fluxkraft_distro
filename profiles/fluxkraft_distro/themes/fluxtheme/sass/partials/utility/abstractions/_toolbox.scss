@@ -1,0 +1,91 @@
+// The cover everything mixin: http://codepen.io/chriscoyier/blog/some-mini-sass-mixins-i-like
+@mixin coverer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* Centering vertically and horizontally: http://codepen.io/chriscoyier/blog/some-mini-sass-mixins-i-like
+ * Works even when:
+ * - You don't know know how big it is
+ * - You don't know how big the container is, either.
+ */
+@mixin centerer {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%, -50%); /* IE 9 */
+  -webkit-transform: translate(-50%, -50%); /* Chrome, Safari, Opera */
+}
+
+/* Mixin based on the one above but only centering horizontally.*/
+@mixin centerer-h {
+  position: absolute;
+  left: 50%;
+  transform: translatex(-50%);
+  -ms-transform: translatex(-50%); /* IE 9 */
+  -webkit-transform: translatex(-50%); /* Chrome, Safari, Opera */
+}
+
+/* Mixin based on the one above but only centering vertically.*/
+@mixin centerer-v {
+  position: absolute;
+  top: 50%;
+  transform: translate(0, -50%);
+  -ms-transform: translate(0, -50%); /* IE 9 */
+  -webkit-transform: translate(0, -50%); /* Chrome, Safari, Opera */
+}
+
+/* breaks Words when they are too long and would burst the layout. */
+@mixin word-wrap() {
+
+  /* Non standard for webkit */
+  word-break: break-all;
+
+  -webkit-hyphens: auto;
+  -moz-hyphens: auto;
+  -ms-hyphens: auto;
+  hyphens: auto;
+}
+
+@mixin ellipsis() {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+@function black($opacity) {
+  @return rgba(0, 0, 0, $opacity);
+}
+
+@function white($opacity) {
+  @return rgba(255, 255, 255, $opacity);
+}
+
+/* helper mixin to provide opacity. TODO: Check if autoprefixer is working for opacity.*/
+@mixin opacity($opacity) {
+  opacity: $opacity;
+  $opacity-ie: $opacity * 100;
+  filter: alpha(opacity=$opacity-ie); //IE8
+}
+
+/* Function to emulate compass image-url function */
+$image-path: "../images" !default;
+@function image-url($asset) {
+  @return url("#{$image-path}/#{$asset}");
+}
+
+@mixin clearfix {
+  &:after {
+    content: "";
+    display: table;
+    clear: both;
+  }
+}
+
+%clearfix {
+  @include clearfix;
+}

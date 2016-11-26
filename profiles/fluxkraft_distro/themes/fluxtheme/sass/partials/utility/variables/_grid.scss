@@ -11,3 +11,18 @@ $column-width     : 3 * $colWidth;
 $gutter-width     : $colWidth;
 $grid-padding     : $gutter-width;
 $debug-grid       : false;
+
+$layout-default: (
+  columns: 12,
+  gutters: 1/4,
+  math: fluid,
+  output: float,
+  global-box-sizing: content-box,
+  gutter-position: after, //when using "after" last gutter would need to be removed.
+  debug: (
+    image: hide, // "show" or "hide"
+    //color: blue,
+    output: background,
+    toggle: top right,
+  ),
+);

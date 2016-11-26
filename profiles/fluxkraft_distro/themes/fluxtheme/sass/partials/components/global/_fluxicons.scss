@@ -20,8 +20,8 @@
   margin-right: .5em;
 }
 .fluxicon--event {
-  @include border-radius(20px);
+  border-radius: 20px;
 }
 .fluxicon--action {
-  @include border-radius(500px);
+  border-radius: 500px;
 }

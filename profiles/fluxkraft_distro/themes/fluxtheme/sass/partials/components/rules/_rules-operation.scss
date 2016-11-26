@@ -4,11 +4,11 @@
     @extend %btnBaseStyles;
     @extend %btnSecondaryBase;
     @extend %btnSmallStyles;
-    @extend %btnRadiusRound;
     @extend %btnHoverDarken;
     padding: .5em;
     white-space: nowrap;
     color: #fff;
+    max-width: 200px;
   }
 }
 

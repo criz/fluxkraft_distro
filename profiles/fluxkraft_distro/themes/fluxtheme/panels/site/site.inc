@@ -9,8 +9,8 @@ function fluxtheme_site_panels_layouts() {
     'category' => t('drunomics'),
     'icon'     => 'site.png',
     'theme'    => 'site',
-    'admin css' => '../../css/panels/site/site.admin.css',
-    'css' => '../../css/panels/site/site.css',
+    'admin css' => '../../css/site/site.admin.css',
+    'css' => '../../css/site/site.css',
     'regions' => array(
       'header'  => t('Header'),
       'main'  => t('Main'),
@@ -31,7 +31,7 @@ function fluxtheme_site_panels_layouts() {
  */
 function template_preprocess_site(&$variables) {
     $path = drupal_get_path('theme', 'fluxtheme');
-  drupal_add_css("$path/css/panels/site/site.fallback.css", array(
+  drupal_add_css("$path/css/site/site.fallback.css", array(
     'browsers' => array(
       '!IE' => FALSE,
       'IE' => 'lte IE 8',

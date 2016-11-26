@@ -9,10 +9,31 @@
  * Implements hook_extension_EXTENSION_theme_settings_form_alter().
  */
 function omega_extension_assets_settings_form($element, &$form, $form_state) {
+  $tokens = array(
+    ':core' => '<code>:core</code><div class="description">' . t('Matches the root (core) modules, themes or misc folder.') . '</div>',
+    ':contrib' => '<code>:contrib</code><div class="description">' . t('Matches all valid contrib module destinations (sites/all/modules, profiles/{profile}/modules, sites/{site}/modules).') . '</div>',
+    ':current-theme' => '<code>:current-theme</code><div class="description">' . t('Matches the directory of the active (current) theme.') . '</div>',
+    ':base-theme' => '<code>:base-theme</code><div class="description">' . t('Matches the directory of each base theme that belongs to the theme trail of the active theme.') . '</div>',
+  );
+
+  $element['omega_namespace_tokens'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Namespace tokens'),
+  );
+
+  $element['omega_namespace_tokens']['help'] = array(
+    '#theme' => 'item_list',
+    '#items' => $tokens,
+    '#attributes' => array(
+      'id' => 'omega-assets-namespace-tokens',
+      'class' => 'omega-assets-namespace-tokens',
+    ),
+  );
+
   $element['omega_js_footer'] = array(
     '#type' => 'textarea',
     '#title' => t('Move JS files to the footer'),
-    '#description' => t("Enter one file per line. The '*' character is a wildcard. Each path is relative to a module, theme, profile, theme engine or the 'misc' folder."),
+    '#description' => t("Enter one file per line. The '*' character is a wildcard. Each path is relative to a module, theme, profile or theme engine (e.g. if you installed the Views module sites/all/modules the path 'views/*' would automatically be mapped to 'sites/all/modules/views/*') or the Drupal root if it can't be mapped to one of the aforementioned namespaces. Alternatively, you can use one of the provided <a href=\"#omega-namespace-tokens\">namespace tokens</a> as path prefixes."),
     // The paths are stored in an array.
     '#default_value' => implode("\n", (array) omega_theme_get_setting('omega_js_footer', array())),
   );
@@ -20,7 +41,7 @@ function omega_extension_assets_settings_form($element, &$form, $form_state) {
   $element['omega_css_exclude'] = array(
     '#type' => 'textarea',
     '#title' => t('Exclude CSS files'),
-    '#description' => t("Enter one file per line. The '*' character is a wildcard. Each path is relative to a module, theme, profile, theme engine or the 'misc' folder."),
+    '#description' => t("Enter one file per line. The '*' character is a wildcard. Each path is relative to a module, theme, profile or theme engine (e.g. if you installed the Views module sites/all/modules the path 'views/*' would automatically be mapped to 'sites/all/modules/views/*') or the Drupal root if it can't be mapped to one of the aforementioned namespaces. Alternatively, you can use one of the provided <a href=\"#omega-namespace-tokens\">namespace tokens</a> as path prefixes."),
     // The paths are stored in an array.
     '#default_value' => implode("\n", (array) omega_theme_get_setting('omega_css_exclude', array())),
   );
@@ -28,7 +49,7 @@ function omega_extension_assets_settings_form($element, &$form, $form_state) {
   $element['omega_js_exclude'] = array(
     '#type' => 'textarea',
     '#title' => t('Exclude JS files'),
-    '#description' => t("Enter one file per line. The '*' character is a wildcard. Each path is relative to a module, theme, profile, theme engine or the 'misc' folder."),
+    '#description' => t("Enter one file per line. The '*' character is a wildcard. Each path is relative to a module, theme, profile or theme engine (e.g. if you installed the Views module sites/all/modules the path 'views/*' would automatically be mapped to 'sites/all/modules/views/*') or the Drupal root if it can't be mapped to one of the aforementioned namespaces. Alternatively, you can use one of the provided <a href=\"#omega-namespace-tokens\">namespace tokens</a> as path prefixes."),
     // The paths are stored in an array.
     '#default_value' => implode("\n", (array) omega_theme_get_setting('omega_js_exclude', array())),
   );
@@ -50,22 +71,26 @@ function omega_extension_assets_settings_form($element, &$form, $form_state) {
 
     $element['omega_libraries'][$key][$library]['status'] = array(
       '#type' => 'checkbox',
-      '#title' => !isset($info['vendor']) ? $info['name'] : (isset($info['vendor url']) ? t('@library by <a href="!url">@vendor</a>', array('@library' => $info['name'], '!url' => $info['vendor url'], '@vendor' => $info['vendor'])) : t('@library by @vendor', array('@library' => $info['name'], '@vendor' => $info['vendor']))),
+      '#title' => !isset($info['vendor']) ? $info['name'] : (isset($info['vendor url']) ? t('@library by <a href="!url">@vendor</a>', array(
+        '@library' => $info['name'],
+        '@vendor' => $info['vendor'],
+        '!url' => $info['vendor url'],
+      )) : t('@library by @vendor', array(
+        '@library' => $info['name'],
+        '@vendor' => $info['vendor'],
+      ))),
       '#description' => $info['description'],
       '#default_value' => !empty($libraries[$library]['status']),
       '#parents' => array('omega_libraries', $library, 'status'),
     );
 
-    if ($missing = omega_extension_assets_check_library($info)) {
-      foreach ($missing as &$file) {
-        $path = drupal_get_path('theme', $form_state['build_info']['args'][0]);
-        $file = strpos($file, $path) === 0 ? substr($file, strlen($path) + 1) : $file;
-      }
-
+    if (!omega_library_path($library)) {
       $element['omega_libraries'][$key][$library]['missing'] = array(
-        '#theme' => 'item_list',
-        '#title' => t('Missing files'),
-        '#items' => $missing,
+        '#type' => 'item',
+        '#title' => t('Missing library files'),
+        '#markup' => t("The library's directory (@directory) could not be found.", array(
+          '@directory' => "libraries/$library",
+        )),
         '#prefix' => '<div class="omega-assets-missing-files">',
         '#suffix' => '</div>',
       );
@@ -116,7 +141,7 @@ function omega_extension_assets_settings_form($element, &$form, $form_state) {
         ),
         '#parents' => array('omega_libraries', $library),
         '#tree' => TRUE,
-        '#attributes' => array('class' => array('omega-settings-container')),
+        '#attributes' => array('class' => array('omega-asset-options')),
         '#collapsible' => TRUE,
         '#collapsed' => TRUE,
       ) + $options;
@@ -133,7 +158,7 @@ function omega_extension_assets_settings_form($element, &$form, $form_state) {
  * Theme settings form submit handler for handling the PIE selectors.
  */
 function omega_library_pie_selectors_submit($form, &$form_state) {
-  $values = &$form_state['values']['omega_libraries']['css3pie'];
+  $values = &$form_state['values']['omega_libraries']['pie'];
 
   // Generate a CSS file for the provided selectors if the inclusion method is
   // set to 'pie.htc' or 'pie.php'.
@@ -145,8 +170,18 @@ function omega_library_pie_selectors_submit($form, &$form_state) {
   }
 
   // Save the selectors as an array.
-  $parents = array('#parents' => array('omega_libraries', 'css3pie', 'selectors'));
+  $parents = array('#parents' => array(
+    'omega_libraries',
+    'pie',
+    'selectors'
+  ));
+
   form_set_value($parents, $selectors, $form_state);
+
+  // Delete stale CSS selector files.
+  $theme = $form_state['build_info']['args'][0];
+  file_unmanaged_delete("public://omega/$theme/pie-selectors.css");
+  file_unmanaged_delete("public://omega/$theme/pie-selectors.js");
 }
 
 /**
@@ -166,8 +201,11 @@ function omega_library_pie_options_form(&$element, &$form, $form_state, $library
   $element['selectors'] = array(
     '#title' => t('Selectors'),
     '#type' => 'textarea',
-    '#description' => t("You can use this textarea to define all the CSS rules that you want to apply the PIE behavior to. Define one CSS selector per line. The selectors submitted with this field get directly cached in a <a href=\"!css\">.css</a> file (as well as a <a href=\"!js\">.js</a> file) in the public file system. This file is then included on page load and triggers CSS3PIE.", array('!css' => $destination . '/pie-selectors.css', '!js' => $destination . '/pie-selectors.js')),
-    '#default_value' => !empty($settings['css3pie']['selectors']) ? implode("\n", $settings['css3pie']['selectors']) : '',
+    '#description' => t('You can use this textarea to define all the CSS rules that you want to apply the PIE behavior to. Define one CSS selector per line. The selectors submitted with this field get directly cached in a <a href="!css">.css</a> file (as well as a <a href="!js">.js</a> file) in the public file system. This file is then included on page load and triggers CSS3PIE.', array(
+      '!css' => $destination . '/pie-selectors.css',
+      '!js' => $destination . '/pie-selectors.js',
+    )),
+    '#default_value' => !empty($settings['pie']['selectors']) ? implode("\n", $settings['pie']['selectors']) : '',
   );
 
   // We need to provide a submit handler to create a CSS file for the
@@ -186,59 +224,4 @@ function omega_extension_assets_theme_settings_form_submit($form, &$form_state) 
     $exclude = array_filter(array_map('trim', explode("\n", $values[$item])));
     form_set_value(array('#parents' => array($item)), $exclude, $form_state);
   }
-
-  // Cache the regex for the CSS and JS excludes (if any).
-  foreach (array('omega_css_exclude', 'omega_js_exclude') as $item) {
-    if ($value = $form_state['values'][$item]) {
-      $exclude = omega_generate_path_regex($value);
-      form_set_value(array('#parents' => array($item . '_regex')), $exclude, $form_state);
-    }
-  }
-
-  if (!empty($form_state['values']['omega_libraries'])) {
-    $values = &$form_state['values']['omega_libraries'];
-
-    foreach ($values as &$settings) {
-      if (isset($settings['variant']) && $settings['variant'] == '_default') {
-        // Unset the 'variant' option if it is the default option.
-        unset($settings['variant']);
-      }
-    }
-  }
-}
-
-/**
- * Checks a library for missing files.
- *
- * @param $info
- *   A library info array.
- *
- * @return array
- *   An array of missing files.
- */
-function omega_extension_assets_check_library($info) {
-  $missing = array();
-  foreach (array_filter($info['files']) as $files) {
-    foreach ($files as $file => $data) {
-      $file = is_array($data) ? $file : $data;
-      if (!is_file($file)) {
-        $missing[$file] = $file;
-      }
-    }
-  }
-
-  if (!empty($info['variants'])) {
-    foreach ($info['variants'] as $variant) {
-      foreach (array_filter($variant['files']) as $files) {
-        foreach ($files as $file => $data) {
-          $file = is_array($data) ? $file : $data;
-          if (!is_file($file)) {
-            $missing[$file] = $file;
-          }
-        }
-      }
-    }
-  }
-
-  return $missing;
 }

@@ -13,3 +13,7 @@ tr.odd {
 tr.even {
   background: lighten($grey-light, 7%);
 }
+
+td.ctools-export-ui-operations {
+  position: relative;
+}

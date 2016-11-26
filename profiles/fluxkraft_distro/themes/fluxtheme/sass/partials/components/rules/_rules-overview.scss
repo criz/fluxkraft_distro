@@ -19,7 +19,6 @@ tr.rules-elements-add td {
   h2 {
     display: block;
     background: $cyan;
-    width: 100%;
     color: $white;
     padding: .5 * $colWidth;
     margin: 0;
@@ -28,7 +27,7 @@ tr.rules-elements-add td {
 
 .fluxkraft-rules-overview--list {
   list-style-type: none;
-  list-style-position: indent;
+  list-style-position: inside;
   margin: 0;
   padding: 0;
   li {

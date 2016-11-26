@@ -6,7 +6,7 @@
  */
 
 /**
- * Implementation of hook_LAYOUT_panels_layouts()
+ * Implementation of hook_LAYOUT_panels_layouts().
  */
 function omega_omega_panels_layouts() {
   // We cannot use the 'path' property here and anywhere in our layouts declared
@@ -41,8 +41,8 @@ function omega_panels_get_sublayout($plugin, $layout, $sublayout) {
  * Callback to retrieve all Omega layouts.
  */
 function omega_panels_get_sublayouts($plugin, $layout) {
-  require_once drupal_get_path('theme', 'omega') . '/includes/omega.inc';
   $path = drupal_get_path('theme', 'omega');
+  require_once "$path/includes/omega.inc";
 
   $layouts = array();
   if ($items = omega_layouts_info('omega')) {
@@ -53,7 +53,7 @@ function omega_panels_get_sublayouts($plugin, $layout) {
       $layouts["$layout:$name"] = array(
         'name' => "$layout:$name",
         'title' => $info['info']['name'],
-        'layout' => $info,
+        'omega_layout' => $name,
       ) + $plugin;
 
       // Panels calls the preview image 'icon'.
@@ -88,28 +88,68 @@ function template_preprocess_omega_panels_admin(&$variables) {
  * Theme function for rendering an Omega layout on the Panels admin UI.
  */
 function theme_omega_panels_admin(&$variables) {
-  return _omega_panels_layout_theme($variables);
+  // Clean up the theme hook suggestion so we don't end up in an infinite loop.
+  unset($variables['theme_hook_suggestion'], $variables['theme_hook_suggestions']);
+
+  $hook = str_replace('-', '_', $variables['omega_layout']['template']);
+  return theme($hook, $variables);
 }
 
 /**
  * Theme function for rendering an Omega layout.
  */
 function theme_omega_panels(&$variables) {
-  return _omega_panels_layout_theme($variables);
+  $path = drupal_get_path('theme', 'omega');
+  require_once "$path/template.php";
+
+  return theme_omega_page_layout($variables);
 }
 
 /**
  * Implements hook_preprocess_omega_panels().
  */
 function template_preprocess_omega_panels(&$variables) {
+  $path = drupal_get_path('theme', 'omega');
+  require_once "$path/includes/omega.inc";
+
   _omega_panels_layout_preprocess($variables);
-  drupal_process_attached(array('#attached' => $variables['layout']['layout']['attached']));
+
+  $layout = $variables['omega_layout'];
+  $page = &$variables['page'];
+
+  // Wrap every page item in a region template.
+  foreach ($layout['info']['regions'] as $region => $name) {
+    if (!empty($variables['page'][$region])) {
+      $page[$region] = array(
+        '#region' => $region,
+        '#theme_wrappers' => array('region'),
+        '#children' => $page[$region],
+      );
+    }
+  }
+
+  // Place dummy blocks in each region if the 'demo regions' setting is active
+  // to force regions to be rendered.
+  if (omega_extension_enabled('development') && omega_theme_get_setting('omega_demo_regions', TRUE) && user_access('administer site configuration')) {
+    foreach ($layout['info']['regions'] as $region => $name) {
+      if (empty($page[$region])) {
+        $page[$region]['#theme_wrappers'] = array('region');
+        $page[$region]['#region'] = $region;
+      }
+
+      $page[$region]['#name'] = $name;
+      $page[$region]['#debug'] = TRUE;
+    }
+  }
 }
 
 /**
  * Helper function for preprocessing an Omega layout in Panels.
  */
 function _omega_panels_layout_preprocess(&$variables) {
+  $layouts = omega_layouts_info();
+  $variables['omega_layout'] = $layouts[$variables['layout']['omega_layout']];
+
   // Place a reference to the 'content' array so that the variables are
   // accessible through both, the default page.tpl.php accessor and the panels
   // layout accessor.
@@ -138,17 +178,6 @@ function _omega_panels_layout_preprocess(&$variables) {
 }
 
 /**
- * Helper function for rendering an Omega layout in Panels.
- */
-function _omega_panels_layout_theme(&$variables) {
-  // Clean up the theme hook suggestion so we don't end up in an infinite loop.
-  unset($variables['theme_hook_suggestion'], $variables['theme_hook_suggestions']);
-
-  $hook = str_replace('-', '_', $variables['layout']['layout']['template']);
-  return theme($hook, $variables);
-}
-
-/**
  * Computes the relative path between two absolute paths.
  *
  * @param string $from
@@ -160,7 +189,7 @@ function _omega_panels_layout_theme(&$variables) {
  *   The relative path between $from and $to.
  */
 function _omega_relative_path($from, $to) {
-  // some compatibility fixes for Windows paths
+  // Some compatibility fixes for Windows paths.
   $from = is_dir($from) ? rtrim($from, '\/') . '/' : $from;
   $to = is_dir($to) ? rtrim($to, '\/') . '/' : $to;
   $from = str_replace('\\', '/', $from);

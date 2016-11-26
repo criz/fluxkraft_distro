@@ -3,7 +3,7 @@
   .tag {
     padding: 2px $colWidth 2px 12px;
     background: $white;
-    @include border-radius(8px);
+    border-radius: 8px;
     color: #000;
     @include font-size(1.2);
     .icon {

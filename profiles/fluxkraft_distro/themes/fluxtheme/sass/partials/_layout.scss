@@ -1,4 +1,4 @@
-@import "layout/layout-rules.scss";
-@import "layout/layout-maintenance.scss";
+// Import layout sass files.
 
-@import "layout/layout-maintenance-fallback.scss";
+@import "layout/layout-rules";
+@import "layout/layout-maintenance";

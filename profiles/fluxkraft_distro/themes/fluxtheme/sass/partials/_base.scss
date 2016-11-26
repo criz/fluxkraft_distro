@@ -1,1 +1,10 @@
-@import "base/*";
+// Import base sass files.
+
+@import "base/fieldsets";
+@import "base/forms";
+@import "base/lists";
+@import "base/media";
+@import "base/menus";
+@import "base/root";
+@import "base/tables";
+@import "base/typography";

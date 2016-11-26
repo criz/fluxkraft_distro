@@ -26,7 +26,7 @@
 
   .region-header {
     @include breakpoint('l-panels-beside') {
-      @include span-columns(7 omega);
+      @include span(7 last);
     }
   }
  
@@ -37,7 +37,7 @@
     .site-logo {
       display: inline-block;
       float: left;
-      margin: 0 1em 0;
+      margin: 0;
       top: -8px;
     }
 

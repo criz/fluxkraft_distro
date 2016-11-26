@@ -1,5 +1,7 @@
 .fluxkraft-rules-overview--element {
   margin: $rowHeight 0 $rowHeight;
+  @extend %clearfix;
+
   .title {
     @include font-size(2.5);
     margin: 0;
@@ -26,9 +28,12 @@
     border-top: 1px dotted lighten($cyan, 10%);
     @include font-size(1.2);
   }
-  .fluxkraft-rules-overview--element--header--info,
-  .fluxkraft-rules-overview--element--header--status {
-    padding: .5 * $rowHeight;
+  .fluxkraft-rules-overview--element--header--info {
+    padding: .5 * $rowHeight 0 0;
+    > * {
+      margin-left: .5 * $colWidth;
+      margin-bottom: .5 * $rowHeight;
+    }
   }
   .fluxkraft-rules-overview--element--header .fluxkraft-rules-overview--element--header--status {
     background: darken($cyan, 10%);
@@ -44,7 +49,6 @@
     border-bottom: 1px solid $grey-light;
     border-left: 1px solid $grey-light;
     border-right: 1px solid $grey-light;
-    @extend %clearfix;
 
     .fluxkraft-rules-overview--element--content--info {
       @extend %clearfix;

@@ -1,5 +1,5 @@
 // Load all dependencies.
-@import "partials/utility";
+@import "../../partials/utility";
 
 #panelizer-edit-content-form {
   .l-drunomics-default-panel {
@@ -11,7 +11,7 @@
     &.with-first-sidebar,
     &.with-second-sidebar {
       .l-main-content {
-        @include span-columns(9);
+        @include span(9);
       }
     }
 
@@ -23,13 +23,13 @@
 
     &.with-both-sidebars {
       .l-main-content {
-        @include span-columns(6);
+        @include span(6);
       }
       .l-sidebar-first-container {
-        @include span-columns(3);
+        @include span(3);
       }
       .l-sidebar-second-container {
-        @include span-columns(3 omega);
+        @include span(3 omega);
       }
     }
 

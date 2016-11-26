@@ -1,21 +1,18 @@
-//alternative: https://gist.github.com/chriseppstein/923780 or use compass alpha http://beta.compass-style.org/reference/compass/css3/user_interface/#mixin-input-placeholder
+//alternative: https://gist.github.com/chriseppstein/923780
 //more info: http://davidwalsh.name/html5-placeholder-css
 
-
 @mixin input-placeholder {
-  @if $experimental-support-for-webkit {
-    &::-webkit-input-placeholder {
-      @content;
-    }
+
+  &::-webkit-input-placeholder { /* Chrome/Opera/Safari */
+    @content;;
   }
-  @if $experimental-support-for-mozilla {
-    &::-moz-placeholder {
-      @content;
-    }
+  &::-moz-placeholder { /* Firefox 19+ */
+    @content;
   }
-  @if $experimental-support-for-microsoft {
-    &:-ms-input-placeholder {
-      @content;
-    }
+  &:-ms-input-placeholder { /* IE 10+ */
+    @content;
+  }
+  &:-moz-placeholder { /* Firefox 18- */
+    @content;
   }
 }

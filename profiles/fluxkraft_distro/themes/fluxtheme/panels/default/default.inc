@@ -9,8 +9,8 @@ function fluxtheme_default_panels_layouts() {
     'category' => t('drunomics'),
     'icon'     => 'default.png',
     'theme'    => 'default',
-    'admin css' => '../../css/panels/default/default.admin.css',
-    'css' => '../../css/panels/default/default.css',
+    'admin css' => '../../css/default/default.admin.css',
+    'css' => '../../css/default/default.css',
     'regions' => array(
       'header'  => t('Header'),
       'main'  => t('Main'),
@@ -28,7 +28,7 @@ function fluxtheme_default_panels_layouts() {
  */
 function template_preprocess_default(&$variables) {
   $path = drupal_get_path('theme', 'fluxtheme');
-  drupal_add_css("$path/css/panels/default/default.fallback.css", array(
+  drupal_add_css("$path/css/default/default.fallback.css", array(
     'browsers' => array(
       '!IE' => FALSE,
       'IE' => 'lte IE 8',

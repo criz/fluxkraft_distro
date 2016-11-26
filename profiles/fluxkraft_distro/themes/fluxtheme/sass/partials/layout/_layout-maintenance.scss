@@ -1,11 +1,16 @@
 $container-width: 800px;
 
 .l-constrained {
-  @extend %container;
+  @include clearfix;
 }
 
 .l-maintenance-page {
-  @include set-container-width;
+  @include clearfix;
+  max-width: $container-width;
+}
+
+.l-maintenance-content {
+  margin-bottom: $rowHeight;
 }
 
 @include breakpoint($l-tablet-up) {
@@ -17,10 +22,12 @@ $container-width: 800px;
   .two-sidebars,
   .one-sidebar {
     .l-maintenance-content {
-      @include span-columns(9 omega, 12);
+      @include span(9 of 12);
+      @include last;
     }
     .l-maintenance--sidebar-first {
-      @include span-columns(3, 12);
+      @include span(3 of 12);
+      padding-top: 20px;
     }
   }
 }

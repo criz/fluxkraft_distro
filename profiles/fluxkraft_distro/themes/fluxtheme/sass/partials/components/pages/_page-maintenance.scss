@@ -7,10 +7,13 @@
     text-align: center;
   }
 }
-.site-branding__logo,
-.site-logo {
+.maintenance-page .site-branding__logo,
+.maintenance-page .site-logo {
   margin-left: 25px;
   top: -12px;
+}
+.maintenance-page .site-branding__name {
+  margin-left: 25px;
 }
 .task-list {
   margin-left: 0; /* LTR */
@@ -92,7 +95,7 @@
       @include font-size(2.0);
       text-transform: uppercase;
       width: 90%;
-      @include border-radius(0px);
+      border-radius: 0;
       margin: auto;
       &:hover {
         color: $black;

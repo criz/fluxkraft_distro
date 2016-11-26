@@ -26,9 +26,9 @@
     text-align: center;
   }
 
-  @include background(linear-gradient(rgba(0,0,0,.6), rgba(0,0,0,.8)));
-  @include box-shadow(rgba(0,0,0,.3) 0 3px 5px);
-  @include border-radius(5px);
+  background: rgba( 0, 0, 0, .8 );
+
+  border-radius: 5px;
   font-size: 0.875em;
   text-align: center;
   text-shadow: 0 1px rgba( 0, 0, 0, .5 );

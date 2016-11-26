@@ -4,8 +4,10 @@ input, select, textarea {
   outline: none;
 }
 
-input[type="text"], input[type="password"], textarea {
-  @include border-radius(3px);
+input[type="text"],
+input[type="password"],
+textarea {
+  border-radius: 3px;
   @include input-placeholder {
     color: $placeholderColor;
     font-style: $placeholderStyle;
@@ -18,7 +20,7 @@ input[type="text"], input[type="password"], textarea {
 }
 
 .form-item-border {
-  @include border-radius(5px);
+  border-radius: 5px;
   padding: 6px;
   background-color: rgba(0, 0, 0, 0.25);
   display: inline-block;
@@ -26,11 +28,11 @@ input[type="text"], input[type="password"], textarea {
 }
 
 .grippie {
-  @include border-bottom-radius(3px);
+  border-radius: 0 0 3px;
 }
 
 .resizable.textarea-processed textarea {
-  @include border-bottom-radius(0);
+  border-radius: 0;
 }
 
 input[type="submit"],
@@ -39,7 +41,6 @@ input[type="button"] {
   @extend %btnBaseStyles;
   @extend %btnPrimaryBase;
   @extend %btnMediumStyles;
-  @extend %btnRadiusRound;
   @extend %btnHoverDarken;
   padding: .5em;
   background-repeat: no-repeat;

@@ -1,10 +1,8 @@
-// Load all dependencies.
-@import "partials/utility";
-
 // Footer Columns Layout
 
 .l-footer-columns {
-  @include container;
+  //@include container;
+  clear: both;
 }
 
 
@@ -14,7 +12,7 @@
     .l-footer-columns__middle_left,
     .l-footer-columns__middle_right,
     .l-footer-columns__right {
-      @include span-columns(3);
+      @include span(3);
     }
     .l-footer-columns__right {
       @include omega;
@@ -29,7 +27,7 @@
       .l-footer-columns__middle_left,
       .l-footer-columns__middle_right,
       .l-footer-columns__right {
-        @include span-columns(12);
+        @include span(12);
         text-align: center;
         @include omega;
       }

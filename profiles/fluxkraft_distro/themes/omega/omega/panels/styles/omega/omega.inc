@@ -6,10 +6,11 @@
  */
 
 /**
- * Implementation of hook_STYLE_panels_styles()
+ * Implementation of hook_STYLE_panels_styles().
  */
 function omega_omega_panels_styles() {
   return array(
+    'title' => t('Omega'),
     'hidden' => TRUE,
     'hook theme' => 'omega_panels_theme_registry_hack',
   );

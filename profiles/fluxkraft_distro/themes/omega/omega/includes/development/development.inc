@@ -8,8 +8,10 @@
 // The development extension has some additional tasks that need to run on every
 // page load (@see _omega_extension_development_boot()).
 if (drupal_get_bootstrap_phase() >= DRUPAL_BOOTSTRAP_DATABASE && $GLOBALS['theme'] === $GLOBALS['theme_key'] && ($GLOBALS['theme'] == 'omega' || (!empty($GLOBALS['base_theme_info']) && $GLOBALS['base_theme_info'][0]->name == 'omega'))) {
-  if (user_access('administer site configuration')) {
-    _omega_extension_development_boot();
+  if (isset($GLOBALS['user']->uid) && function_exists('user_access')) {
+    if (user_access('administer site configuration') && omega_extension_enabled('development')) {
+      _omega_extension_development_boot();
+    }
   }
 }
 
@@ -33,45 +35,74 @@ function omega_extension_development_preprocess_html(&$variables) {
   $path = drupal_get_path('theme', 'omega');
 
   if (omega_theme_get_setting('omega_livereload', TRUE)) {
-    $port = omega_theme_get_setting('omega_livereload_port', '35729');
-    $host = omega_theme_get_setting('omega_livereload_host', 'localhost');
-    $script = omega_theme_get_setting('omega_livereload_script', "http://$host:$port/livereload.js");
-    $parsed = parse_url($script);
+    // LiveReload obviously only works if CSS aggregation is disabled.
+    if (!variable_get('preprocess_css', FALSE)) {
+      $port = omega_theme_get_setting('omega_livereload_port', '35729');
+      $host = omega_theme_get_setting('omega_livereload_host', 'localhost');
+      $script = omega_theme_get_setting('omega_livereload_script', "http://$host:$port/livereload.js");
+      $parsed = parse_url($script);
 
-    $query = array();
-    if (!isset($parsed['port']) || $parsed['port'] != $port) {
-      // If no port is specified the livereload.js script will use the default
-      // port (35729).
-      $query['port'] = $port;
+      $query = array('snipver' => '1');
+      if (!isset($parsed['port']) || $parsed['port'] != $port) {
+        // If no port is specified the livereload.js script will use the default
+        // port (35729).
+        $query['port'] = $port;
+      }
+
+      if (!isset($parsed['host']) || $parsed['host'] != $host) {
+        // If no host is specified livereload.js will use the host that it is
+        // served from (e.g. if livereload.js is served from example.com it will
+        // try to connect to a livereload server on example.com.
+        $query['host'] = $host;
+      }
+
+      // We need to add livereload.js as external script with an absolute path
+      // because otherwise Drupal core messes with the query string.
+      $script = empty($query) ? $script : $script . '?' . http_build_query($query);
+
+      // Check if livereload.js can be loaded.
+      if (@file_get_contents($script) === FALSE) {
+        if (user_access('administer site configuration') && flood_is_allowed('omega_' . $GLOBALS['theme'] . '_livereload_error', 3, 3600)) {
+          flood_register_event('omega_' . $GLOBALS['theme'] . '_livereload_error');
+          drupal_set_message(t('LiveReload is currently enabled but could not be loaded. Please ensure that livereload.js is being served at the <a href="!link">configured path</a> (@script).', array(
+            '@script' => $script,
+            '!link' => url('admin/appearance/settings/' . $GLOBALS['theme']),
+          )), 'error');
+        }
+      }
+      else {
+        drupal_add_js($script, array(
+          'preprocess' => FALSE,
+          'type' => 'external',
+          'scope' => 'footer',
+          'weight' => 1000,
+        ));
+      }
     }
-
-    if (!isset($parsed['host']) || $parsed['host'] != $host) {
-      // If no host is specified livereload.js will use the host that it is
-      // served from (e.g. if livereload.js is served from example.com it will
-      // try to connect to a livereload server on example.com.
-      $query['host'] = $host;
+    // If CSS aggregation is enabled, show a warning.
+    elseif (user_access('administer site configuration') && flood_is_allowed('omega_' . $GLOBALS['theme'] . '_aggregation_and_livereload', 3, 3600)) {
+      flood_register_event('omega_' . $GLOBALS['theme'] . '_aggregation_and_livereload');
+      drupal_set_message(t('LiveReload does not work with aggregated CSS files. Please <a href="!link">disable CSS aggregation</a> if you want to use LiveReload for development.', array(
+        '!link' => url('admin/config/development/performance'),
+      )), 'warning');
     }
-
-    // We need to add livereload.js as external script with an absolute path
-    // because otherwise Drupal core messes with the query string.
-    $script = empty($query) ? $script : $script . '?' . http_build_query($query);
-    drupal_add_js($script, array(
-      'preprocess' => FALSE,
-      'type' => 'external',
-      'browsers' => array(
-        'IE' => FALSE,
-        '!IE' => TRUE,
-      ),
-    ));
   }
 
   if (omega_theme_get_setting('omega_browser_width_indicator', FALSE) || omega_theme_get_setting('omega_demo_regions', TRUE)) {
-    drupal_add_css($path . '/css/omega.development.css', array('group' => CSS_THEME, 'weight' => -10, 'every_page' => TRUE));
+    drupal_add_css($path . '/css/omega.development.css', array(
+      'group' => CSS_THEME,
+      'weight' => -10,
+      'every_page' => TRUE,
+    ));
 
     if (omega_theme_get_setting('omega_browser_width_indicator', FALSE)) {
       if (!module_exists('overlay') || (!$mode = overlay_get_mode()) || $mode == 'parent') {
         $variables['attributes_array']['class'][] = 'omega-browser-width-indicator';
-        drupal_add_js($path . '/js/omega.indicator.min.js', array('group' => JS_THEME, 'weight' => -10, 'every_page' => TRUE));
+        drupal_add_js($path . '/js/omega.indicator.min.js', array(
+          'group' => JS_THEME,
+          'weight' => -10,
+          'every_page' => TRUE,
+        ));
       }
     }
   }
@@ -91,6 +122,9 @@ function omega_extension_development_preprocess_region(&$variables) {
 
     $variables['attributes_array']['class'][] = 'region--debug';
     $variables['attributes_array']['class'][] = $class;
+
+    // Ensure that the content is not completely empty.
+    $variables['content'] = !empty($variables['content']) ? $variables['content'] : '&nbsp;';
   }
 }
 
@@ -101,10 +135,10 @@ function _omega_extension_development_boot() {
   // Managing debugging (flood) messages and a few development tasks. This also
   // lives outside of any function declaration to make sure that the code is
   // executed before any theme hooks.
-  if (variable_get('theme_' . $GLOBALS['theme'] . '_settings') && flood_is_allowed('omega_' . $GLOBALS['theme'] . '_theme_settings_warning', 3)) {
+  if (omega_theme_get_setting('omega_enable_export_reminder') && variable_get('theme_' . $GLOBALS['theme'] . '_settings') && flood_is_allowed('omega_' . $GLOBALS['theme'] . '_theme_settings_warning', 3)) {
     // Alert the user that the theme settings are served from a variable.
     flood_register_event('omega_' . $GLOBALS['theme'] . '_theme_settings_warning');
-    drupal_set_message(t('The settings for this theme are currently served from a variable. You might want to export them to your .info file.'), 'warning');
+    drupal_set_message(t("The settings for this theme are currently served from a variable. You might want to export them to your .info file. This is optional and can be done the Drush command 'drush omega-export'."), 'warning');
   }
 
   // Rebuild the theme registry / aggregates on every page load if the

@@ -23,7 +23,7 @@
  * same type and browsers, if needed to accommodate other items in
  * between.
  *
- * @param $javascript
+ * @param array $javascript
  *   An array of JavaScript items, as returned by drupal_add_js(), but after
  *   alteration performed by drupal_get_js().
  *
@@ -46,9 +46,7 @@ function omega_group_js($javascript) {
   $index = -1;
   foreach ($javascript as $item) {
     $item['browsers'] = isset($item['browsers']) ? $item['browsers'] : array();
-    $item['browsers'] += array(
-      'IE'
-    );
+    $item['browsers'] += array('IE');
 
     // The browsers for which the JavaScript item needs to be loaded is part of
     // the information that determines when a new group is needed, but the order
@@ -62,7 +60,12 @@ function omega_group_js($javascript) {
         // Help ensure maximum reuse of aggregate files by only grouping
         // together items that share the same 'group' value and 'every_page'
         // flag. See drupal_add_js() for details about that.
-        $group_keys = $item['preprocess'] ? array($item['type'], $item['group'], $item['every_page'], $item['browsers']) : FALSE;
+        $group_keys = $item['preprocess'] ? array(
+          $item['type'],
+          $item['group'],
+          $item['every_page'],
+          $item['browsers'],
+        ) : FALSE;
         break;
 
       case 'external':
@@ -108,14 +111,14 @@ function omega_group_js($javascript) {
  * is to add another element to the $javascript array, deriving from
  * drupal_js_defaults(). See locale_js_alter() for an example of this.
  *
- * @param $scope
- *   (optional) The scope for which the JavaScript rules should be returned.
+ * @param string $scope
+ *   (Optional) The scope for which the JavaScript rules should be returned.
  *   Defaults to 'header'.
- * @param $javascript
- *   (optional) An array with all JavaScript code. Defaults to the default
+ * @param array $javascript
+ *   (Optional) An array with all JavaScript code. Defaults to the default
  *   JavaScript array for the given scope.
- * @param $skip_alter
- *   (optional) If set to TRUE, this function skips calling drupal_alter() on
+ * @param bool $skip_alter
+ *   (Optional) If set to TRUE, this function skips calling drupal_alter() on
  *   $javascript, useful when the calling function passes a $javascript array
  *   that has already been altered.
  *
@@ -164,7 +167,7 @@ function omega_get_js($scope = 'header', $javascript = NULL, $skip_alter = FALSE
   }
 
   // There is no need for the ajax page state if there is no ajax js!
-  if (array_key_exists('misc/ajax.js', $items)) {
+  if (array_key_exists('misc/ajax.js', $javascript)) {
     // Provide the page with information about the individual JavaScript files
     // used, information not otherwise available when aggregation is enabled.
     $setting['ajaxPageState']['js'] = array_fill_keys(array_keys($items), 1);
@@ -200,7 +203,7 @@ function omega_get_js($scope = 'header', $javascript = NULL, $skip_alter = FALSE
  * this function to work correctly even if modules have implemented custom
  * logic for grouping and aggregating files.
  *
- * @param $elements
+ * @param array $elements
  *   A render array containing:
  *   - #items: The JavaScript items as returned by drupal_add_js() and
  *     altered by drupal_get_js().
@@ -317,7 +320,7 @@ function omega_pre_render_scripts($elements) {
  * download, it also compresses the aggregate files by removing comments,
  * whitespace, and other unnecessary content.
  *
- * @param $js_groups
+ * @param array $js_groups
  *   An array of JavaScript groups as returned by drupal_group_js(). For each
  *   group that is aggregated, this function sets the value of the group's
  *   'data' key to the URI of the aggregate file.
@@ -355,7 +358,7 @@ function omega_aggregate_js(&$js_groups) {
  * period by drupal_delete_file_if_stale(). This ensures that files referenced
  * by a cached page will still be available.
  *
- * @param $files
+ * @param array $files
  *   An array of JavaScript files to aggregate and compress into one file.
  *
  * @return string|bool
@@ -378,9 +381,10 @@ function omega_build_js_cache($files) {
 
   if (empty($uri) || !file_exists($uri)) {
     // Build aggregate JS file.
-    foreach ($files as $path => $info) {
+    foreach ($files as $info) {
       if ($info['preprocess']) {
-        // Append a ';' and a newline after each JS file to prevent them from running together.
+        // Append a ';' and a newline after each JS file to prevent them from
+        // running together.
         $contents .= file_get_contents($info['data']) . ";\n";
       }
     }

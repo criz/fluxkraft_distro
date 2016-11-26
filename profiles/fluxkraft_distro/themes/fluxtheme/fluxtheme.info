@@ -46,7 +46,7 @@ settings[toggle_comment_user_verification] = 1
 settings[toggle_favicon] = 1
 settings[omega_toggle_front_page_content] = 1
 settings[default_logo] = 0
-settings[logo_path] = 'http://drunomics.com/files/styles/project_circle/public/fluxkraft_logo_500_0.png'
+settings[logo_path] = 'profiles/fluxkraft_distro/themes/fluxtheme/images/logo.png'
 settings[logo_upload] = ''
 settings[default_favicon] = 1
 settings[favicon_path] = ''
@@ -75,16 +75,11 @@ settings[omega_internet_explorer_support] = 7
 settings[omega_chrome_popup] = 0
 settings[omega_chrome_notice] = 1
 settings[omega_toggle_extension_assets] = 1
-settings[omega_css_exclude][] = panels/*
-settings[omega_css_exclude][] = views/*
-settings[omega_css_exclude][] = flexslider/*
-settings[omega_css_exclude][] = *flexslider.css
-settings[omega_css_exclude][] = flexslider.css
-settings[omega_libraries][selectivizr][status] = 1
+settings[omega_libraries][selectivizr][status] = 0
 settings[omega_libraries][css3mediaqueries][status] = 0
 settings[omega_libraries][respond][status] = 0
 settings[omega_libraries][css3pie][status] = 0
-settings[omega_libraries][html5shiv][status] = 1
+settings[omega_libraries][html5shiv][status] = 0
 settings[omega_libraries][messages][status] = 0
 settings[hurricane_renderers][drop] = drop
 settings[hurricane_renderers][spinjs] = 0
@@ -102,11 +97,9 @@ settings[hurricane_text-decoration] = 0
 settings[hurricane_text-align] = 0
 settings[hurricane_white-space] = 0
 settings[hurricane_font-style] = 0
-settings[omega_css_exclude_regex] = /^sites\/all\/modules\/panels\/(.*)|profiles\/fluxkraft_distro\/modules\/views\/(.*)|flexslider\/(.*)|(.*)flexslider\.css|flexslider\.css$/
-
-; Information added by drupal.org packaging script on 2013-10-18
-version = "7.x-1.x-dev"
+; Information added by Drupal.org packaging script on 2016-11-25
+version = "7.x-2.x-dev"
 core = "7.x"
 project = "fluxtheme"
-datestamp = "1382122420"
+datestamp = "1480085884"
 

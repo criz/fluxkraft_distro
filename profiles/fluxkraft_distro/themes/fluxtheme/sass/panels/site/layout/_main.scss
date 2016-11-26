@@ -1,11 +1,8 @@
 // Main
 
-.sites {
-  @include set-container-width;
-}
-
 .l-main-content {
-  @extend %container;
+  @extend %clearfix;
+  @include container;
 }
 
 [role="main"] {

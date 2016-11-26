@@ -18,9 +18,11 @@
   text-decoration: none;
   width: auto;
   color: $btnFontColor;
-  @include box-shadow($btnShinyEdge);
-  @include single-transition(background-color, $btnTransitionSpeed, $btnTransitionEase);
-  &:active { @include box-shadow($btnDarkEdge); }
+  //@include box-shadow($btnShinyEdge);
+  //@include single-transition(background-color, $btnTransitionSpeed, $btnTransitionEase);
+  &:active {
+    //@include box-shadow($btnDarkEdge);
+  }
 }
 
 // Primary Button Base
@@ -28,7 +30,7 @@
   background-color: $primaryColor;
   border: none;
   &:hover,
-  &:focus { color: $btnFontColor; background-color: darken($primaryColor, 5%); }
+  &:focus { color: $btnFontColor; background-color: lighten($primaryColor, 5%); }
 }
 %btnHoverLighten {
   &:hover,
@@ -70,7 +72,7 @@
 %btnDisabledBase {
   opacity: $btnDisabledOpacity;
   cursor: default;
-  @include box-shadow(none);
+  //@include box-shadow(none);
 }
 // Disabled Background Colors
 %btnPrimaryDisabled { background-color: $primaryColor;
@@ -114,8 +116,12 @@
 }
 
 // Button Radii
-%btnRadiusRound { @include border-radius($btnRadius); }
-%btnRadiusPill { @include border-radius(1000px); }
+%btnRadiusRound {
+  border-radius: $btnRadius;
+}
+%btnRadiusPill {
+  border-radius: 1000px;
+}
 
 // Button Text Alignment
 %btnTextCenter { text-align: center; }

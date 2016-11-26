@@ -1,5 +1,5 @@
 // Load all dependencies.
-@import "partials/utility";
+@import "../../partials/utility";
 
 .panels-dnd {
   header[role="banner"],
@@ -8,6 +8,6 @@
   .l-header {
     background: none;
     height: auto;
-    @include container;
+    //@include container;
   }
 }

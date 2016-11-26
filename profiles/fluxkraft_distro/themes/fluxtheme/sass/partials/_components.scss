@@ -1,9 +1,45 @@
+// Import component sass files.
+
+// Entities
+@import "components/entity/chromeframe";
+
+// Fields
+@import "components/fields/field";
+@import "components/fields/field-tags";
+
+// Global
+@import "components/global/branding";
+@import "components/global/_comment.scss";
+@import "components/global/_error.scss";
+@import "components/global/fluxicons";
+@import "components/global/footer";
+@import "components/global/footer-menu";
+@import "components/global/header";
+@import "components/global/icons";
+@import "components/global/mark-new";
+@import "components/global/messages";
+@import "components/global/navigation";
+@import "components/global/pagetitle";
+@import "components/global/sidebars";
 @import "components/global/sprite";
-@import "components/global/*";
-/*@import "components/blocks/*";*/
-@import "components/entity/*";
-@import "components/views/*";
-@import "components/pages/*";
-@import "components/fields/*";
-@import "components/menus/*";
-@import "components/rules/*";
+@import "components/global/submitted";
+@import "components/global/tabledrag";
+@import "components/global/tables";
+@import "components/global/tabs";
+
+// Menus
+@import "components/menus/action-links";
+@import "components/menus/breadcrumb";
+
+// Pages
+@import "components/pages/page-maintenance.scss";
+@import "components/pages/pages-base";
+
+// Rules
+@import "components/rules/rules-edit";
+@import "components/rules/rules-element";
+@import "components/rules/rules-element-icons";
+@import "components/rules/rules-operation";
+@import "components/rules/rules-overview";
+@import "components/rules/rules-tags";
+@import "components/rules/rules-tooltip";

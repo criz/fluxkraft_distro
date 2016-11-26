@@ -1,11 +1,14 @@
 <?php
 
 /**
+ * @file
+ * Contains a pre-process hook for 'region'.
+ */
+
+/**
  * Implements hook_preprocess_region().
  */
 function omega_preprocess_region(&$variables) {
-  $variables['debug'] = FALSE;
-
   // Sidebar regions common template suggestion for all sidebars.
   if (strpos($variables['region'], 'sidebar') === 0) {
     // Allow a region-specific template to override region--sidebar.

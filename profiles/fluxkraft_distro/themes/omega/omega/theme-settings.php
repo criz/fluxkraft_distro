@@ -23,6 +23,16 @@ function omega_form_system_theme_settings_alter(&$form, &$form_state, $form_id =
     drupal_set_message(t('The settings for this theme are currently served from a variable. You might want to export them to your .info file.'), 'warning', FALSE);
   }
 
+  $form['omega_enable_warning'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Show a warning if Omega is used directly'),
+    '#description' => t('You can disable this warning message permanently, however, please be aware that Omega is a base theme and should not be used directly. You should always create a sub-theme instead.'),
+    '#default_value' => omega_theme_get_setting('omega_enable_warning', TRUE),
+    '#weight' => -20,
+    // Only show this checkbox on the Omega theme settings page.
+    '#access' => $GLOBALS['theme_key'] === 'omega',
+  );
+
   // Include the template.php and theme-settings.php files for all the themes in
   // the theme trail.
   foreach (omega_theme_trail() as $theme => $name) {
@@ -51,7 +61,7 @@ function omega_form_system_theme_settings_alter(&$form, &$form_state, $form_id =
   // Collapse all the core theme settings tabs in order to have the form actions
   // visible all the time without having to scroll.
   foreach (element_children($form) as $key) {
-    if ($form[$key]['#type'] == 'fieldset')  {
+    if ($form[$key]['#type'] == 'fieldset') {
       $form[$key]['#collapsible'] = TRUE;
       $form[$key]['#collapsed'] = TRUE;
     }
@@ -128,11 +138,14 @@ function omega_form_system_theme_settings_alter(&$form, &$form_state, $form_id =
 
       $function = $info['theme'] . '_extension_' . $extension . '_settings_form';
       if (function_exists($function)) {
-        // By default, each extension resides in a vertical tab
+        // By default, each extension resides in a vertical tab.
         $element = $function($element, $form, $form_state) + array(
           '#type' => 'fieldset',
           '#title' => t('@extension extension configuration', array('@extension' => $info['info']['name'])),
           '#description' => $info['info']['description'],
+          '#attributes' => array(
+            'class' => array('omega-extension-settings')
+          ),
           '#states' => array(
             'disabled' => array(
               'input[name="omega_toggle_extension_' . $extension . '"]' => array('checked' => FALSE),
@@ -155,7 +168,7 @@ function omega_form_system_theme_settings_alter(&$form, &$form_state, $form_id =
   $form['theme_settings']['omega_toggle_front_page_content'] = array(
     '#type' => 'checkbox',
     '#title' => t('Front page content'),
-    '#description' => t('Allow the main content block to be rendered on the front page.'),
+    '#description' => t('Allow the default content list to be rendered on the front page.'),
     '#default_value' => omega_theme_get_setting('omega_toggle_front_page_content', TRUE),
   );
 
