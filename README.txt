@@ -1,8 +1,8 @@
-fluxkraft is a module suite and Drupal distribution for automating your workflows (think like IFTTT or Zapier) based on the <a href="https://drupal.org/project/rules">Rules module</a>.
+fluxkraft is a module suite and Drupal distribution for automating your workflows (think like IFTTT or Zapier) based on the Rules module (https://drupal.org/project/rules).
 
 Connect and automate tools like Facebook and Dropbox or schedule tweets to promote your website content.
 
-NEW: Trigger actions by pressing a physical button (using the Open Source IoT System <a href="http://www.opentrigger.com">OpenTrigger</a>).
+NEW: Trigger actions by pressing a physical button (using the Open Source IoT System http://www.opentrigger.com).
 
 More features:
 - User specific Rules
@@ -32,8 +32,8 @@ OpenTrigger Open Source IoT System
 CREDITS
 ----
 
-The distribution has been initiated by <a href="http://www.drunomics.com">drunomics</a>. It is currently maintained by <a href="http://www.acolono.com">acolono</a>.
-The project has been sponsored by <a href="https://www.netidee.at">netidee</a>.
+The distribution has been initiated by http://www.drunomics.com. It is currently maintained by http://www.acolono.com.
+The project has been sponsored by https://www.netidee.at.
 
 LICENCE
 ---
