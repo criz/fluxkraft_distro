@@ -1,0 +1,19 @@
+name = Webhook Example
+description = Example Webhook for creating logging github commits to watchdog.
+core = 7.x
+package = Features
+dependencies[] = ctools
+dependencies[] = webhook
+features[ctools][] = webhook:webhook:1
+features[features_api][] = api:1
+features[webhook][] = github
+
+files[] = plugins/processor/Webhook_Example_Plugins_Processor_GithubLog.class.inc
+files[] = plugins/unserializer/Webhook_Example_Plugins_Unserializer_Github.class.inc
+
+; Information added by Drupal.org packaging script on 2014-09-19
+version = "7.x-1.0-alpha3"
+core = "7.x"
+project = "webhook"
+datestamp = "1411118631"
+

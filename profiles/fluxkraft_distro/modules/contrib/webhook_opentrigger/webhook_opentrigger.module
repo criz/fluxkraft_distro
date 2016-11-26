@@ -1,0 +1,70 @@
+<?php
+/**
+ * @file
+ * Code for the Webhook Opentrigger module.
+ */
+
+include_once 'webhook_opentrigger.features.inc';
+
+/**
+ * Implements hook_ctools_plugin_directory().
+ */
+function webhook_opentrigger_ctools_plugin_directory($module, $type) {
+  if ('webhook' == $module) {
+    return "plugins/{$type}";
+  }
+}
+
+/**
+ * Implements hook_webhook_processor().
+ */
+function webhook_opentrigger_webhook_processor() {
+
+  $path = drupal_get_path('module', 'webhook_opentrigger') . '/plugins/processor';
+  $plugins = array();
+
+  $plugins['opentriggerevent'] = array(
+    'title' => t('OpenTrigger Events'),
+    'processor' => array(
+      'path' => $path,
+      'file' => 'Webhook_Opentrigger_Plugins_Processor_OpentriggerEvent.class.inc',
+      'class' => 'Webhook_Opentrigger_Plugins_Processor_OpentriggerEvent',
+    ),
+  );
+
+  return $plugins;
+}
+
+/**
+ * Implements hook_webhook_unserializer().
+ */
+function webhook_opentrigger_webhook_unserializer() {
+
+  $path = drupal_get_path('module', 'webhook_opentrigger') . '/plugins/unserializer';
+  $plugins = array();
+
+  $plugins['opentrigger'] = array(
+    'title' => t('Opentrigger'),
+    'unserializer' => array(
+      'path' => $path,
+      'file' => 'Webhook_Opentrigger_Plugins_Unserializer_Opentrigger.class.inc',
+      'class' => 'Webhook_Opentrigger_Plugins_Unserializer_Opentrigger',
+    ),
+  );
+
+  return $plugins;
+}
+
+/**
+ * Implements hook_preprocess_fluxkraft_rules_category_icon().
+ * @param $variables
+ */
+function webhook_opentrigger_preprocess_fluxkraft_rules_category_icon(&$variables) {
+  // Provide a nice OpenTrigger Icon for the fluxkraft event.
+  if (isset($variables['element']['#module']) && $variables['element']['#module'] == 'webhook_opentrigger') {
+    $variables['background_color'] = '#e22b1b';
+    $path = drupal_get_path('module', 'webhook_opentrigger');
+    $variables['icon'] = theme('image', array('path' => $path . '/images/opentrigger.svg'));
+    $variables['attributes']['class'] = array('fluxkraft-rules-icon-file');
+  }
+}

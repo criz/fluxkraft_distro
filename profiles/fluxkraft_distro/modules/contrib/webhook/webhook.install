@@ -1,0 +1,109 @@
+<?php
+
+/**
+ * @file
+ * Webhook module installation functions.
+ */
+
+/**
+ * Implements hook_schema().
+ */
+function webhook_schema() {
+  $schema = array();
+
+  $schema['webhook'] = array(
+    'description' => 'Webhook configuration table.',
+    'export' => array(
+      'key' => 'machine_name',
+      'key name' => 'Machine Name',
+      'primary key' => 'whid',
+      'identifier' => 'webhook',
+      'default hook' => 'webhook_default_config',
+      'api' => array(
+        'owner' => 'webhook',
+        'api' => 'webhook',  // Base name for api include files.
+        'minimum_version' => 1,
+        'current_version' => 1,
+      ),
+    ),
+    'fields' => array(
+      'whid' => array(
+        'description' => 'The primary identifier for a webhook.',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'title' => array(
+        'description' => 'The human friendly name for the webhook.',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'machine_name' => array(
+        'description' => 'The machine name for the webhook.',
+        'type' => 'varchar',
+        'length' => 50,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'description' => array(
+        'description' => 'The description of the webhook.',
+        'type' => 'text',
+      ),
+      'unserializer' => array(
+        'description' => 'The name of the class for unserializing the submitted data.',
+        'type' => 'varchar',
+        'length' => 100,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'processor' => array(
+        'description' => 'The name of the class for processing the data.',
+        'type' => 'varchar',
+        'length' => 100,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'config' => array(
+        'description' => 'The configuration of the webhook.',
+        'type' => 'text',
+        'serialize' => TRUE,
+      ),
+      'enabled' => array(
+        'description' => 'Flag to indiciate if the webhook is enabled.',
+        'type' => 'int',
+        'size' => 'tiny',
+        'default' => 1,
+      ),
+    ),
+    'primary key' => array('whid'),
+    'unique keys' => array(
+      'machine_name' => array('machine_name'),
+    ),
+    'indexes' => array(
+      'enabled' => array('enabled'),
+    ),
+  );
+
+  return $schema;
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function webhook_uninstall() {
+  $variables = array();
+  foreach ($variables as $variable) {
+    variable_del($variable);
+  }
+}
+
+/**
+ * Remove redundant webhook_extras module.
+ */
+function webhook_update_7000(&$sandbox) {
+  $modules = array('webhook_extras');
+  module_disable($modules);
+  drupal_uninstall_modules($modules);
+}

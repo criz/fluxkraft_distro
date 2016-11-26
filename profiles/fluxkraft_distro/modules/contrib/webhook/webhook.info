@@ -1,0 +1,26 @@
+name = Webhook
+description = Webhook callback handler.
+
+core = 7.x
+
+configure= admin/config/services/webhook
+
+dependencies[] = ctools
+
+; Export UI
+files[] = plugins/export_ui/webhook.inc
+
+;Processors
+files[] = includes/Webhook_Plugins_Processor_Interface.inc
+files[] = includes/Webhook_Plugins_Processor_ErrorException.inc
+
+; Unserializers
+files[] = includes/Webhook_Plugins_Unserializer_Interface.inc
+files[] = includes/Webhook_Plugins_Unserializer_InvalidDataException.class.inc
+
+; Information added by Drupal.org packaging script on 2014-09-19
+version = "7.x-1.0-alpha3"
+core = "7.x"
+project = "webhook"
+datestamp = "1411118631"
+

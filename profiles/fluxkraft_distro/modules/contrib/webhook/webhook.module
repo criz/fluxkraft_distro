@@ -1,0 +1,391 @@
+<?php
+
+/**
+ * @file
+ * Webhook module functions.
+ */
+
+/**
+ * Implements hook_menu().
+ */
+function webhook_menu() {
+  $items = array();
+
+  $items['webhook/%'] = array(
+    'title' => 'Webhook',
+    'page callback' => 'webhook_process_request',
+    'page arguments' => array(1),
+    'access arguments' => array('trigger webhook'),
+    'type' => MENU_CALLBACK,
+  );
+  return $items;
+}
+
+/**
+ * Implements hook_permission().
+ */
+function webhook_permission() {
+  $permissions = array();
+
+  $permissions['administer webhook'] = array(
+    'title' => t('Administer webhooks.'),
+  );
+
+  $permissions['trigger webhook'] = array(
+    'title' => t('Trigger a webhook'),
+  );
+
+  return $permissions;
+}
+
+/**
+ * Implements hook_ctools_plugin_api().
+ */
+function webhook_ctools_plugin_api($module, $api) {
+  if ('webhook' == $module && in_array($api, array('processor', 'unserialize'))) {
+    return array('version' => 1);
+  }
+}
+
+/**
+ * Implements hook_ctools_plugin_directory().
+ */
+function webhook_ctools_plugin_directory($module, $type) {
+  if ('webhook' == $module || 'export_ui' == $type) {
+    return "plugins/{$type}";
+  }
+}
+
+/**
+ * Implements hook_ctools_plugin_type().
+ */
+function webhook_ctools_plugin_type() {
+  $plugins = array();
+
+  $plugins['processor'] = array(
+    'cache' => TRUE,
+    'classes' => array('processor'),
+    'use hooks' => TRUE,
+  );
+
+  $plugins['unserializer'] = array(
+    'cache' => TRUE,
+    'classes' => array('unserializer'),
+    'use hooks' => TRUE,
+  );
+
+  return $plugins;
+}
+
+/**
+ * Implements hook_webhook_processor().
+ */
+function webhook_webhook_processor() {
+
+  require_once __DIR__ . "/includes/Webhook_Plugins_Processor_Interface.inc";
+
+  $path = drupal_get_path('module', 'webhook') . '/plugins/processor';
+  $plugins = array();
+
+  return $plugins;
+}
+
+/**
+ * Implements hook_webhook_unserializer().
+ */
+function webhook_webhook_unserializer() {
+
+  require_once __DIR__ . "/includes/Webhook_Plugins_Unserializer_Interface.inc";
+
+  $path = drupal_get_path('module', 'webhook') . '/plugins/unserializer';
+  $plugins = array();
+
+  $plugins['autodetect'] = array(
+    'title' => t('Autodetect'),
+    'unserializer' => array(
+      'path' => $path,
+      'file' => 'Webhook_Plugins_Unserializer_Autodetect.class.inc',
+      'class' => 'Webhook_Plugins_Unserializer_Autodetect',
+    ),
+  );
+
+
+  $plugins['json'] = array(
+    'title' => t('JSON'),
+    'unserializer' => array(
+      'path' => $path,
+      'file' => 'Webhook_Plugins_Unserializer_Json.class.inc',
+      'class' => 'Webhook_Plugins_Unserializer_Json',
+    ),
+  );
+
+  $plugins['urlencoded'] = array(
+    'title' => t('URL encoded key=value'),
+    'unserializer' => array(
+      'path' => $path,
+      'file' => 'Webhook_Plugins_Unserializer_UrlEncoded.class.inc',
+      'class' => 'Webhook_Plugins_Unserializer_UrlEncoded',
+    ),
+  );
+
+
+  $plugins['xml'] = array(
+    'title' => t('XML'),
+    'unserializer' => array(
+      'path' => $path,
+      'file' => 'Webhook_Plugins_Unserializer_Xml.class.inc',
+      'class' => 'Webhook_Plugins_Unserializer_Xml',
+    ),
+  );
+
+  return $plugins;
+}
+
+/**
+ * Processes a webhook trigger call.
+ *
+ * @param string $name
+ *   The name of the webhook that was triggered.
+ */
+function webhook_process_request($name) {
+
+  ctools_include('plugins');
+
+  // We we receive an invalid request, error and exit.
+  if ('POST' != $_SERVER['REQUEST_METHOD']) {
+    drupal_add_http_header('Status', '405 Method Not Allowed');
+    drupal_exit();
+  }
+
+  $webhook = webhook_load($name);
+  if (!$webhook || !$webhook->enabled) {
+    return MENU_NOT_FOUND;
+  }
+
+  $unserializer = webhook_load_unserializer($webhook->unserializer);
+  $raw_post = file_get_contents("php://input");
+  try {
+    $data = $unserializer->unserialize($raw_post);
+  }
+  catch (Webhook_Plugins_Unserializer_InvalidDataException $e) {
+    return webhook_process_unserializer_error($name, $raw_data, $e);
+  }
+
+  $processor = webhook_load_processor($webhook->processor);
+  try {
+    $response = $processor->process($data);
+  }
+  catch (Webhook_Plugins_Processor_ErrorException $e) {
+    return webhook_process_processor_error($name, $data, $e);
+  }
+
+  drupal_add_http_header('Status', '200 OK');
+  drupal_exit();
+}
+
+/**
+ * Saves a single webhook.
+ *
+ * @param object $webhook
+ *   The webhook object to save.
+ */
+function webhook_save(&$webhook) {
+  $update = array();
+  if (isset($webhook->whid) && is_numeric($webhook->whid)) {
+    $update = array('whid');
+  }
+  return drupal_write_record('webhook', $webhook, $update);
+}
+
+/**
+ * Loads a webhook by machine name.
+ *
+ * @param string $name
+ *   The name of the webhook to load.
+ *
+ * @return object
+ *   The webhook object or NULL if not found.
+ */
+function webhook_load($name) {
+  ctools_include('export');
+  $result = ctools_export_load_object('webhook', 'names', array($name));
+  if (isset($result[$name])) {
+    return $result[$name];
+  }
+}
+
+/**
+ * Loads multiple webhooks by name.
+ */
+function webhook_load_multiple(array $names) {
+  ctools_include('export');
+  $results = ctools_export_load_object('webhook', 'names', $names);
+  return array_filter($results);
+}
+
+/**
+ * Loads and instantiates unserializer class.
+ *
+ * @param string $name
+ *   The name of the unserializer to load.
+ *
+ * @return Webhook_Unserializer
+ *   The instantiated unserializer object.
+ */
+function webhook_load_unserializer($name) {
+  $class_name = ctools_plugin_load_class('webhook', 'unserializer', $name, 'unserializer');
+  return new $class_name();
+}
+
+/**
+ * Loads and instantiates processor class.
+ *
+ * @param string $name
+ *   The name of the processor to load.
+ *
+ * @return Webhook_Processor
+ *   The instantiated processor object.
+ */
+function webhook_load_processor($name) {
+  $class_name = ctools_plugin_load_class('webhook', 'processor', $name, 'processor');
+  return new $class_name();
+}
+
+/**
+ * Fetches a list of processor plugins.
+ *
+ * @return array
+ *   An associative array of the processors keyed by name.
+ */
+function webhook_get_processor_list() {
+  $plugins = array();
+  foreach (ctools_get_plugins('webhook', 'processor') as $name => $info) {
+    $plugins[$name] = $info['title'];
+  }
+  return $plugins;
+}
+
+/**
+ * Fetches a list of unserializer plugins.
+ *
+ * @return array
+ *   An associative array of unserializer plugins keyed by name.
+ */
+function webhook_get_unserlizer_list() {
+  $plugins = array();
+  foreach (ctools_get_plugins('webhook', 'unserializer') as $name => $info) {
+    $plugins[$name] = $info['title'];
+  }
+  return $plugins;
+}
+
+/**
+ * Exception handler.
+ */
+function webhook_process_error(Exception $e) {
+  $message = $e->getMessage();
+  $code = $e->getCode();
+  if (!$code || !isset($http_codes[$code])) {
+    $code = 400;
+  }
+  $status = $http_codes[$code];
+
+  // Lifted from https://stackoverflow.com/a/3914021.
+  $http_codes = array(
+    100 => 'Continue',
+    101 => 'Switching Protocols',
+    102 => 'Processing',
+    200 => 'OK',
+    201 => 'Created',
+    202 => 'Accepted',
+    203 => 'Non-Authoritative Information',
+    204 => 'No Content',
+    205 => 'Reset Content',
+    206 => 'Partial Content',
+    207 => 'Multi-Status',
+    300 => 'Multiple Choices',
+    301 => 'Moved Permanently',
+    302 => 'Found',
+    303 => 'See Other',
+    304 => 'Not Modified',
+    305 => 'Use Proxy',
+    306 => 'Switch Proxy',
+    307 => 'Temporary Redirect',
+    400 => 'Bad Request',
+    401 => 'Unauthorized',
+    402 => 'Payment Required',
+    403 => 'Forbidden',
+    404 => 'Not Found',
+    405 => 'Method Not Allowed',
+    406 => 'Not Acceptable',
+    407 => 'Proxy Authentication Required',
+    408 => 'Request Timeout',
+    409 => 'Conflict',
+    410 => 'Gone',
+    411 => 'Length Required',
+    412 => 'Precondition Failed',
+    413 => 'Request Entity Too Large',
+    414 => 'Request-URI Too Long',
+    415 => 'Unsupported Media Type',
+    416 => 'Requested Range Not Satisfiable',
+    417 => 'Expectation Failed',
+    418 => 'I\'m a teapot',
+    422 => 'Unprocessable Entity',
+    423 => 'Locked',
+    424 => 'Failed Dependency',
+    425 => 'Unordered Collection',
+    426 => 'Upgrade Required',
+    449 => 'Retry With',
+    450 => 'Blocked by Windows Parental Controls',
+    500 => 'Internal Server Error',
+    501 => 'Not Implemented',
+    502 => 'Bad Gateway',
+    503 => 'Service Unavailable',
+    504 => 'Gateway Timeout',
+    505 => 'HTTP Version Not Supported',
+    506 => 'Variant Also Negotiates',
+    507 => 'Insufficient Storage',
+    509 => 'Bandwidth Limit Exceeded',
+    510 => 'Not Extended'
+);
+
+  drupal_add_http_header('Status', "$code $status");
+  $args = array(
+    '@code' => $code,
+    '@status' => $status,
+    '@body' => $message,
+  );
+  print t("<html><head><title>@code @status</title></head><body><h1>@status</h1><p>@body</p></body></html>", $args);
+
+  drupal_exit();
+}
+
+/**
+ * Handles processor exceptions.
+ */
+function webhook_process_processor_error($name, $data, Webhook_Plugins_Processor_ErrorException $e) {
+
+  $args = array(
+    '@name' => $name,
+    '@error' => $e->getMessage(),
+    '@data' => print_r($data, TRUE),
+  );
+  watchdog('webhook', 'Error processing @name.<br />Error: @error<br />Data: <pre>@data</pre>', $args, WATCHDOG_ERROR);
+
+  return webhook_process_error($e);
+}
+
+/**
+ * Handles unserialiser exceptions.
+ */
+function webhook_process_unserializer_error($body, Webhook_Plugins_Unserializer_InvalidDataException $e) {
+
+  $args = array(
+    '@name' => $name,
+    '@error' => $e->getMessage(),
+    '@data' => $body,
+  );
+  watchdog('webhook', 'Error unserializing @name.<br />Error: @error<br />Body: @body', $args, WATCHDOG_ERROR);
+
+  return webhook_process_error($e);
+}

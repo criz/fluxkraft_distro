@@ -1,0 +1,11 @@
+name = Webhook Extras [DEPRECATED]
+description = This module is no longer needed - please uninstall.
+
+core = 7.x
+
+; Information added by Drupal.org packaging script on 2014-09-19
+version = "7.x-1.0-alpha3"
+core = "7.x"
+project = "webhook"
+datestamp = "1411118631"
+

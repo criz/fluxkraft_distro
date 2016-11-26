@@ -1,0 +1,56 @@
+<?php
+/**
+ * @file
+ * Code for the Webhook Example feature.
+ */
+
+include_once 'webhook_example.features.inc';
+
+/**
+ * Implements hook_ctools_plugin_directory().
+ */
+function webhook_example_ctools_plugin_directory($module, $type) {
+  if ('webhook' == $module) {
+    return "plugins/{$type}";
+  }
+}
+
+/**
+ * Implements hook_webhook_processor().
+ */
+function webhook_example_webhook_processor() {
+
+  $path = drupal_get_path('module', 'webhook_example') . '/plugins/processor';
+  $plugins = array();
+
+  $plugins['githublog'] = array(
+    'title' => t('GitHub Logger'),
+    'processor' => array(
+      'path' => $path,
+      'file' => 'Webhook_Example_Plugins_Processor_GithubLog.class.inc',
+      'class' => 'Webhook_Example_Plugins_Processor_GithubLog',
+    ),
+  );
+
+  return $plugins;
+}
+
+/**
+ * Implements hook_webhook_unserializer().
+ */
+function webhook_example_webhook_unserializer() {
+
+  $path = drupal_get_path('module', 'webhook_example') . '/plugins/unserializer';
+  $plugins = array();
+
+  $plugins['github'] = array(
+    'title' => t('GitHub'),
+    'unserializer' => array(
+      'path' => $path,
+      'file' => 'Webhook_Example_Plugins_Unserializer_Github.class.inc',
+      'class' => 'Webhook_Example_Plugins_Unserializer_Github',
+    ),
+  );
+
+  return $plugins;
+}

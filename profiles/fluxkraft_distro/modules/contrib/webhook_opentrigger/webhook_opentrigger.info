@@ -1,0 +1,19 @@
+name = Webhook OpenTrigger
+description = Providing OpenTrigger webhook support for the Webhook module.
+core = 7.x
+package = Features
+dependencies[] = ctools
+dependencies[] = webhook
+features[ctools][] = webhook:webhook:1
+features[features_api][] = api:1
+features[webhook][] = opentrigger
+
+files[] = plugins/processor/Webhook_Opentrigger_Plugins_Processor_OpentriggerEvent.class.inc
+files[] = plugins/unserializer/Webhook_Opentrigger_Plugins_Unserializer_Opentrigger.class.inc
+
+; Information added by Drupal.org packaging script on 2016-11-23
+version = "7.x-1.x-dev"
+core = "7.x"
+project = "webhook_opentrigger"
+datestamp = "1479941587"
+
